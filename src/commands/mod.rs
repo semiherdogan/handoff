@@ -5,6 +5,7 @@ pub mod r#continue;
 pub mod init;
 pub mod list;
 pub mod prompt;
+pub mod prompt_output;
 pub mod start;
 pub mod status;
 pub mod switch;

@@ -1,3 +1,4 @@
+use crate::commands::prompt_output;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::core::state;
@@ -5,8 +6,6 @@ use crate::core::workspace;
 use crate::templates::manager::TemplateManager;
 use crate::templates::prompts;
 use anyhow::{Context, Result};
-use arboard::Clipboard;
-use colored::Colorize;
 use std::fs;
 
 pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
@@ -21,24 +20,5 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let template_manager = TemplateManager::new(paths);
     let prompt = prompts::continuation_prompt(&template_manager);
 
-    if copy {
-        let mut clipboard = Clipboard::new().context("Failed to access clipboard")?;
-        clipboard
-            .set_text(prompt.clone())
-            .context("Failed to copy prompt to clipboard")?;
-    }
-
-    if !raw {
-        println!("{}", "AI Prompt".bold().cyan());
-        println!();
-    }
-
-    println!("{prompt}");
-
-    if copy {
-        println!();
-        println!("{}", "Copied prompt to clipboard.".green());
-    }
-
-    Ok(())
+    prompt_output::output_prompt(&prompt, copy, raw)
 }
