@@ -82,10 +82,31 @@ fn print_standard_status(feature_name: &str, summary: &StateSummary) {
 }
 
 fn spinner_frame(index: usize) -> &'static str {
+    // Root cause: the previous pseudo-progress frames looked like partial completion,
+    // which made follow mode feel noisy instead of indicating simple liveness.
     match index % 4 {
-        0 => "[....]",
-        1 => "[=...]",
-        2 => "[==..]",
-        _ => "[===.]",
+        0 => "[|]",
+        1 => "[/]",
+        2 => "[-]",
+        _ => "[\\]",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::spinner_frame;
+
+    #[test]
+    fn spinner_frame_uses_clean_ascii_spinner_cycle() {
+        assert_eq!(spinner_frame(0), "[|]");
+        assert_eq!(spinner_frame(1), "[/]");
+        assert_eq!(spinner_frame(2), "[-]");
+        assert_eq!(spinner_frame(3), "[\\]");
+    }
+
+    #[test]
+    fn spinner_frame_wraps_every_four_ticks() {
+        assert_eq!(spinner_frame(4), "[|]");
+        assert_eq!(spinner_frame(5), "[/]");
     }
 }
