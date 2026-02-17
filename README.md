@@ -36,6 +36,7 @@ handoff continue [--copy] [--raw]
 handoff start [--copy] [--raw]
 handoff prompt [start|continue] [--copy] [--raw]
 handoff status [--follow]
+handoff version
 handoff list
 handoff archive <feature>
 ```
@@ -113,6 +114,8 @@ If archived feature is active, `.ai/current` symlink is cleared automatically.
 - `handoff status`
   - Use to inspect current execution state quickly.
   - Add `--follow` to watch the active `[>]` step live (polls every 2s) until work completes.
+- `handoff version`
+  - Use to print the current CLI version from `Cargo.toml`.
 - `handoff switch <feature>`
   - Use to make another feature active.
 - `handoff list`
@@ -180,11 +183,14 @@ This lets the next session continue from where the previous one stopped.
 
 This repository includes a GitHub Actions workflow that automatically creates a GitHub Release when a version tag is pushed (for example: `v0.1.0`).
 
+The release workflow updates `Cargo.toml` package version from the pushed tag (`vX.Y.Z` -> `version = "X.Y.Z"`) before building release binaries.
+
 Release artifacts are built for:
 
 - Linux (`x86_64-unknown-linux-gnu`)
 - macOS (`aarch64-apple-darwin`)
-- Windows (`x86_64-pc-windows-msvc`)
+
+Artifact names include the release tag suffix (for example: `handoff-aarch64-apple-darwin-v0.1.0`).
 
 ### macOS note for release binaries
 

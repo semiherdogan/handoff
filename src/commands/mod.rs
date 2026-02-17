@@ -6,3 +6,4 @@ pub mod prompt;
 pub mod start;
 pub mod status;
 pub mod switch;
+pub mod version;

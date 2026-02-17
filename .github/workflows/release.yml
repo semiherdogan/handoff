@@ -29,6 +29,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set Cargo.toml version from release tag
+        shell: bash
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [[ -z "$tag_version" ]]; then
+            echo "Failed to read release tag version"
+            exit 1
+          fi
+
+          # Root cause: Cargo.toml can lag behind the release tag and produce stale binary version output.
+          # Ensure release binaries embed the tag version by updating Cargo.toml before build.
+          if ! grep -q '^version = "[^"]*"$' Cargo.toml; then
+            echo "Failed to locate package version in Cargo.toml"
+            exit 1
+          fi
+
+          sed -E "0,/^version = \"[^\"]*\"$/s//version = \"$tag_version\"/" Cargo.toml > Cargo.toml.tmp
+          mv Cargo.toml.tmp Cargo.toml
+
+          if ! grep -q "^version = \"$tag_version\"$" Cargo.toml; then
+            echo "Cargo.toml version update verification failed"
+            exit 1
+          fi
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 

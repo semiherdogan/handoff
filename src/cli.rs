@@ -40,6 +40,7 @@ pub enum Command {
         #[arg(long)]
         follow: bool,
     },
+    Version,
     List,
     Archive {
         feature: String,

@@ -20,6 +20,7 @@ fn run() -> Result<()> {
         Command::Start { copy, raw } => commands::start::run(&paths, copy, raw),
         Command::Prompt { target, copy, raw } => commands::prompt::run(&paths, target, copy, raw),
         Command::Status { follow } => commands::status::run(&paths, follow),
+        Command::Version => commands::version::run(),
         Command::List => commands::list::run(&paths),
         Command::Archive { feature } => commands::archive::run(&paths, &feature),
     }

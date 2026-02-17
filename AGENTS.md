@@ -74,6 +74,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff continue [--copy] [--raw]`
 - `handoff prompt [start|continue] [--copy] [--raw]`
 - `handoff status`
+- `handoff version`
 - `handoff list`
 - `handoff archive <feature>`
 
@@ -84,6 +85,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`start` or `continue`) without continue guard semantics
 - `status`: summarize active feature state
+- `version`: print CLI version from Cargo package metadata
 - `switch` / `list`: move between feature workspaces
 - `archive`: mark feature as archived; clear `.ai/current` if archived feature was active
 
@@ -128,6 +130,7 @@ Also keep active-feature errors deterministic:
 
 - GitHub Actions release workflow is in `.github/workflows/release.yml`.
 - Releases are triggered by pushing tags like `v0.1.0`.
+- Release workflow updates `Cargo.toml` package version from the release tag before building artifacts.
 - Keep artifact names aligned with binary/package naming (`handoff`).
 
 ## Documentation Expectations
