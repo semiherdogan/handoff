@@ -14,10 +14,12 @@ fn run() -> Result<()> {
     let paths = AiPaths::discover(&cwd);
 
     match cli.command {
-        Command::Init { feature } => commands::init::run(&paths, feature.as_deref()),
+        Command::Init { feature, force } => commands::init::run(&paths, feature.as_deref(), force),
         Command::Switch { feature } => commands::switch::run(&paths, &feature),
         Command::Continue { copy, raw } => commands::r#continue::run(&paths, copy, raw),
-        Command::Prompt { copy, raw } => commands::r#continue::run(&paths, copy, raw),
+        Command::Start { copy, raw } => commands::start::run(&paths, copy, raw),
+        Command::Prompt { target, copy, raw } => commands::prompt::run(&paths, target, copy, raw),
+        Command::Status => commands::status::run(&paths),
         Command::List => commands::list::run(&paths),
         Command::Archive { feature } => commands::archive::run(&paths, &feature),
     }

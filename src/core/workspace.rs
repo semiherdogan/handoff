@@ -1,5 +1,6 @@
 use crate::core::feature;
 use crate::core::paths::AiPaths;
+use crate::templates::manager::TemplateManager;
 use anyhow::{anyhow, Context, Result};
 use std::fs;
 
@@ -20,10 +21,28 @@ pub fn ensure_workspace(paths: &AiPaths) -> Result<()> {
     Ok(())
 }
 
-pub fn init_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
+pub fn init_feature(paths: &AiPaths, feature_name: &str, force: bool) -> Result<()> {
     ensure_workspace(paths)?;
+
+    if paths.current_link.symlink_metadata().is_ok() && !force {
+        eprintln!(
+            "Warning: {} already exists. Use --force to replace it.",
+            paths.current_link.display()
+        );
+        return Ok(());
+    }
+
     let feature_dir = paths.feature_dir(feature_name);
-    feature::ensure_feature_files(&feature_dir, feature_name)?;
+    let template_manager = TemplateManager::new(paths);
+    feature::ensure_feature_files(&feature_dir, feature_name, &template_manager)?;
+
+    if paths.current_link.symlink_metadata().is_ok() {
+        eprintln!(
+            "Warning: {} already exists and will be replaced.",
+            paths.current_link.display()
+        );
+    }
+
     set_current_feature(paths, feature_name)?;
     Ok(())
 }
