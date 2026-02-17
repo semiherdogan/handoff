@@ -51,6 +51,7 @@ pub enum Command {
     },
     Version,
     List,
+    Clean,
     Archive {
         feature: String,
     },

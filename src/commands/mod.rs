@@ -1,4 +1,5 @@
 pub mod archive;
+pub mod clean;
 pub mod completion;
 pub mod r#continue;
 pub mod init;

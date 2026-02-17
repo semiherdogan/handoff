@@ -38,6 +38,7 @@ handoff prompt [start|continue] [--copy] [--raw]
 handoff status [--follow]
 handoff version
 handoff list
+handoff clean
 handoff archive <feature>
 handoff completion <shell>
 ```
@@ -129,6 +130,8 @@ If archived feature is active, `.ai/current` symlink is cleared automatically.
   - Use to make another feature active.
 - `handoff list`
   - Use to view available features and which one is active.
+- `handoff clean`
+  - Use to remove all non-active feature directories under `.ai/features`.
 - `handoff archive <feature>`
   - Use to archive completed/outdated feature work.
 - `handoff completion <shell>`

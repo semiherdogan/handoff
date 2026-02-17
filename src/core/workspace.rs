@@ -103,6 +103,28 @@ mod tests {
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }
+
+    #[test]
+    fn clean_features_removes_all_non_current_feature_directories() {
+        let base = make_temp_base("clean-features");
+        let paths = AiPaths::discover(&base);
+
+        init_feature_with_switch_option(&paths, "active-feature", false, true)
+            .expect("failed to init active feature");
+        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+            .expect("failed to init stale feature");
+        init_feature_with_switch_option(&paths, "old-feature", false, false)
+            .expect("failed to init old feature");
+
+        let removed = clean_features(&paths).expect("failed to clean features");
+
+        assert_eq!(removed, 2);
+        assert!(paths.feature_dir("active-feature").is_dir());
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.feature_dir("old-feature").exists());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
 }
 
 pub fn init_feature_with_switch_option(
@@ -219,6 +241,25 @@ pub fn list_features(paths: &AiPaths) -> Result<Vec<String>> {
 
     names.sort();
     Ok(names)
+}
+
+pub fn clean_features(paths: &AiPaths) -> Result<usize> {
+    let current = resolve_current_feature_name(paths)?;
+    let features = list_features(paths)?;
+
+    let mut removed = 0usize;
+    for feature in features {
+        if feature == current {
+            continue;
+        }
+
+        let feature_dir = paths.feature_dir(&feature);
+        fs::remove_dir_all(&feature_dir)
+            .with_context(|| format!("Failed to remove feature directory: {}", feature_dir.display()))?;
+        removed += 1;
+    }
+
+    Ok(removed)
 }
 
 pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
