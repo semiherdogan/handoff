@@ -7,7 +7,7 @@ use anyhow::{Context, Result};
 use std::fs;
 use std::io::{self, Write};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 pub fn run(paths: &AiPaths, follow: bool) -> Result<()> {
     if follow {
@@ -20,13 +20,14 @@ pub fn run(paths: &AiPaths, follow: bool) -> Result<()> {
 }
 
 fn run_follow(paths: &AiPaths) -> Result<()> {
-    let poll_interval = Duration::from_secs(2);
+    let status_refresh_interval = follow_status_refresh_interval();
+    let spinner_tick_interval = follow_spinner_tick_interval();
     let mut spinner_idx = 0usize;
     let terminal_columns = terminal_columns();
+    let mut last_status_refresh_at = Instant::now();
+    let (mut feature_name, mut summary, mut current_plan_step) = load_status(paths)?;
 
     loop {
-        let (feature_name, summary, current_plan_step) = load_status(paths)?;
-
         if summary.remaining_steps == 0 {
             print!("\r\x1b[2K");
             io::stdout().flush().with_context(|| "Failed to flush stdout")?;
@@ -34,16 +35,34 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
             return Ok(());
         }
 
-        let step = current_plan_step.unwrap_or_else(|| "No active [>] step".to_string());
+        let step = current_plan_step.as_deref().unwrap_or("No active [>] step");
         let frame = spinner_frame(spinner_idx);
-        let follow_line = format_follow_line(frame, &step, terminal_columns);
+        let follow_line = format_follow_line(frame, step, terminal_columns);
 
         print!("\r\x1b[2K{follow_line}");
         io::stdout().flush().with_context(|| "Failed to flush stdout")?;
 
         spinner_idx = (spinner_idx + 1) % 4;
-        thread::sleep(poll_interval);
+        thread::sleep(spinner_tick_interval);
+
+        if last_status_refresh_at.elapsed() >= status_refresh_interval {
+            let (next_feature_name, next_summary, next_plan_step) = load_status(paths)?;
+            feature_name = next_feature_name;
+            summary = next_summary;
+            current_plan_step = next_plan_step;
+            last_status_refresh_at = Instant::now();
+        }
     }
+}
+
+fn follow_status_refresh_interval() -> Duration {
+    Duration::from_secs(2)
+}
+
+fn follow_spinner_tick_interval() -> Duration {
+    // Root cause: follow mode advanced the spinner only when status was reloaded every 2s,
+    // so the loader appeared stalled instead of showing responsive liveness.
+    Duration::from_millis(125)
 }
 
 fn terminal_columns() -> usize {
@@ -124,7 +143,11 @@ fn spinner_frame(index: usize) -> &'static str {
 
 #[cfg(test)]
 mod tests {
-    use super::{format_follow_line, spinner_frame};
+    use super::{
+        follow_spinner_tick_interval, follow_status_refresh_interval, format_follow_line,
+        spinner_frame,
+    };
+    use std::time::Duration;
 
     #[test]
     fn spinner_frame_uses_clean_ascii_spinner_cycle() {
@@ -150,5 +173,15 @@ mod tests {
     fn format_follow_line_keeps_short_steps_unchanged() {
         let line = format_follow_line("[-]", "short step", 80);
         assert_eq!(line, "[-] short step");
+    }
+
+    #[test]
+    fn follow_spinner_tick_interval_is_faster_than_status_refresh() {
+        assert!(follow_spinner_tick_interval() < follow_status_refresh_interval());
+    }
+
+    #[test]
+    fn follow_spinner_tick_interval_is_quick_for_responsive_loader() {
+        assert_eq!(follow_spinner_tick_interval(), Duration::from_millis(125));
     }
 }
