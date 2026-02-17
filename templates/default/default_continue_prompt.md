@@ -71,5 +71,6 @@ If multiple interpretations exist:
 Before Context Ends
 
 - Ensure exactly one [>] exists if work remains.
+- If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
 - Update .ai/current/STATE.md fully.
 - Rewrite .ai/current/SESSION.md for safe continuation.
