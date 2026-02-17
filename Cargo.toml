@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
 anyhow = "1"
 thiserror = "1"
 colored = "2"

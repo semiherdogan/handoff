@@ -39,6 +39,7 @@ handoff status [--follow]
 handoff version
 handoff list
 handoff archive <feature>
+handoff completion <shell>
 ```
 
 ## How to Use (Full Flow)
@@ -122,6 +123,40 @@ If archived feature is active, `.ai/current` symlink is cleared automatically.
   - Use to view available features and which one is active.
 - `handoff archive <feature>`
   - Use to archive completed/outdated feature work.
+- `handoff completion <shell>`
+  - Use to generate shell completion scripts for `bash`, `zsh`, `fish`, `powershell`, or `elvish`.
+
+## Shell Autocomplete
+
+Generate completion script output:
+
+```bash
+handoff completion zsh
+```
+
+Load completions dynamically in zsh (recommended for development so new commands are picked up automatically):
+
+```bash
+autoload -U compinit && compinit
+source <(handoff completion zsh)
+# optional alias mapping
+compdef _handoff ho
+```
+
+Persist in zsh by writing to your completions directory and loading it (recommended for stable installs):
+
+```bash
+mkdir -p ~/.zsh/completions
+handoff completion zsh > ~/.zsh/completions/_handoff
+echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
+echo 'autoload -U compinit && compinit' >> ~/.zshrc
+```
+
+If you installed the binary under another command name (for example `ho`), map it with `compdef`:
+
+```bash
+compdef _handoff ho
+```
 
 ## Installation
 

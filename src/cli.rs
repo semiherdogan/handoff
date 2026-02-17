@@ -54,10 +54,22 @@ pub enum Command {
     Archive {
         feature: String,
     },
+    Completion {
+        shell: CompletionShell,
+    },
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum PromptKind {
     Start,
     Continue,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
+pub enum CompletionShell {
+    Bash,
+    Zsh,
+    Fish,
+    PowerShell,
+    Elvish,
 }

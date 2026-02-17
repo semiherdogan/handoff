@@ -23,6 +23,7 @@ fn run() -> Result<()> {
         Command::Version => commands::version::run(),
         Command::List => commands::list::run(&paths),
         Command::Archive { feature } => commands::archive::run(&paths, &feature),
+        Command::Completion { shell } => commands::completion::run(shell),
     }
 }
 

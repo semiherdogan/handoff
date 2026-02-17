@@ -77,6 +77,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff version`
 - `handoff list`
 - `handoff archive <feature>`
+- `handoff completion <shell>`
 
 ## Command Intent (When to Use What)
 
@@ -88,6 +89,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `version`: print CLI version from Cargo package metadata
 - `switch` / `list`: move between feature workspaces
 - `archive`: mark feature as archived; clear `.ai/current` if archived feature was active
+- `completion`: print shell completion script for supported shells
 
 ## Deterministic Error Contract (Do Not Drift)
 
