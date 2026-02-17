@@ -189,10 +189,3 @@ Release artifacts are built for:
 
 If you download `handoff` from GitHub Releases, macOS may block first launch.
 Allow it from **System Settings → Privacy & Security** (look for the blocked app message and click **Allow Anyway**), then run it again.
-
-To publish a release:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
