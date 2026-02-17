@@ -50,6 +50,20 @@ Constraints
 - Avoid speculative improvements.
 
 --------------------------------------------------
+Engineering Guardrails
+
+- Follow existing project patterns and conventions.
+- Preserve existing behavior unless explicitly asked to change it.
+- Fix root causes, not just symptoms.
+- Do not catch and ignore errors silently; surface enough context to debug.
+- Follow existing security/auth patterns and do not weaken checks without clarification.
+- Do not upgrade dependencies unless required for the task.
+- Keep lockfiles and existing version constraints intact.
+- Update tests when behavior changes or bugs are fixed.
+- Add tests when required for the task.
+- Remove code only when it is provably unused; otherwise leave it and call it out.
+
+--------------------------------------------------
 Before Context Ends
 
 - Ensure exactly one [>] exists if work remains.
