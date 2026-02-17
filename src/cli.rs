@@ -1,7 +1,16 @@
 use clap::{Parser, Subcommand, ValueEnum};
 
 #[derive(Debug, Parser)]
-#[command(name = "handoff", version, about = "Lightweight autonomous dev loop manager")]
+#[command(
+    name = "handoff",
+    version,
+    about = "Lightweight autonomous dev loop manager",
+    after_help = concat!(
+        "Repository: https://github.com/semiherdogan/handoff\n",
+        "Version: ",
+        env!("CARGO_PKG_VERSION")
+    )
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Command,
