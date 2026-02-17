@@ -138,6 +138,18 @@ pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
         anyhow::bail!("Feature '{feature_name}' not found.");
     }
 
+    let is_archiving_current = match fs::read_link(&paths.current_link) {
+        Ok(target) => {
+            let absolute = if target.is_absolute() {
+                target
+            } else {
+                paths.ai_dir.join(target)
+            };
+            absolute == source
+        }
+        Err(_) => false,
+    };
+
     let archived_name = format!("{feature_name}.archived");
     let destination = paths.feature_dir(&archived_name);
     fs::rename(&source, &destination).with_context(|| {
@@ -148,16 +160,14 @@ pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
         )
     })?;
 
-    if let Ok(current_name) = resolve_current_feature_name(paths) {
-        if current_name == feature_name {
-            // Root cause: archived feature cannot remain active because current symlink would point to a removed path.
-            fs::remove_file(&paths.current_link).with_context(|| {
-                format!(
-                    "Archived active feature but failed to clear symlink: {}",
-                    paths.current_link.display()
-                )
-            })?;
-        }
+    if is_archiving_current {
+        // Root cause: checking current after rename can fail because the symlink target is already moved.
+        fs::remove_file(&paths.current_link).with_context(|| {
+            format!(
+                "Archived active feature but failed to clear symlink: {}",
+                paths.current_link.display()
+            )
+        })?;
     }
 
     Ok(())
