@@ -78,6 +78,11 @@ handoff start --copy
 Paste the output into your coding assistant conversation. This should initialize
 the execution plan in `.ai/current/STATE.md` and start the first micro-step.
 
+During execution, each micro-step should fully update `.ai/current/STATE.md`
+(current step, execution plan markers, completed/remaining steps, and changed
+issues/risks/notes) and rewrite `.ai/current/SESSION.md` with continuation-safe
+context before moving to the next step.
+
 ### 4) Continue the loop
 
 For next iterations, use:

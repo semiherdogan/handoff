@@ -35,8 +35,8 @@ After each micro-step:
 - Mark the next step as "- [>]".
 - Run build/tests.
 - Fix issues before proceeding.
-- Update .ai/current/STATE.md.
-- Update .ai/current/SESSION.md.
+- Fully update .ai/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
+- Rewrite .ai/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
 - Continue automatically.
 
 Stop only if logically blocked.

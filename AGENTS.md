@@ -143,3 +143,4 @@ When updating workflow behavior, also update:
 
 - `README.md` (usage flow and command guidance)
 - default templates in `templates/default/` (if prompt/state contract changes)
+- start/continue prompt contract to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety
