@@ -1,8 +1,8 @@
-# ai
+# handoff
 
 Lightweight, model-agnostic autonomous dev loop manager.
 
-`ai` is currently a local-first prompt generator. It does not call provider APIs and does not require network access for runtime behavior.
+`handoff` is currently a local-first prompt generator. It does not call provider APIs and does not require network access for runtime behavior.
 
 ## Features
 
@@ -10,7 +10,7 @@ Lightweight, model-agnostic autonomous dev loop manager.
 - multi-feature workflow with active `current` symlink
 - embedded default templates with `.ai/templates/` override support
 - prompt generation for `start` and `continue`
-- context-window handoff via `ai continue` prompt output
+- context-window handoff via `handoff continue` prompt output
 - clipboard copy support (`--copy`)
 - deterministic state guardrails for continuation
 
@@ -30,14 +30,34 @@ Lightweight, model-agnostic autonomous dev loop manager.
 ## CLI Commands
 
 ```bash
-ai init [feature] [--force]
-ai switch <feature>
-ai continue [--copy] [--raw]
-ai start [--copy] [--raw]
-ai prompt [start|continue] [--copy] [--raw]
-ai status
-ai list
-ai archive <feature>
+handoff init [feature] [--force]
+handoff switch <feature>
+handoff continue [--copy] [--raw]
+handoff start [--copy] [--raw]
+handoff prompt [start|continue] [--copy] [--raw]
+handoff status
+handoff list
+handoff archive <feature>
+```
+
+## Installation
+
+Build release binary:
+
+```bash
+cargo build --release
+```
+
+Install as `handoff`:
+
+```bash
+sudo mv ./target/release/handoff /usr/local/bin/handoff
+```
+
+Optional: install as a short command like `ho`:
+
+```bash
+sudo mv ./target/release/handoff /usr/local/bin/ho
 ```
 
 ## Development
@@ -65,7 +85,7 @@ cargo test
 When context length is full, you can continue safely in a new conversation:
 
 ```bash
-ai continue --copy
+handoff continue --copy
 ```
 
 Then paste the copied prompt into the new conversation. The prompt points to:
