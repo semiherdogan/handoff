@@ -92,8 +92,10 @@ mod tests {
         let base = make_temp_base("init-feature-current-exists");
         let paths = AiPaths::discover(&base);
 
-        init_feature(&paths, "first-feature", false).expect("failed to init first feature");
-        init_feature(&paths, "second-feature", false).expect("failed to init second feature");
+        init_feature_with_switch_option(&paths, "first-feature", false, true)
+            .expect("failed to init first feature");
+        init_feature_with_switch_option(&paths, "second-feature", false, true)
+            .expect("failed to init second feature");
 
         assert!(paths.feature_dir("second-feature").is_dir());
         let current_target = fs::read_link(&paths.current_link).expect("failed to read current symlink");
@@ -101,10 +103,6 @@ mod tests {
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }
-}
-
-pub fn init_feature(paths: &AiPaths, feature_name: &str, force: bool) -> Result<()> {
-    init_feature_with_switch_option(paths, feature_name, force, true)
 }
 
 pub fn init_feature_with_switch_option(
