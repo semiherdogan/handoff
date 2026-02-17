@@ -51,7 +51,10 @@ pub enum Command {
     },
     Version,
     List,
-    Clean,
+    Clean {
+        #[arg(long)]
+        force: bool,
+    },
     Archive {
         feature: String,
     },

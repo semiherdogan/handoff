@@ -22,7 +22,7 @@ fn run() -> Result<()> {
         Command::Status { follow } => commands::status::run(&paths, follow),
         Command::Version => commands::version::run(),
         Command::List => commands::list::run(&paths),
-        Command::Clean => commands::clean::run(&paths),
+        Command::Clean { force } => commands::clean::run(&paths, force),
         Command::Archive { feature } => commands::archive::run(&paths, &feature),
         Command::Completion { shell } => commands::completion::run(shell),
     }

@@ -116,12 +116,52 @@ mod tests {
         init_feature_with_switch_option(&paths, "old-feature", false, false)
             .expect("failed to init old feature");
 
-        let removed = clean_features(&paths).expect("failed to clean features");
+        let removed = clean_features(&paths, false).expect("failed to clean features");
 
         assert_eq!(removed, 2);
         assert!(paths.feature_dir("active-feature").is_dir());
         assert!(!paths.feature_dir("stale-feature").exists());
         assert!(!paths.feature_dir("old-feature").exists());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn clean_features_with_force_removes_current_and_all_feature_directories() {
+        let base = make_temp_base("clean-features-force");
+        let paths = AiPaths::discover(&base);
+
+        init_feature_with_switch_option(&paths, "active-feature", false, true)
+            .expect("failed to init active feature");
+        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+            .expect("failed to init stale feature");
+
+        let removed = clean_features(&paths, true).expect("failed to clean features with force");
+
+        assert_eq!(removed, 2);
+        assert!(!paths.feature_dir("active-feature").exists());
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.current_link.exists());
+        assert!(paths.features_dir.is_dir());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn clean_features_with_force_removes_all_features_without_active_current() {
+        let base = make_temp_base("clean-features-force-no-current");
+        let paths = AiPaths::discover(&base);
+
+        ensure_workspace(&paths).expect("failed to create workspace");
+        fs::create_dir_all(paths.feature_dir("stale-feature")).expect("failed to create stale feature");
+        fs::create_dir_all(paths.feature_dir("old-feature")).expect("failed to create old feature");
+
+        let removed = clean_features(&paths, true).expect("failed to clean features with force");
+
+        assert_eq!(removed, 2);
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.feature_dir("old-feature").exists());
+        assert!(!paths.current_link.exists());
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }
@@ -243,13 +283,17 @@ pub fn list_features(paths: &AiPaths) -> Result<Vec<String>> {
     Ok(names)
 }
 
-pub fn clean_features(paths: &AiPaths) -> Result<usize> {
-    let current = resolve_current_feature_name(paths)?;
+pub fn clean_features(paths: &AiPaths, force: bool) -> Result<usize> {
+    let current = if force {
+        None
+    } else {
+        Some(resolve_current_feature_name(paths)?)
+    };
     let features = list_features(paths)?;
 
     let mut removed = 0usize;
     for feature in features {
-        if feature == current {
+        if current.as_deref() == Some(feature.as_str()) {
             continue;
         }
 
@@ -257,6 +301,28 @@ pub fn clean_features(paths: &AiPaths) -> Result<usize> {
         fs::remove_dir_all(&feature_dir)
             .with_context(|| format!("Failed to remove feature directory: {}", feature_dir.display()))?;
         removed += 1;
+    }
+
+    if force && (paths.current_link.exists() || paths.current_link.symlink_metadata().is_ok()) {
+        // Root cause: force clean previously only removed non-current feature directories,
+        // leaving `.ai/current` and active feature artifacts behind.
+        let metadata = paths
+            .current_link
+            .symlink_metadata()
+            .with_context(|| format!("Failed to inspect: {}", paths.current_link.display()))?;
+
+        if metadata.is_dir() && !metadata.file_type().is_symlink() {
+            fs::remove_dir_all(&paths.current_link).with_context(|| {
+                format!(
+                    "Failed to remove current directory: {}",
+                    paths.current_link.display()
+                )
+            })?;
+        } else {
+            fs::remove_file(&paths.current_link).with_context(|| {
+                format!("Failed to remove current link: {}", paths.current_link.display())
+            })?;
+        }
     }
 
     Ok(removed)

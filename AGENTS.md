@@ -76,7 +76,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff status`
 - `handoff version`
 - `handoff list`
-- `handoff clean`
+- `handoff clean [--force]`
 - `handoff archive <feature>`
 - `handoff completion <shell>`
 
@@ -89,7 +89,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `status`: summarize active feature state
 - `version`: print CLI version from Cargo package metadata
 - `switch` / `list`: move between feature workspaces
-- `clean`: remove all non-active feature directories
+- `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.ai/current`
 - `archive`: mark feature as archived; clear `.ai/current` if archived feature was active
 - `completion`: print shell completion script for supported shells
 
