@@ -111,6 +111,88 @@ fn section_content(content: &str, title: &str) -> Option<String> {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::{ensure_execution_plan_initialized, parse_state};
+
+    fn state_doc(current_step: &str, execution_plan: &str, risks: &str) -> String {
+        format!(
+            "# State\n\n# Current Step\n{current_step}\n\n# Execution Plan\n{execution_plan}\n\n# Risks\n{risks}\n"
+        )
+    }
+
+    #[test]
+    fn valid_plan_has_expected_counts_and_guard_passes() {
+        let content = state_doc(
+            "Implement parser",
+            "- [x] bootstrap\n- [>] implement parser\n- [ ] add tests\n- [ ] validate",
+            "- parser drift",
+        );
+
+        let summary = parse_state(&content);
+        assert_eq!(summary.completed_steps, 1);
+        assert_eq!(summary.current_steps, 1);
+        assert_eq!(summary.remaining_steps, 3);
+        assert_eq!(summary.known_risks, vec!["parser drift".to_string()]);
+        assert!(ensure_execution_plan_initialized(&content).is_ok());
+    }
+
+    #[test]
+    fn done_only_plan_fails_with_deterministic_error() {
+        let content = state_doc("Done", "- [x] one\n- [x] two", "None");
+
+        let error = ensure_execution_plan_initialized(&content).unwrap_err();
+        assert_eq!(error.to_string(), "No remaining steps to continue.");
+    }
+
+    #[test]
+    fn no_current_plan_with_pending_steps_passes_guard() {
+        let content = state_doc("Pick next", "- [ ] one\n- [ ] two", "None");
+
+        let summary = parse_state(&content);
+        assert_eq!(summary.current_steps, 0);
+        assert_eq!(summary.remaining_steps, 2);
+        assert!(ensure_execution_plan_initialized(&content).is_ok());
+    }
+
+    #[test]
+    fn multiple_current_steps_fail_with_deterministic_error() {
+        let content = state_doc("Implement", "- [>] one\n- [>] two\n- [ ] three", "None");
+
+        let error = ensure_execution_plan_initialized(&content).unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Invalid execution plan: multiple current steps ([>]) found."
+        );
+    }
+
+    #[test]
+    fn empty_execution_plan_fails_with_start_first_error() {
+        let content = state_doc("Not started", "", "None");
+
+        let error = ensure_execution_plan_initialized(&content).unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Execution plan not initialized. Run `ai start` first."
+        );
+    }
+
+    #[test]
+    fn mixed_formatting_is_parsed_for_list_and_numbered_markers_only() {
+        let content = state_doc(
+            "Formatting",
+            "\t- [>] current\t\n  * [ ] pending   \n1. [x] completed\n[ ] raw should not count\nparagraph [x] inline should not count",
+            "None",
+        );
+
+        let summary = parse_state(&content);
+        assert_eq!(summary.current_steps, 1);
+        assert_eq!(summary.completed_steps, 1);
+        assert_eq!(summary.remaining_steps, 2);
+        assert!(ensure_execution_plan_initialized(&content).is_ok());
+    }
+}
+
 fn normalize_step_prefix(line: &str) -> Option<&str> {
     let trimmed = line.trim_start();
 
