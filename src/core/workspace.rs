@@ -104,6 +104,15 @@ mod tests {
 }
 
 pub fn init_feature(paths: &AiPaths, feature_name: &str, force: bool) -> Result<()> {
+    init_feature_with_switch_option(paths, feature_name, force, true)
+}
+
+pub fn init_feature_with_switch_option(
+    paths: &AiPaths,
+    feature_name: &str,
+    force: bool,
+    set_as_current: bool,
+) -> Result<()> {
     ensure_workspace(paths)?;
 
     validate_feature_name_slug(feature_name)?;
@@ -122,14 +131,17 @@ pub fn init_feature(paths: &AiPaths, feature_name: &str, force: bool) -> Result<
     let template_manager = TemplateManager::new(paths);
     feature::ensure_feature_files(&feature_dir, feature_name, &template_manager)?;
 
-    if paths.current_link.symlink_metadata().is_ok() {
+    if set_as_current && paths.current_link.symlink_metadata().is_ok() {
         eprintln!(
-            "Warning: {} already exists and will be replaced.",
-            paths.current_link.display()
+            "Warning: {} already exists. Setting '{feature_name}' as current feature.",
+            paths.current_link.display(),
         );
     }
 
-    set_current_feature(paths, feature_name)?;
+    if set_as_current {
+        set_current_feature(paths, feature_name)?;
+    }
+
     Ok(())
 }
 

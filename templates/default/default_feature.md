@@ -22,3 +22,4 @@ Explicitly list what is NOT part of this feature.
 
 ## Context
 Describe relevant architecture, modules, constraints, or dependencies.
+Check AGENTS.md for more information.

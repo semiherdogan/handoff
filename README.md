@@ -52,6 +52,14 @@ handoff init my-feature
 
 This creates/uses `.ai/features/my-feature` and points `.ai/current` to it.
 
+If an active `.ai/current` symlink already exists, `handoff init <feature>` asks for confirmation before switching:
+
+```text
+Warning: .ai/current already exists. Set 'my-feature' as current feature? [y/N]:
+```
+
+Selecting `y` switches current to the new feature. Any other response keeps the existing active feature while still creating/updating `.ai/features/<feature>`.
+
 ### 2) Define the feature before starting execution
 
 After `init`, update:
