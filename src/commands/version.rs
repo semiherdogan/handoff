@@ -1,6 +1,6 @@
 use anyhow::Result;
 
 pub fn run() -> Result<()> {
-    println!("{}", env!("CARGO_PKG_VERSION"));
+    println!("{}", env!("HANDOFF_VERSION"));
     Ok(())
 }

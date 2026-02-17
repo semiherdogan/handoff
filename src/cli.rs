@@ -8,7 +8,7 @@ use clap::{Parser, Subcommand, ValueEnum};
     after_help = concat!(
         "Repository: https://github.com/semiherdogan/handoff\n",
         "Version: ",
-        env!("CARGO_PKG_VERSION")
+        env!("HANDOFF_VERSION")
     )
 )]
 pub struct Cli {

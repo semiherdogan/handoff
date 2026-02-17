@@ -29,10 +29,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set Cargo.toml version from release tag
+      - name: Write release version file
         shell: bash
         run: |
-          python3 scripts/set_cargo_version.py "$GITHUB_REF_NAME"
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [[ -z "$tag_version" ]]; then
+            echo "Failed to read release tag version"
+            exit 1
+          fi
+          printf '%s\n' "$tag_version" > version.txt
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
