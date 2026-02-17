@@ -42,12 +42,21 @@ After each micro-step:
 Stop only if logically blocked.
 
 --------------------------------------------------
+Structured Reasoning Requirements
+
+- Think step by step.
+- If critical information is missing, ask before proceeding.
+- Do not introduce unstated assumptions.
+- Prefer evidence from FEATURE.md and repository context over familiarity.
+
+--------------------------------------------------
 Constraints
 
 - Do not refactor unrelated modules.
 - Do not restart planning unless required.
 - Do not introduce architectural changes unless necessary.
 - Avoid speculative improvements.
+- Do not fabricate test results, statistics, or sources.
 
 --------------------------------------------------
 Engineering Guardrails

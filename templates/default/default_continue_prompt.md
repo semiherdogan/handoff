@@ -40,7 +40,9 @@ Structured Reasoning Requirements
 - Think step by step.
 - If critical information is missing, ask before proceeding.
 - Do not assume unstated architecture.
+- Do not introduce unstated assumptions.
 - Explicitly evaluate risk before modifying multiple files.
+- Prefer evidence from FEATURE.md and repository context over familiarity.
 
 --------------------------------------------------
 Internal Alternative Evaluation
@@ -57,6 +59,7 @@ Constraints
 - Do not modify unrelated modules.
 - Do not introduce speculative improvements.
 - Do not fabricate test results.
+- Do not fabricate statistics or sources.
 - Do not skip validation.
 
 --------------------------------------------------
