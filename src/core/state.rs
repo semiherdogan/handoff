@@ -82,6 +82,23 @@ pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
     ))
 }
 
+pub fn current_execution_plan_step(content: &str) -> Option<String> {
+    let execution_plan_section = section_content(content, "Execution Plan")?;
+
+    for line in execution_plan_section.lines() {
+        if let Some(normalized) = normalize_step_prefix(line) {
+            if let Some(rest) = normalized.strip_prefix("[>]") {
+                let step = rest.trim_start().to_owned();
+                if !step.is_empty() {
+                    return Some(step);
+                }
+            }
+        }
+    }
+
+    None
+}
+
 fn section_content(content: &str, title: &str) -> Option<String> {
     let header = format!("# {title}");
     let mut in_section = false;
@@ -113,7 +130,7 @@ fn section_content(content: &str, title: &str) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ensure_execution_plan_initialized, parse_state};
+    use super::{current_execution_plan_step, ensure_execution_plan_initialized, parse_state};
 
     fn state_doc(current_step: &str, execution_plan: &str, risks: &str) -> String {
         format!(
@@ -190,6 +207,33 @@ mod tests {
         assert_eq!(summary.completed_steps, 1);
         assert_eq!(summary.remaining_steps, 2);
         assert!(ensure_execution_plan_initialized(&content).is_ok());
+    }
+
+    #[test]
+    fn current_execution_plan_step_returns_current_marker_text() {
+        let content = state_doc("Current", "- [x] one\n- [>] implement api\n- [ ] test", "None");
+
+        let current = current_execution_plan_step(&content);
+        assert_eq!(current.as_deref(), Some("implement api"));
+    }
+
+    #[test]
+    fn current_execution_plan_step_returns_none_when_no_current_marker() {
+        let content = state_doc("Current", "- [x] one\n- [ ] two", "None");
+
+        assert!(current_execution_plan_step(&content).is_none());
+    }
+
+    #[test]
+    fn current_execution_plan_step_ignores_non_step_lines() {
+        let content = state_doc(
+            "Current",
+            "\nnotes before plan\n- [>] implement follow mode\n- [ ] test",
+            "None",
+        );
+
+        let current = current_execution_plan_step(&content);
+        assert_eq!(current.as_deref(), Some("implement follow mode"));
     }
 }
 

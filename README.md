@@ -35,7 +35,7 @@ handoff switch <feature>
 handoff continue [--copy] [--raw]
 handoff start [--copy] [--raw]
 handoff prompt [start|continue] [--copy] [--raw]
-handoff status
+handoff status [--follow]
 handoff list
 handoff archive <feature>
 ```
@@ -112,6 +112,7 @@ If archived feature is active, `.ai/current` symlink is cleared automatically.
   - Use when you only want prompt text output (without loop checks from `continue`).
 - `handoff status`
   - Use to inspect current execution state quickly.
+  - Add `--follow` to watch the active `[>]` step live (polls every 2s) until work completes.
 - `handoff switch <feature>`
   - Use to make another feature active.
 - `handoff list`

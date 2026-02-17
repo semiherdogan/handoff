@@ -36,7 +36,10 @@ pub enum Command {
         #[arg(long)]
         raw: bool,
     },
-    Status,
+    Status {
+        #[arg(long)]
+        follow: bool,
+    },
     List,
     Archive {
         feature: String,
