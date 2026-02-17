@@ -4,6 +4,7 @@ use anyhow::{anyhow, Result};
 pub struct StateSummary {
     pub current_step: String,
     pub completed_steps: usize,
+    pub current_steps: usize,
     pub remaining_steps: usize,
     pub known_risks: Vec<String>,
     pub execution_plan_initialized: bool,
@@ -53,6 +54,7 @@ pub fn parse_state(content: &str) -> StateSummary {
     StateSummary {
         current_step,
         completed_steps,
+        current_steps,
         remaining_steps: pending_steps + current_steps,
         known_risks,
         execution_plan_initialized: !not_started && !not_generated && has_any_step,
@@ -61,6 +63,16 @@ pub fn parse_state(content: &str) -> StateSummary {
 
 pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
     let summary = parse_state(content);
+    if summary.current_steps > 1 {
+        return Err(anyhow!(
+            "Invalid execution plan: multiple current steps ([>]) found."
+        ));
+    }
+
+    if summary.completed_steps > 0 && summary.remaining_steps == 0 {
+        return Err(anyhow!("No remaining steps to continue."));
+    }
+
     if summary.execution_plan_initialized {
         return Ok(());
     }
@@ -99,6 +111,36 @@ fn section_content(content: &str, title: &str) -> Option<String> {
     }
 }
 
+fn normalize_step_prefix(line: &str) -> Option<&str> {
+    let trimmed = line.trim_start();
+
+    if let Some(rest) = trimmed.strip_prefix("- ") {
+        return Some(rest.trim_start());
+    }
+
+    if let Some(rest) = trimmed.strip_prefix("* ") {
+        return Some(rest.trim_start());
+    }
+
+    let mut split_idx = 0usize;
+    for ch in trimmed.chars() {
+        if ch.is_ascii_digit() {
+            split_idx += ch.len_utf8();
+        } else {
+            break;
+        }
+    }
+
+    if split_idx > 0 {
+        let rest = &trimmed[split_idx..];
+        if let Some(rest) = rest.strip_prefix(". ") {
+            return Some(rest.trim_start());
+        }
+    }
+
+    None
+}
+
 enum StepMarker {
     Pending,
     Current,
@@ -106,7 +148,7 @@ enum StepMarker {
 }
 
 fn step_marker(line: &str) -> Option<StepMarker> {
-    let normalized = line.trim_start().trim_start_matches(['-', '*']).trim_start();
+    let normalized = normalize_step_prefix(line)?;
 
     if normalized.starts_with("[ ]") {
         Some(StepMarker::Pending)
