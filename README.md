@@ -185,6 +185,11 @@ Release artifacts are built for:
 - macOS (`aarch64-apple-darwin`)
 - Windows (`x86_64-pc-windows-msvc`)
 
+### macOS note for release binaries
+
+If you download `handoff` from GitHub Releases, macOS may block first launch.
+Allow it from **System Settings → Privacy & Security** (look for the blocked app message and click **Allow Anyway**), then run it again.
+
 To publish a release:
 
 ```bash
