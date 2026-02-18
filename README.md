@@ -4,6 +4,8 @@ Lightweight, model-agnostic autonomous dev loop manager.
 
 `handoff` is currently a local-first prompt generator. It does not call provider APIs and does not require network access for runtime behavior.
 
+![Handoff](./cover.jpg)
+
 ## Features
 
 - `.ai/` workspace management
