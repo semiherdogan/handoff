@@ -11,7 +11,7 @@ Guidelines for AI/code agents and contributors working in this repository.
 
 ## Core Intent
 
-`handoff` manages a structured feature workspace under `.ai/` and generates prompts (`start` / `continue`) for coding assistants.
+`handoff` manages a structured feature workspace under `.handoff/` and generates prompts (`start` / `continue`) for coding assistants.
 
 The tool should remain:
 
@@ -34,7 +34,7 @@ The tool should remain:
 Expected structure:
 
 ```text
-.ai/
+.handoff/
   config.toml
   current -> features/<feature-name>
   features/
@@ -82,28 +82,28 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 
 ## Command Intent (When to Use What)
 
-- `init`: create/select feature workspace, optionally replace existing `.ai/current` with `--force`
+- `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
 - `start`: generate initial prompt for first session
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`start` or `continue`) without continue guard semantics
 - `status`: summarize active feature state
 - `version`: print CLI version from Cargo package metadata
 - `switch` / `list`: move between feature workspaces
-- `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.ai/current`
-- `archive`: mark feature as archived; clear `.ai/current` if archived feature was active
+- `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.handoff/current`
+- `archive`: mark feature as archived; clear `.handoff/current` if archived feature was active
 - `completion`: print shell completion script for supported shells
 
 ## Deterministic Error Contract (Do Not Drift)
 
 The following guard errors are contract-level and must remain deterministic unless explicitly changed:
 
-- `Execution plan not initialized. Run \`ai start\` first.`
+- `Execution plan not initialized. Run \`handoff start\` first.`
 - `Invalid execution plan: multiple current steps ([>]) found.`
 - `No remaining steps to continue.`
 
 Also keep active-feature errors deterministic:
 
-- `No active feature found. Run: ai init`
+- `No active feature found. Run: handoff init`
 
 ## Change Rules for Agents
 

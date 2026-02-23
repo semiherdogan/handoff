@@ -6,7 +6,7 @@ use std::io::{self, Write};
 pub fn run(paths: &AiPaths, feature: Option<&str>, force: bool) -> Result<()> {
     let feature_name = feature.unwrap_or("current");
 
-    // Root cause: init always replaced `.ai/current` for new features without giving users
+    // Root cause: init always replaced `.handoff/current` for new features without giving users
     // an explicit opt-in when another active feature already existed.
     let set_as_current = if should_prompt_for_set_current(paths, feature_name, force) {
         confirm_set_as_current(feature_name)?
@@ -22,7 +22,7 @@ fn should_prompt_for_set_current(paths: &AiPaths, feature_name: &str, force: boo
 }
 
 fn confirm_set_as_current(feature_name: &str) -> Result<bool> {
-    print!("Warning: .ai/current already exists. Set '{feature_name}' as current feature? [y/N]: ");
+    print!("Warning: .handoff/current already exists. Set '{feature_name}' as current feature? [y/N]: ");
     io::stdout()
         .flush()
         .context("Failed to flush confirmation prompt")?;
@@ -77,7 +77,7 @@ mod tests {
         let base = make_temp_base("init-prompt-set-current");
         let paths = AiPaths::discover(&base);
 
-        fs::create_dir_all(&paths.ai_dir).expect("failed to create .ai dir");
+        fs::create_dir_all(&paths.ai_dir).expect("failed to create .handoff dir");
         symlink("features/first", &paths.current_link).expect("failed to create current symlink");
 
         assert!(should_prompt_for_set_current(&paths, "new-feature", false));

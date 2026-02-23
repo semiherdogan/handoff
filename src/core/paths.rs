@@ -1,5 +1,8 @@
 use std::path::{Path, PathBuf};
 
+/// Workspace directory name. Change this value to use a different folder.
+pub const WORKSPACE_DIR: &str = ".handoff";
+
 #[derive(Debug, Clone)]
 pub struct AiPaths {
     pub ai_dir: PathBuf,
@@ -10,7 +13,7 @@ pub struct AiPaths {
 
 impl AiPaths {
     pub fn discover(base_dir: &Path) -> Self {
-        let ai_dir = base_dir.join(".ai");
+        let ai_dir = base_dir.join(WORKSPACE_DIR);
         let features_dir = ai_dir.join("features");
 
         Self {

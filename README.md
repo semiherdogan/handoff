@@ -8,9 +8,9 @@ Lightweight, model-agnostic autonomous dev loop manager.
 
 ## Features
 
-- `.ai/` workspace management
+- `.handoff/` workspace management
 - multi-feature workflow with active `current` symlink
-- embedded default templates with `.ai/templates/` override support
+- embedded default templates with `.handoff/templates/` override support
 - prompt generation for `start` and `continue`
 - context-window handoff via `handoff continue` prompt output
 - clipboard copy support (`--copy`)
@@ -19,7 +19,7 @@ Lightweight, model-agnostic autonomous dev loop manager.
 ## Workspace Layout
 
 ```text
-.ai/
+.handoff/
   config.toml
   current -> features/<feature-name>
   features/
@@ -27,6 +27,14 @@ Lightweight, model-agnostic autonomous dev loop manager.
       FEATURE.md
       STATE.md
       SESSION.md
+```
+
+### Ignoring the workspace folder
+
+If your AI coding assistant is configured to ignore paths listed in .gitignore, and you do not want .handoff/ to be ignored by the assistant but still want Git to avoid tracking it, you can add it to .git/info/exclude instead of .gitignore. This keeps the exclusion local to your repository without modifying shared ignore rules.
+
+```bash
+echo ".handoff/" >> .git/info/exclude
 ```
 
 ## CLI Commands
@@ -53,21 +61,21 @@ handoff completion <shell>
 handoff init my-feature
 ```
 
-This creates/uses `.ai/features/my-feature` and points `.ai/current` to it.
+This creates/uses `.handoff/features/my-feature` and points `.handoff/current` to it.
 
-If an active `.ai/current` symlink already exists, `handoff init <feature>` asks for confirmation before switching:
+If an active `.handoff/current` symlink already exists, `handoff init <feature>` asks for confirmation before switching:
 
 ```text
-Warning: .ai/current already exists. Set 'my-feature' as current feature? [y/N]:
+Warning: .handoff/current already exists. Set 'my-feature' as current feature? [y/N]:
 ```
 
-Selecting `y` switches current to the new feature. Any other response keeps the existing active feature while still creating/updating `.ai/features/<feature>`.
+Selecting `y` switches current to the new feature. Any other response keeps the existing active feature while still creating/updating `.handoff/features/<feature>`.
 
 ### 2) Define the feature before starting execution
 
 After `init`, update:
 
-- `.ai/current/FEATURE.md`
+- `.handoff/current/FEATURE.md`
 
 Write the real goal, acceptance criteria, constraints, and context there.
 
@@ -78,11 +86,11 @@ handoff start --copy
 ```
 
 Paste the output into your coding assistant conversation. This should initialize
-the execution plan in `.ai/current/STATE.md` and start the first micro-step.
+the execution plan in `.handoff/current/STATE.md` and start the first micro-step.
 
-During execution, each micro-step should fully update `.ai/current/STATE.md`
+During execution, each micro-step should fully update `.handoff/current/STATE.md`
 (current step, execution plan markers, completed/remaining steps, and changed
-issues/risks/notes) and rewrite `.ai/current/SESSION.md` with continuation-safe
+issues/risks/notes) and rewrite `.handoff/current/SESSION.md` with continuation-safe
 context before moving to the next step.
 
 ### 4) Continue the loop
@@ -116,14 +124,14 @@ handoff switch another-feature
 handoff archive my-feature
 ```
 
-If archived feature is active, `.ai/current` symlink is cleared automatically.
+If archived feature is active, `.handoff/current` symlink is cleared automatically.
 
 ## When to Use Which Command
 
 - `handoff init [feature]`
   - Use when starting a new feature workspace.
 - `handoff start`
-  - Use once after defining `.ai/current/FEATURE.md`.
+  - Use once after defining `.handoff/current/FEATURE.md`.
 - `handoff continue`
   - Use for ongoing work after a plan already exists.
 - `handoff prompt start|continue`
@@ -138,8 +146,8 @@ If archived feature is active, `.ai/current` symlink is cleared automatically.
 - `handoff list`
   - Use to view available features and which one is active.
 - `handoff clean [--force]`
-  - Use to remove all non-active feature directories under `.ai/features`.
-  - Add `--force` to also remove the active feature directory and clear `.ai/current`.
+  - Use to remove all non-active feature directories under `.handoff/features`.
+  - Add `--force` to also remove the active feature directory and clear `.handoff/current`.
 - `handoff archive <feature>`
   - Use to archive completed/outdated feature work.
 - `handoff completion <shell>`
@@ -227,9 +235,9 @@ handoff continue --copy
 
 Then paste the copied prompt into the new conversation. The prompt points to:
 
-- `.ai/current/SESSION.md`
-- `.ai/current/STATE.md`
-- `.ai/current/FEATURE.md`
+- `.handoff/current/SESSION.md`
+- `.handoff/current/STATE.md`
+- `.handoff/current/FEATURE.md`
 
 This lets the next session continue from where the previous one stopped.
 

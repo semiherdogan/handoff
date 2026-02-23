@@ -16,7 +16,7 @@ pub fn ensure_workspace(paths: &AiPaths) -> Result<()> {
         .with_context(|| format!("Failed to create directory: {}", paths.features_dir.display()))?;
 
     if !paths.config_toml.exists() {
-        fs::write(&paths.config_toml, "# ai v0.1 configuration\n")
+        fs::write(&paths.config_toml, "# handoff v0.1 configuration\n")
             .with_context(|| format!("Failed to write file: {}", paths.config_toml.display()))?;
     }
 
@@ -177,7 +177,7 @@ pub fn init_feature_with_switch_option(
 
     validate_feature_name_slug(feature_name)?;
 
-    // Root cause: this guard blocked all new feature inits once `.ai/current` existed,
+    // Root cause: this guard blocked all new feature inits once `.handoff/current` existed,
     // even when the requested feature directory did not exist yet.
     if feature_name == "current" && paths.current_link.symlink_metadata().is_ok() && !force {
         eprintln!(
@@ -201,7 +201,7 @@ pub fn init_feature_with_switch_option(
 pub fn set_current_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
     let target_feature = paths.feature_dir(feature_name);
     if !target_feature.is_dir() {
-        anyhow::bail!("Feature '{feature_name}' not found. Run: ai init {feature_name}");
+        anyhow::bail!("Feature '{feature_name}' not found. Run: handoff init {feature_name}");
     }
 
     if paths.current_link.exists() || paths.current_link.symlink_metadata().is_ok() {
@@ -238,7 +238,7 @@ pub fn set_current_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
 
 pub fn resolve_current_feature_path(paths: &AiPaths) -> Result<std::path::PathBuf> {
     let target = fs::read_link(&paths.current_link)
-        .map_err(|_| anyhow!("No active feature found. Run: ai init"))?;
+        .map_err(|_| anyhow!("No active feature found. Run: handoff init"))?;
 
     let absolute = if target.is_absolute() {
         target
@@ -247,7 +247,7 @@ pub fn resolve_current_feature_path(paths: &AiPaths) -> Result<std::path::PathBu
     };
 
     if !absolute.is_dir() {
-        return Err(anyhow!("No active feature found. Run: ai init"));
+        return Err(anyhow!("No active feature found. Run: handoff init"));
     }
 
     Ok(absolute)
@@ -258,7 +258,7 @@ pub fn resolve_current_feature_name(paths: &AiPaths) -> Result<String> {
     let name = current_path
         .file_name()
         .and_then(|name| name.to_str())
-        .ok_or_else(|| anyhow!("No active feature found. Run: ai init"))?;
+        .ok_or_else(|| anyhow!("No active feature found. Run: handoff init"))?;
     Ok(name.to_owned())
 }
 
@@ -305,7 +305,7 @@ pub fn clean_features(paths: &AiPaths, force: bool) -> Result<usize> {
 
     if force && (paths.current_link.exists() || paths.current_link.symlink_metadata().is_ok()) {
         // Root cause: force clean previously only removed non-current feature directories,
-        // leaving `.ai/current` and active feature artifacts behind.
+        // leaving `.handoff/current` and active feature artifacts behind.
         let metadata = paths
             .current_link
             .symlink_metadata()

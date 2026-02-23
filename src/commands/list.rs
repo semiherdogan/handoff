@@ -7,7 +7,7 @@ pub fn run(paths: &AiPaths) -> Result<()> {
     let current = workspace::resolve_current_feature_name(paths).ok();
 
     if features.is_empty() {
-        println!("No features found. Run: ai init");
+        println!("No features found. Run: handoff init");
         return Ok(());
     }
 

@@ -1,7 +1,7 @@
 We are starting a new feature in autonomous loop mode.
 
 Read:
-- .ai/current/FEATURE.md
+- .handoff/current/FEATURE.md
 
 --------------------------------------------------
 Role
@@ -13,10 +13,10 @@ Analyze the feature definition and begin execution.
 --------------------------------------------------
 Execution Protocol (Required)
 
-1. Analyze .ai/current/FEATURE.md.
+1. Analyze .handoff/current/FEATURE.md.
 2. Generate a structured implementation plan.
 3. Break into 5–10 micro-steps (each < 30 minutes).
-4. Write the plan into .ai/current/STATE.md under "Execution Plan".
+4. Write the plan into .handoff/current/STATE.md under "Execution Plan".
 
    Step formatting rules (STRICT):
    - Use markdown list form only:
@@ -35,8 +35,8 @@ After each micro-step:
 - Mark the next step as "- [>]".
 - Run build/tests.
 - Fix issues before proceeding.
-- Fully update .ai/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
-- Rewrite .ai/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
+- Fully update .handoff/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
+- Rewrite .handoff/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
 - Continue automatically.
 
 Stop only if logically blocked.
@@ -77,5 +77,5 @@ Before Context Ends
 
 - Ensure exactly one [>] exists if work remains.
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
-- Update .ai/current/STATE.md.
-- Rewrite .ai/current/SESSION.md for safe continuation.
+- Update .handoff/current/STATE.md.
+- Rewrite .handoff/current/SESSION.md for safe continuation.

@@ -1,16 +1,16 @@
 We are continuing an autonomous development session.
 
 Read:
-- .ai/current/SESSION.md
-- .ai/current/STATE.md
-- .ai/current/FEATURE.md
+- .handoff/current/SESSION.md
+- .handoff/current/STATE.md
+- .handoff/current/FEATURE.md
 
 --------------------------------------------------
 Role
 You are a senior engineer executing a structured implementation loop.
 
 Goal
-Complete the remaining micro-steps defined in .ai/current/STATE.md.
+Complete the remaining micro-steps defined in .handoff/current/STATE.md.
 
 --------------------------------------------------
 Execution Protocol (Required)
@@ -29,8 +29,8 @@ Execution Protocol (Required)
    - Mark the next step as "- [>]" when work remains.
    - Validate via build/tests.
    - Fix issues if needed.
-   - Fully update .ai/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
-   - Rewrite .ai/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
+   - Fully update .handoff/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
+   - Rewrite .handoff/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
 6. Continue automatically while unfinished steps exist.
 7. Stop if logically blocked or if no remaining steps exist.
 
@@ -81,7 +81,7 @@ Uncertainty Handling
 
 If multiple interpretations exist:
 - Briefly enumerate them.
-- Choose the most consistent with .ai/current/FEATURE.md.
+- Choose the most consistent with .handoff/current/FEATURE.md.
 - State assumptions explicitly.
 
 --------------------------------------------------
@@ -89,5 +89,5 @@ Before Context Ends
 
 - Ensure exactly one [>] exists if work remains.
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
-- Update .ai/current/STATE.md fully.
-- Rewrite .ai/current/SESSION.md for safe continuation.
+- Update .handoff/current/STATE.md fully.
+- Rewrite .handoff/current/SESSION.md for safe continuation.

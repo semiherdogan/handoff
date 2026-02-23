@@ -78,7 +78,7 @@ pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
     }
 
     Err(anyhow!(
-        "Execution plan not initialized. Run `ai start` first."
+        "Execution plan not initialized. Run `handoff start` first."
     ))
 }
 
@@ -190,7 +190,7 @@ mod tests {
         let error = ensure_execution_plan_initialized(&content).unwrap_err();
         assert_eq!(
             error.to_string(),
-            "Execution plan not initialized. Run `ai start` first."
+            "Execution plan not initialized. Run `handoff start` first."
         );
     }
 
