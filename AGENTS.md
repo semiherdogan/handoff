@@ -79,6 +79,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff clean [--force]`
 - `handoff archive <feature>`
 - `handoff completion <shell>`
+- `handoff upgrade`
 
 ## Command Intent (When to Use What)
 
@@ -92,6 +93,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.handoff/current`
 - `archive`: mark feature as archived; clear `.handoff/current` if archived feature was active
 - `completion`: print shell completion script for supported shells
+- `upgrade`: fetch latest release from GitHub, compare versions, download and replace the current binary
 
 ## Deterministic Error Contract (Do Not Drift)
 

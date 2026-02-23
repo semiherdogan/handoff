@@ -61,6 +61,7 @@ pub enum Command {
     Completion {
         shell: CompletionShell,
     },
+    Upgrade,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]

@@ -9,4 +9,5 @@ pub mod prompt_output;
 pub mod start;
 pub mod status;
 pub mod switch;
+pub mod upgrade;
 pub mod version;

@@ -51,6 +51,7 @@ handoff list
 handoff clean [--force]
 handoff archive <feature>
 handoff completion <shell>
+handoff upgrade
 ```
 
 ## How to Use (Full Flow)
@@ -152,6 +153,8 @@ If archived feature is active, `.handoff/current` symlink is cleared automatical
   - Use to archive completed/outdated feature work.
 - `handoff completion <shell>`
   - Use to generate shell completion scripts for `bash`, `zsh`, `fish`, `powershell`, or `elvish`.
+- `handoff upgrade`
+  - Use to upgrade handoff to the latest version from GitHub Releases.
 
 ## Shell Autocomplete
 
