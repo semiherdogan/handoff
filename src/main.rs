@@ -26,6 +26,7 @@ fn run() -> Result<()> {
         Command::Archive { feature } => commands::archive::run(&paths, &feature),
         Command::Completion { shell } => commands::completion::run(shell),
         Command::Upgrade => commands::upgrade::run(),
+        Command::Export { force } => commands::export::run(&paths, force),
     }
 }
 

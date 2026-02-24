@@ -62,6 +62,10 @@ pub enum Command {
         shell: CompletionShell,
     },
     Upgrade,
+    Export {
+        #[arg(long)]
+        force: bool,
+    },
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]

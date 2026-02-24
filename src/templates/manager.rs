@@ -21,6 +21,23 @@ impl TemplateManager {
         }
     }
 
+    pub fn override_dir(&self) -> &PathBuf {
+        &self.override_dir
+    }
+
+    pub fn default_templates() -> Vec<(&'static str, &'static str)> {
+        vec![
+            ("default_feature.md", DEFAULT_FEATURE_TEMPLATE),
+            ("default_state.md", DEFAULT_STATE_TEMPLATE),
+            ("default_session.md", DEFAULT_SESSION_TEMPLATE),
+            ("default_start_prompt.md", DEFAULT_START_PROMPT_TEMPLATE),
+            (
+                "default_continue_prompt.md",
+                DEFAULT_CONTINUE_PROMPT_TEMPLATE,
+            ),
+        ]
+    }
+
     pub fn get_template(&self, name: &str) -> String {
         let override_path = self.override_dir.join(name);
         if override_path.is_file() {

@@ -52,6 +52,7 @@ handoff clean [--force]
 handoff archive <feature>
 handoff completion <shell>
 handoff upgrade
+handoff export [--force]
 ```
 
 ## How to Use (Full Flow)
@@ -155,6 +156,10 @@ If archived feature is active, `.handoff/current` symlink is cleared automatical
   - Use to generate shell completion scripts for `bash`, `zsh`, `fish`, `powershell`, or `elvish`.
 - `handoff upgrade`
   - Use to upgrade handoff to the latest version from GitHub Releases.
+- `handoff export [--force]`
+  - Use to export default templates to `.handoff/templates/` for customization.
+  - If the directory already contains files, prompts for confirmation unless `--force` is used.
+  - Once exported, `handoff` uses these files instead of the built-in defaults for prompt generation.
 
 ## Shell Autocomplete
 
