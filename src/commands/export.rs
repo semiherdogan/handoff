@@ -1,9 +1,9 @@
+use crate::commands::confirm;
 use crate::core::paths::AiPaths;
 use crate::templates::manager::TemplateManager;
 use anyhow::{Context, Result};
 use colored::Colorize;
 use std::fs;
-use std::io::{self, Write};
 
 pub fn run(paths: &AiPaths, force: bool) -> Result<()> {
     let template_manager = TemplateManager::new(paths);
@@ -18,20 +18,12 @@ pub fn run(paths: &AiPaths, force: bool) -> Result<()> {
             .is_some();
 
         if has_files {
-            print!(
+            let confirmed = confirm::prompt_yes_no(&format!(
                 "Warning: {} already contains files. Overwrite? [y/N]: ",
                 override_dir.display()
-            );
-            io::stdout()
-                .flush()
-                .context("Failed to flush confirmation prompt")?;
+            ))?;
 
-            let mut input = String::new();
-            io::stdin()
-                .read_line(&mut input)
-                .context("Failed to read confirmation response")?;
-
-            if !matches!(input.trim(), "y" | "Y" | "yes" | "YES" | "Yes") {
+            if !confirmed {
                 println!("Export cancelled.");
                 return Ok(());
             }
@@ -67,18 +59,7 @@ pub fn run(paths: &AiPaths, force: bool) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    fn make_temp_base(label: &str) -> std::path::PathBuf {
-        let nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("system time before unix epoch")
-            .as_nanos();
-        let dir =
-            std::env::temp_dir().join(format!("handoff-{label}-{}-{nanos}", std::process::id()));
-        fs::create_dir_all(&dir).expect("failed to create temp test dir");
-        dir
-    }
+    use crate::core::test_utils::make_temp_base;
 
     #[test]
     fn export_creates_templates_directory_and_files() {

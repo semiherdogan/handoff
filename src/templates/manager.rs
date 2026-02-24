@@ -2,6 +2,12 @@ use crate::core::paths::AiPaths;
 use std::fs;
 use std::path::PathBuf;
 
+pub const DEFAULT_FEATURE_TEMPLATE_NAME: &str = "default_feature.md";
+pub const DEFAULT_STATE_TEMPLATE_NAME: &str = "default_state.md";
+pub const DEFAULT_SESSION_TEMPLATE_NAME: &str = "default_session.md";
+pub const DEFAULT_START_PROMPT_TEMPLATE_NAME: &str = "default_start_prompt.md";
+pub const DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME: &str = "default_continue_prompt.md";
+
 const DEFAULT_FEATURE_TEMPLATE: &str = include_str!("../../templates/default/default_feature.md");
 const DEFAULT_STATE_TEMPLATE: &str = include_str!("../../templates/default/default_state.md");
 const DEFAULT_SESSION_TEMPLATE: &str = include_str!("../../templates/default/default_session.md");
@@ -27,12 +33,12 @@ impl TemplateManager {
 
     pub fn default_templates() -> Vec<(&'static str, &'static str)> {
         vec![
-            ("default_feature.md", DEFAULT_FEATURE_TEMPLATE),
-            ("default_state.md", DEFAULT_STATE_TEMPLATE),
-            ("default_session.md", DEFAULT_SESSION_TEMPLATE),
-            ("default_start_prompt.md", DEFAULT_START_PROMPT_TEMPLATE),
+            (DEFAULT_FEATURE_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE),
+            (DEFAULT_STATE_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE),
+            (DEFAULT_SESSION_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE),
+            (DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_START_PROMPT_TEMPLATE),
             (
-                "default_continue_prompt.md",
+                DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
                 DEFAULT_CONTINUE_PROMPT_TEMPLATE,
             ),
         ]
@@ -53,11 +59,11 @@ impl TemplateManager {
         }
 
         match name {
-            "default_feature.md" => DEFAULT_FEATURE_TEMPLATE.to_owned(),
-            "default_state.md" => DEFAULT_STATE_TEMPLATE.to_owned(),
-            "default_session.md" => DEFAULT_SESSION_TEMPLATE.to_owned(),
-            "default_start_prompt.md" => DEFAULT_START_PROMPT_TEMPLATE.to_owned(),
-            "default_continue_prompt.md" => DEFAULT_CONTINUE_PROMPT_TEMPLATE.to_owned(),
+            DEFAULT_FEATURE_TEMPLATE_NAME => DEFAULT_FEATURE_TEMPLATE.to_owned(),
+            DEFAULT_STATE_TEMPLATE_NAME => DEFAULT_STATE_TEMPLATE.to_owned(),
+            DEFAULT_SESSION_TEMPLATE_NAME => DEFAULT_SESSION_TEMPLATE.to_owned(),
+            DEFAULT_START_PROMPT_TEMPLATE_NAME => DEFAULT_START_PROMPT_TEMPLATE.to_owned(),
+            DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME => DEFAULT_CONTINUE_PROMPT_TEMPLATE.to_owned(),
             _ => String::new(),
         }
     }

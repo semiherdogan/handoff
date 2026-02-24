@@ -65,17 +65,7 @@ fn validate_feature_name_slug(feature_name: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    fn make_temp_base(label: &str) -> std::path::PathBuf {
-        let nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("system time before unix epoch")
-            .as_nanos();
-        let dir = std::env::temp_dir().join(format!("handoff-{label}-{}-{nanos}", std::process::id()));
-        fs::create_dir_all(&dir).expect("failed to create temp test dir");
-        dir
-    }
+    use crate::core::test_utils::make_temp_base;
 
     #[test]
     fn validate_feature_name_slug_accepts_valid_slug() {
@@ -198,31 +188,42 @@ pub fn init_feature_with_switch_option(
     Ok(())
 }
 
+fn remove_current_link(paths: &AiPaths) -> Result<()> {
+    if !paths.current_link.exists() && paths.current_link.symlink_metadata().is_err() {
+        return Ok(());
+    }
+
+    let metadata = paths
+        .current_link
+        .symlink_metadata()
+        .with_context(|| format!("Failed to inspect: {}", paths.current_link.display()))?;
+
+    if metadata.is_dir() && !metadata.file_type().is_symlink() {
+        fs::remove_dir_all(&paths.current_link).with_context(|| {
+            format!(
+                "Failed to remove existing directory: {}",
+                paths.current_link.display()
+            )
+        })?;
+    } else {
+        fs::remove_file(&paths.current_link).with_context(|| {
+            format!(
+                "Failed to remove existing link: {}",
+                paths.current_link.display()
+            )
+        })?;
+    }
+
+    Ok(())
+}
+
 pub fn set_current_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
     let target_feature = paths.feature_dir(feature_name);
     if !target_feature.is_dir() {
         anyhow::bail!("Feature '{feature_name}' not found. Run: handoff init {feature_name}");
     }
 
-    if paths.current_link.exists() || paths.current_link.symlink_metadata().is_ok() {
-        let metadata = paths
-            .current_link
-            .symlink_metadata()
-            .with_context(|| format!("Failed to inspect: {}", paths.current_link.display()))?;
-
-        if metadata.is_dir() && !metadata.file_type().is_symlink() {
-            fs::remove_dir_all(&paths.current_link).with_context(|| {
-                format!(
-                    "Failed to remove existing directory: {}",
-                    paths.current_link.display()
-                )
-            })?;
-        } else {
-            fs::remove_file(&paths.current_link).with_context(|| {
-                format!("Failed to remove existing link: {}", paths.current_link.display())
-            })?;
-        }
-    }
+    remove_current_link(paths)?;
 
     let relative_target = std::path::Path::new("features").join(feature_name);
     symlink(&relative_target, &paths.current_link).with_context(|| {
@@ -303,26 +304,10 @@ pub fn clean_features(paths: &AiPaths, force: bool) -> Result<usize> {
         removed += 1;
     }
 
-    if force && (paths.current_link.exists() || paths.current_link.symlink_metadata().is_ok()) {
+    if force {
         // Root cause: force clean previously only removed non-current feature directories,
         // leaving `.handoff/current` and active feature artifacts behind.
-        let metadata = paths
-            .current_link
-            .symlink_metadata()
-            .with_context(|| format!("Failed to inspect: {}", paths.current_link.display()))?;
-
-        if metadata.is_dir() && !metadata.file_type().is_symlink() {
-            fs::remove_dir_all(&paths.current_link).with_context(|| {
-                format!(
-                    "Failed to remove current directory: {}",
-                    paths.current_link.display()
-                )
-            })?;
-        } else {
-            fs::remove_file(&paths.current_link).with_context(|| {
-                format!("Failed to remove current link: {}", paths.current_link.display())
-            })?;
-        }
+        remove_current_link(paths)?;
     }
 
     Ok(removed)
@@ -358,12 +343,7 @@ pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
 
     if is_archiving_current {
         // Root cause: checking current after rename can fail because the symlink target is already moved.
-        fs::remove_file(&paths.current_link).with_context(|| {
-            format!(
-                "Archived active feature but failed to clear symlink: {}",
-                paths.current_link.display()
-            )
-        })?;
+        remove_current_link(paths)?;
     }
 
     Ok(())

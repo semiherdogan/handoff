@@ -128,6 +128,56 @@ fn section_content(content: &str, title: &str) -> Option<String> {
     }
 }
 
+enum StepMarker {
+    Pending,
+    Current,
+    Completed,
+}
+
+fn step_marker(line: &str) -> Option<StepMarker> {
+    let normalized = normalize_step_prefix(line)?;
+
+    if normalized.starts_with("[ ]") {
+        Some(StepMarker::Pending)
+    } else if normalized.starts_with("[>]") {
+        Some(StepMarker::Current)
+    } else if normalized.starts_with("[x]") || normalized.starts_with("[X]") {
+        Some(StepMarker::Completed)
+    } else {
+        None
+    }
+}
+
+fn normalize_step_prefix(line: &str) -> Option<&str> {
+    let trimmed = line.trim_start();
+
+    if let Some(rest) = trimmed.strip_prefix("- ") {
+        return Some(rest.trim_start());
+    }
+
+    if let Some(rest) = trimmed.strip_prefix("* ") {
+        return Some(rest.trim_start());
+    }
+
+    let mut split_idx = 0usize;
+    for ch in trimmed.chars() {
+        if ch.is_ascii_digit() {
+            split_idx += ch.len_utf8();
+        } else {
+            break;
+        }
+    }
+
+    if split_idx > 0 {
+        let rest = &trimmed[split_idx..];
+        if let Some(rest) = rest.strip_prefix(". ") {
+            return Some(rest.trim_start());
+        }
+    }
+
+    None
+}
+
 #[cfg(test)]
 mod tests {
     use super::{current_execution_plan_step, ensure_execution_plan_initialized, parse_state};
@@ -234,55 +284,5 @@ mod tests {
 
         let current = current_execution_plan_step(&content);
         assert_eq!(current.as_deref(), Some("implement follow mode"));
-    }
-}
-
-fn normalize_step_prefix(line: &str) -> Option<&str> {
-    let trimmed = line.trim_start();
-
-    if let Some(rest) = trimmed.strip_prefix("- ") {
-        return Some(rest.trim_start());
-    }
-
-    if let Some(rest) = trimmed.strip_prefix("* ") {
-        return Some(rest.trim_start());
-    }
-
-    let mut split_idx = 0usize;
-    for ch in trimmed.chars() {
-        if ch.is_ascii_digit() {
-            split_idx += ch.len_utf8();
-        } else {
-            break;
-        }
-    }
-
-    if split_idx > 0 {
-        let rest = &trimmed[split_idx..];
-        if let Some(rest) = rest.strip_prefix(". ") {
-            return Some(rest.trim_start());
-        }
-    }
-
-    None
-}
-
-enum StepMarker {
-    Pending,
-    Current,
-    Completed,
-}
-
-fn step_marker(line: &str) -> Option<StepMarker> {
-    let normalized = normalize_step_prefix(line)?;
-
-    if normalized.starts_with("[ ]") {
-        Some(StepMarker::Pending)
-    } else if normalized.starts_with("[>]") {
-        Some(StepMarker::Current)
-    } else if normalized.starts_with("[x]") || normalized.starts_with("[X]") {
-        Some(StepMarker::Completed)
-    } else {
-        None
     }
 }
