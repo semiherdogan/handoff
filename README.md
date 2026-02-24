@@ -31,7 +31,7 @@ Lightweight, model-agnostic autonomous dev loop manager.
 
 ### Ignoring the workspace folder
 
-If your AI coding assistant is configured to ignore paths listed in .gitignore, and you do not want .handoff/ to be ignored by the assistant but still want Git to avoid tracking it, you can add it to .git/info/exclude instead of .gitignore. This keeps the exclusion local to your repository without modifying shared ignore rules.
+If your AI coding assistant is configured to ignore paths listed in `.gitignore`, and you do not want `.handoff/` to be ignored by the assistant but still want Git to avoid tracking it, you can add it to `.git/info/exclude` instead of `.gitignore`. This keeps the exclusion local to your repository without modifying shared ignore rules.
 
 ```bash
 echo ".handoff/" >> .git/info/exclude
