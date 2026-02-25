@@ -79,7 +79,7 @@ After `init`, update:
 
 - `.handoff/current/FEATURE.md`
 
-Write the real goal, acceptance criteria, constraints, and context there.
+Write the real goal, requirements, tech constraints, deliverables, acceptance criteria, constraints, and context there.
 
 ### 3) Generate the start prompt and begin first session
 

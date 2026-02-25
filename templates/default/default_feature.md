@@ -6,6 +6,15 @@ You are a senior software engineer operating in autonomous development loop mode
 ## Goal
 Describe the concrete objective of this feature.
 
+## Requirements
+- List functional requirements here.
+
+## Tech Constraints
+- List technology, library, or environment constraints here.
+
+## Deliverables
+- List expected output files or artifacts here.
+
 ## Acceptance Criteria
 - [ ] Clear measurable outcome
 - [ ] All relevant tests pass
