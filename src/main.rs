@@ -27,6 +27,7 @@ fn run() -> Result<()> {
         Command::Completion { shell } => commands::completion::run(shell),
         Command::Upgrade => commands::upgrade::run(),
         Command::Export { force } => commands::export::run(&paths, force),
+        Command::Ignore => commands::ignore::run(),
     }
 }
 

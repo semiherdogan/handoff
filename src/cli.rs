@@ -66,6 +66,7 @@ pub enum Command {
         #[arg(long)]
         force: bool,
     },
+    Ignore,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]

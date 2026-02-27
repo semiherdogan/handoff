@@ -4,6 +4,7 @@ pub mod completion;
 pub mod confirm;
 pub mod r#continue;
 pub mod export;
+pub mod ignore;
 pub mod init;
 pub mod list;
 pub mod prompt;

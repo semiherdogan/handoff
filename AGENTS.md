@@ -81,6 +81,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff completion <shell>`
 - `handoff upgrade`
 - `handoff export [--force]`
+- `handoff ignore`
 
 ## Command Intent (When to Use What)
 
@@ -96,6 +97,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `completion`: print shell completion script for supported shells
 - `upgrade`: fetch latest release from GitHub, compare versions, download and replace the current binary
 - `export`: copy embedded default templates to `.handoff/templates/` for user customization; prompts for confirmation if directory has files, use `--force` to skip
+- `ignore`: toggle `.handoff/` in `.git/info/exclude` (add if absent, remove if present)
 
 ## Deterministic Error Contract (Do Not Drift)
 

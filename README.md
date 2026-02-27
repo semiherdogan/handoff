@@ -83,6 +83,7 @@ handoff archive my-feature
 | `clean [--force]` | Remove non-active features (`--force` removes all) |
 | `archive <feature>` | Archive a feature (clears `current` if active) |
 | `export [--force]` | Export default templates to `.handoff/templates/` for customization |
+| `ignore` | Toggle `.handoff/` in `.git/info/exclude` (add if absent, remove if present) |
 | `completion <shell>` | Generate shell completions (`bash`, `zsh`, `fish`, `powershell`, `elvish`) |
 | `upgrade` | Upgrade to the latest GitHub release |
 | `version` | Print CLI version |
@@ -100,10 +101,11 @@ handoff archive my-feature
       SESSION.md
 ```
 
-> **Tip:** To exclude `.handoff/` from Git without affecting `.gitignore` (so your AI assistant can still see it), add it to `.git/info/exclude`:
+> **Tip:** To exclude `.handoff/` from Git without affecting `.gitignore` (so your AI assistant can still see it), use:
 > ```bash
-> echo ".handoff/" >> .git/info/exclude
+> handoff ignore
 > ```
+> Run it again to remove the entry. This toggles `.handoff/` in `.git/info/exclude`.
 
 ## Shell Completions
 
