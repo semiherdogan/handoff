@@ -6,16 +6,26 @@ use crate::core::workspace;
 use anyhow::{Context, Result};
 use std::fs;
 use std::io::{self, Write};
+use std::path::Path;
 use std::thread;
 use std::time::{Duration, Instant};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ArtifactStatus {
+    feature: String,
+    spec: String,
+    design: String,
+    state: String,
+    session: String,
+}
 
 pub fn run(paths: &AiPaths, follow: bool) -> Result<()> {
     if follow {
         return run_follow(paths);
     }
 
-    let (feature_name, summary, _) = load_status(paths)?;
-    print_standard_status(&feature_name, &summary);
+    let (feature_name, summary, _, artifacts) = load_status(paths)?;
+    print_standard_status(&feature_name, &summary, &artifacts);
     Ok(())
 }
 
@@ -25,13 +35,13 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
     let mut spinner_idx = 0usize;
     let terminal_columns = terminal_columns();
     let mut last_status_refresh_at = Instant::now();
-    let (mut feature_name, mut summary, mut current_plan_step) = load_status(paths)?;
+    let (mut feature_name, mut summary, mut current_plan_step, mut artifacts) = load_status(paths)?;
 
     loop {
         if summary.remaining_steps == 0 {
             print!("\r\x1b[2K");
             io::stdout().flush().with_context(|| "Failed to flush stdout")?;
-            print_standard_status(&feature_name, &summary);
+            print_standard_status(&feature_name, &summary, &artifacts);
             return Ok(());
         }
 
@@ -46,10 +56,11 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
         thread::sleep(spinner_tick_interval);
 
         if last_status_refresh_at.elapsed() >= status_refresh_interval {
-            let (next_feature_name, next_summary, next_plan_step) = load_status(paths)?;
+            let (next_feature_name, next_summary, next_plan_step, next_artifacts) = load_status(paths)?;
             feature_name = next_feature_name;
             summary = next_summary;
             current_plan_step = next_plan_step;
+            artifacts = next_artifacts;
             last_status_refresh_at = Instant::now();
         }
     }
@@ -100,7 +111,7 @@ fn truncate_for_width(text: &str, max_chars: usize) -> String {
     truncated
 }
 
-fn load_status(paths: &AiPaths) -> Result<(String, StateSummary, Option<String>)> {
+fn load_status(paths: &AiPaths) -> Result<(String, StateSummary, Option<String>, ArtifactStatus)> {
     let active_feature_path = workspace::resolve_current_feature_path(paths)?;
     feature::validate_feature_files(&active_feature_path)?;
 
@@ -110,15 +121,22 @@ fn load_status(paths: &AiPaths) -> Result<(String, StateSummary, Option<String>)
         .with_context(|| format!("Failed to read file: {}", state_path.display()))?;
     let summary = state::parse_state(&state_content);
     let current_plan_step = state::current_execution_plan_step(&state_content);
+    let artifacts = artifact_statuses(&active_feature_path, &state_content)?;
 
-    Ok((feature_name, summary, current_plan_step))
+    Ok((feature_name, summary, current_plan_step, artifacts))
 }
 
-fn print_standard_status(feature_name: &str, summary: &StateSummary) {
+fn print_standard_status(feature_name: &str, summary: &StateSummary, artifacts: &ArtifactStatus) {
     println!("Active feature: {feature_name}");
     println!("Current Step: {}", summary.current_step);
     println!("Remaining steps: {}", summary.remaining_steps);
     println!("Completed steps: {}", summary.completed_steps);
+    println!("Artifacts:");
+    println!("- FEATURE.md: {}", artifacts.feature);
+    println!("- SPEC.md: {}", artifacts.spec);
+    println!("- DESIGN.md: {}", artifacts.design);
+    println!("- STATE.md: {}", artifacts.state);
+    println!("- SESSION.md: {}", artifacts.session);
 
     if summary.known_risks.is_empty() {
         println!("Known risks: None");
@@ -127,6 +145,63 @@ fn print_standard_status(feature_name: &str, summary: &StateSummary) {
         for risk in &summary.known_risks {
             println!("- {risk}");
         }
+    }
+}
+
+fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<ArtifactStatus> {
+    Ok(ArtifactStatus {
+        feature: classify_feature_or_session_artifact(
+            &fs::read_to_string(feature_dir.join(feature::FEATURE_FILE)).with_context(|| {
+                format!(
+                    "Failed to read file: {}",
+                    feature_dir.join(feature::FEATURE_FILE).display()
+                )
+            })?,
+            "Describe the concrete objective of this feature.",
+        ),
+        spec: classify_generated_artifact(
+            feature_dir,
+            feature::SPEC_FILE,
+            "Not yet generated.",
+        )?,
+        design: classify_generated_artifact(
+            feature_dir,
+            feature::DESIGN_FILE,
+            "Not yet generated.",
+        )?,
+        state: if state::ensure_execution_plan_initialized(state_content).is_ok() {
+            "planned".to_owned()
+        } else {
+            "scaffolded".to_owned()
+        },
+        session: classify_feature_or_session_artifact(
+            &fs::read_to_string(feature_dir.join(feature::SESSION_FILE)).with_context(|| {
+                format!(
+                    "Failed to read file: {}",
+                    feature_dir.join(feature::SESSION_FILE).display()
+                )
+            })?,
+            "None yet.",
+        ),
+    })
+}
+
+fn classify_generated_artifact(feature_dir: &Path, file_name: &str, placeholder: &str) -> Result<String> {
+    let content = fs::read_to_string(feature_dir.join(file_name))
+        .with_context(|| format!("Failed to read file: {}", feature_dir.join(file_name).display()))?;
+
+    Ok(if content.contains(placeholder) {
+        "scaffolded".to_owned()
+    } else {
+        "ready".to_owned()
+    })
+}
+
+fn classify_feature_or_session_artifact(content: &str, placeholder: &str) -> String {
+    if content.contains(placeholder) {
+        "needs review".to_owned()
+    } else {
+        "ready".to_owned()
     }
 }
 
@@ -144,8 +219,8 @@ fn spinner_frame(index: usize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::{
-        follow_spinner_tick_interval, follow_status_refresh_interval, format_follow_line,
-        spinner_frame,
+        classify_feature_or_session_artifact, follow_spinner_tick_interval,
+        follow_status_refresh_interval, format_follow_line, spinner_frame,
     };
     use std::time::Duration;
 
@@ -183,5 +258,17 @@ mod tests {
     #[test]
     fn follow_spinner_tick_interval_is_quick_for_responsive_loader() {
         assert_eq!(follow_spinner_tick_interval(), Duration::from_millis(125));
+    }
+
+    #[test]
+    fn classify_feature_or_session_artifact_marks_placeholders_as_needing_review() {
+        assert_eq!(
+            classify_feature_or_session_artifact("Describe the concrete objective of this feature.", "Describe the concrete objective of this feature."),
+            "needs review"
+        );
+        assert_eq!(
+            classify_feature_or_session_artifact("Implemented API flow.", "None yet."),
+            "ready"
+        );
     }
 }

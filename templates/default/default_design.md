@@ -1,3 +1,6 @@
+> Optional planning artifact.
+> Use this file for implementation approach and tradeoffs when the feature is complex enough to need explicit design.
+
 # Design
 
 ## Design Summary

@@ -1,3 +1,6 @@
+> Execution ledger.
+> This file tracks the current task plan and progress markers during implementation.
+
 # State
 
 # Current Step

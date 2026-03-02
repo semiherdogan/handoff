@@ -1,3 +1,6 @@
+> Start here.
+> Edit this file first to describe the feature, constraints, and success criteria.
+
 # Feature: {{feature_name}}
 
 ## Role

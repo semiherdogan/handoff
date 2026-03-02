@@ -1,3 +1,6 @@
+> Usually generated from `FEATURE.md`.
+> Refine this file when you want explicit, reviewable requirements before implementation.
+
 # Spec
 
 ## Feature Summary
