@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Aligned `handoff --version` with `handoff version` so both now report the build-time `HANDOFF_VERSION` value.
+
 ## [0.5.0] - 2026-03-02
 
 ### Added

@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 #[derive(Debug, Parser)]
 #[command(
     name = "handoff",
-    version,
+    version = env!("HANDOFF_VERSION"),
     about = "Lightweight autonomous dev loop manager",
     after_help = concat!(
         "Repository: https://github.com/semiherdogan/handoff\n",
