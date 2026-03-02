@@ -74,8 +74,16 @@ mod tests {
     fn start_prompt_prefers_existing_execution_plan() {
         let context = build_start_prompt_context(true, true, true);
 
-        assert!(context.planning_mode.contains("Execution plan already exists"));
-        assert!(context.workflow_instructions.contains("Continue from the existing execution plan"));
+        assert!(
+            context
+                .planning_mode
+                .contains("Execution plan already exists")
+        );
+        assert!(
+            context
+                .workflow_instructions
+                .contains("Continue from the existing execution plan")
+        );
     }
 
     #[test]
@@ -83,7 +91,11 @@ mod tests {
         let context = build_start_prompt_context(true, false, false);
 
         assert!(context.planning_mode.contains("Spec-first planning mode"));
-        assert!(context.workflow_instructions.contains("Read FEATURE.md and SPEC.md"));
+        assert!(
+            context
+                .workflow_instructions
+                .contains("Read FEATURE.md and SPEC.md")
+        );
     }
 
     #[test]
@@ -91,6 +103,10 @@ mod tests {
         let context = build_start_prompt_context(false, false, false);
 
         assert!(context.planning_mode.contains("Full orchestration mode"));
-        assert!(context.workflow_instructions.contains("normalize it into a concise SPEC.md"));
+        assert!(
+            context
+                .workflow_instructions
+                .contains("normalize it into a concise SPEC.md")
+        );
     }
 }

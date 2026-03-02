@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use serde::Deserialize;
 use std::fs;
 use std::io::Write;
@@ -25,7 +25,10 @@ pub fn run() -> Result<()> {
     println!("Checking for updates...");
     let release = fetch_latest_release()?;
 
-    let latest_version = release.tag_name.strip_prefix('v').unwrap_or(&release.tag_name);
+    let latest_version = release
+        .tag_name
+        .strip_prefix('v')
+        .unwrap_or(&release.tag_name);
 
     if !is_newer(current_version, latest_version) {
         println!("Already up to date.");
@@ -56,8 +59,8 @@ pub fn run() -> Result<()> {
     println!("Downloading {asset_name}...");
     let binary_data = download_asset(&asset.browser_download_url)?;
 
-    let current_exe = std::env::current_exe()
-        .context("Failed to determine current executable path")?;
+    let current_exe =
+        std::env::current_exe().context("Failed to determine current executable path")?;
 
     replace_binary(&current_exe, &binary_data)?;
 
@@ -164,10 +167,7 @@ fn current_target_triple() -> &'static str {
 /// Compare two semver-like version strings. Returns true if `latest` is newer than `current`.
 fn is_newer(current: &str, latest: &str) -> bool {
     let parse = |v: &str| -> (u64, u64, u64) {
-        let parts: Vec<u64> = v
-            .split('.')
-            .filter_map(|p| p.parse().ok())
-            .collect();
+        let parts: Vec<u64> = v.split('.').filter_map(|p| p.parse().ok()).collect();
         (
             parts.first().copied().unwrap_or(0),
             parts.get(1).copied().unwrap_or(0),

@@ -40,7 +40,9 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
     loop {
         if summary.remaining_steps == 0 {
             print!("\r\x1b[2K");
-            io::stdout().flush().with_context(|| "Failed to flush stdout")?;
+            io::stdout()
+                .flush()
+                .with_context(|| "Failed to flush stdout")?;
             print_standard_status(&feature_name, &summary, &artifacts);
             return Ok(());
         }
@@ -50,13 +52,16 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
         let follow_line = format_follow_line(frame, step, terminal_columns);
 
         print!("\r\x1b[2K{follow_line}");
-        io::stdout().flush().with_context(|| "Failed to flush stdout")?;
+        io::stdout()
+            .flush()
+            .with_context(|| "Failed to flush stdout")?;
 
         spinner_idx = (spinner_idx + 1) % 4;
         thread::sleep(spinner_tick_interval);
 
         if last_status_refresh_at.elapsed() >= status_refresh_interval {
-            let (next_feature_name, next_summary, next_plan_step, next_artifacts) = load_status(paths)?;
+            let (next_feature_name, next_summary, next_plan_step, next_artifacts) =
+                load_status(paths)?;
             feature_name = next_feature_name;
             summary = next_summary;
             current_plan_step = next_plan_step;
@@ -146,6 +151,8 @@ fn print_standard_status(feature_name: &str, summary: &StateSummary, artifacts: 
             println!("- {risk}");
         }
     }
+
+    println!("Next: {}", next_recommendation(summary, artifacts));
 }
 
 fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<ArtifactStatus> {
@@ -159,11 +166,7 @@ fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<Artifact
             })?,
             "Describe the concrete objective of this feature.",
         ),
-        spec: classify_generated_artifact(
-            feature_dir,
-            feature::SPEC_FILE,
-            "Not yet generated.",
-        )?,
+        spec: classify_generated_artifact(feature_dir, feature::SPEC_FILE, "Not yet generated.")?,
         design: classify_generated_artifact(
             feature_dir,
             feature::DESIGN_FILE,
@@ -186,9 +189,17 @@ fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<Artifact
     })
 }
 
-fn classify_generated_artifact(feature_dir: &Path, file_name: &str, placeholder: &str) -> Result<String> {
-    let content = fs::read_to_string(feature_dir.join(file_name))
-        .with_context(|| format!("Failed to read file: {}", feature_dir.join(file_name).display()))?;
+fn classify_generated_artifact(
+    feature_dir: &Path,
+    file_name: &str,
+    placeholder: &str,
+) -> Result<String> {
+    let content = fs::read_to_string(feature_dir.join(file_name)).with_context(|| {
+        format!(
+            "Failed to read file: {}",
+            feature_dir.join(file_name).display()
+        )
+    })?;
 
     Ok(if content.contains(placeholder) {
         "scaffolded".to_owned()
@@ -205,6 +216,30 @@ fn classify_feature_or_session_artifact(content: &str, placeholder: &str) -> Str
     }
 }
 
+fn next_recommendation(summary: &StateSummary, artifacts: &ArtifactStatus) -> &'static str {
+    if artifacts.feature == "needs review" {
+        return "edit .handoff/current/FEATURE.md";
+    }
+
+    if !summary.execution_plan_initialized {
+        if artifacts.spec == "scaffolded" {
+            return "run handoff start --copy";
+        }
+
+        if artifacts.design == "scaffolded" {
+            return "run handoff tasks --copy";
+        }
+
+        return "run handoff start --copy";
+    }
+
+    if summary.remaining_steps == 0 {
+        return "archive the feature or start a new one";
+    }
+
+    "run handoff continue --copy"
+}
+
 fn spinner_frame(index: usize) -> &'static str {
     // Root cause: the previous pseudo-progress frames looked like partial completion,
     // which made follow mode feel noisy instead of indicating simple liveness.
@@ -219,9 +254,11 @@ fn spinner_frame(index: usize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::{
-        classify_feature_or_session_artifact, follow_spinner_tick_interval,
+        ArtifactStatus, classify_feature_or_session_artifact, follow_spinner_tick_interval,
         follow_status_refresh_interval, format_follow_line, spinner_frame,
+        next_recommendation,
     };
+    use crate::core::state::StateSummary;
     use std::time::Duration;
 
     #[test]
@@ -263,12 +300,63 @@ mod tests {
     #[test]
     fn classify_feature_or_session_artifact_marks_placeholders_as_needing_review() {
         assert_eq!(
-            classify_feature_or_session_artifact("Describe the concrete objective of this feature.", "Describe the concrete objective of this feature."),
+            classify_feature_or_session_artifact(
+                "Describe the concrete objective of this feature.",
+                "Describe the concrete objective of this feature."
+            ),
             "needs review"
         );
         assert_eq!(
             classify_feature_or_session_artifact("Implemented API flow.", "None yet."),
             "ready"
+        );
+    }
+
+    #[test]
+    fn next_recommendation_prioritizes_feature_editing_before_planning() {
+        let summary = StateSummary {
+            current_step: "Not started".to_owned(),
+            completed_steps: 0,
+            current_steps: 0,
+            remaining_steps: 0,
+            known_risks: Vec::new(),
+            execution_plan_initialized: false,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "needs review".to_owned(),
+            spec: "scaffolded".to_owned(),
+            design: "scaffolded".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "needs review".to_owned(),
+        };
+
+        assert_eq!(
+            next_recommendation(&summary, &artifacts),
+            "edit .handoff/current/FEATURE.md"
+        );
+    }
+
+    #[test]
+    fn next_recommendation_suggests_continue_when_plan_exists() {
+        let summary = StateSummary {
+            current_step: "Implement API".to_owned(),
+            completed_steps: 1,
+            current_steps: 1,
+            remaining_steps: 2,
+            known_risks: Vec::new(),
+            execution_plan_initialized: true,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "ready".to_owned(),
+            state: "planned".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert_eq!(
+            next_recommendation(&summary, &artifacts),
+            "run handoff continue --copy"
         );
     }
 }

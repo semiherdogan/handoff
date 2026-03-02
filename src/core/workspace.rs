@@ -1,7 +1,7 @@
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::templates::manager::TemplateManager;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use std::fs;
 
 #[cfg(unix)]
@@ -12,8 +12,12 @@ const MAX_FEATURE_NAME_LEN: usize = 64;
 pub fn ensure_workspace(paths: &AiPaths) -> Result<()> {
     fs::create_dir_all(&paths.ai_dir)
         .with_context(|| format!("Failed to create directory: {}", paths.ai_dir.display()))?;
-    fs::create_dir_all(&paths.features_dir)
-        .with_context(|| format!("Failed to create directory: {}", paths.features_dir.display()))?;
+    fs::create_dir_all(&paths.features_dir).with_context(|| {
+        format!(
+            "Failed to create directory: {}",
+            paths.features_dir.display()
+        )
+    })?;
 
     if !paths.config_toml.exists() {
         fs::write(&paths.config_toml, "# handoff v0.1 configuration\n")
@@ -33,9 +37,7 @@ fn validate_feature_name_slug(feature_name: &str) -> Result<()> {
     }
 
     if bytes[0] == b'-' || bytes[bytes.len() - 1] == b'-' {
-        anyhow::bail!(
-            "Invalid feature name '{feature_name}'. Slug cannot start or end with '-'"
-        );
+        anyhow::bail!("Invalid feature name '{feature_name}'. Slug cannot start or end with '-'");
     }
 
     let mut prev_dash = false;
@@ -60,101 +62,6 @@ fn validate_feature_name_slug(feature_name: &str) -> Result<()> {
     }
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::core::test_utils::make_temp_base;
-
-    #[test]
-    fn validate_feature_name_slug_accepts_valid_slug() {
-        assert!(validate_feature_name_slug("feature-123").is_ok());
-    }
-
-    #[test]
-    fn validate_feature_name_slug_rejects_spaces_and_uppercase() {
-        assert!(validate_feature_name_slug("My Feature").is_err());
-    }
-
-    #[test]
-    fn init_feature_does_not_block_new_feature_when_current_exists() {
-        let base = make_temp_base("init-feature-current-exists");
-        let paths = AiPaths::discover(&base);
-
-        init_feature_with_switch_option(&paths, "first-feature", false, true)
-            .expect("failed to init first feature");
-        init_feature_with_switch_option(&paths, "second-feature", false, true)
-            .expect("failed to init second feature");
-
-        assert!(paths.feature_dir("second-feature").is_dir());
-        let current_target = fs::read_link(&paths.current_link).expect("failed to read current symlink");
-        assert_eq!(current_target, std::path::Path::new("features/second-feature"));
-
-        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
-    }
-
-    #[test]
-    fn clean_features_removes_all_non_current_feature_directories() {
-        let base = make_temp_base("clean-features");
-        let paths = AiPaths::discover(&base);
-
-        init_feature_with_switch_option(&paths, "active-feature", false, true)
-            .expect("failed to init active feature");
-        init_feature_with_switch_option(&paths, "stale-feature", false, false)
-            .expect("failed to init stale feature");
-        init_feature_with_switch_option(&paths, "old-feature", false, false)
-            .expect("failed to init old feature");
-
-        let removed = clean_features(&paths, false).expect("failed to clean features");
-
-        assert_eq!(removed, 2);
-        assert!(paths.feature_dir("active-feature").is_dir());
-        assert!(!paths.feature_dir("stale-feature").exists());
-        assert!(!paths.feature_dir("old-feature").exists());
-
-        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
-    }
-
-    #[test]
-    fn clean_features_with_force_removes_current_and_all_feature_directories() {
-        let base = make_temp_base("clean-features-force");
-        let paths = AiPaths::discover(&base);
-
-        init_feature_with_switch_option(&paths, "active-feature", false, true)
-            .expect("failed to init active feature");
-        init_feature_with_switch_option(&paths, "stale-feature", false, false)
-            .expect("failed to init stale feature");
-
-        let removed = clean_features(&paths, true).expect("failed to clean features with force");
-
-        assert_eq!(removed, 2);
-        assert!(!paths.feature_dir("active-feature").exists());
-        assert!(!paths.feature_dir("stale-feature").exists());
-        assert!(!paths.current_link.exists());
-        assert!(paths.features_dir.is_dir());
-
-        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
-    }
-
-    #[test]
-    fn clean_features_with_force_removes_all_features_without_active_current() {
-        let base = make_temp_base("clean-features-force-no-current");
-        let paths = AiPaths::discover(&base);
-
-        ensure_workspace(&paths).expect("failed to create workspace");
-        fs::create_dir_all(paths.feature_dir("stale-feature")).expect("failed to create stale feature");
-        fs::create_dir_all(paths.feature_dir("old-feature")).expect("failed to create old feature");
-
-        let removed = clean_features(&paths, true).expect("failed to clean features with force");
-
-        assert_eq!(removed, 2);
-        assert!(!paths.feature_dir("stale-feature").exists());
-        assert!(!paths.feature_dir("old-feature").exists());
-        assert!(!paths.current_link.exists());
-
-        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
-    }
 }
 
 pub fn init_feature_with_switch_option(
@@ -273,10 +180,10 @@ pub fn list_features(paths: &AiPaths) -> Result<Vec<String>> {
         .with_context(|| format!("Failed to read directory: {}", paths.features_dir.display()))?
     {
         let entry = entry?;
-        if entry.file_type()?.is_dir() {
-            if let Some(name) = entry.file_name().to_str() {
-                names.push(name.to_owned());
-            }
+        if entry.file_type()?.is_dir()
+            && let Some(name) = entry.file_name().to_str()
+        {
+            names.push(name.to_owned());
         }
     }
 
@@ -299,8 +206,12 @@ pub fn clean_features(paths: &AiPaths, force: bool) -> Result<usize> {
         }
 
         let feature_dir = paths.feature_dir(&feature);
-        fs::remove_dir_all(&feature_dir)
-            .with_context(|| format!("Failed to remove feature directory: {}", feature_dir.display()))?;
+        fs::remove_dir_all(&feature_dir).with_context(|| {
+            format!(
+                "Failed to remove feature directory: {}",
+                feature_dir.display()
+            )
+        })?;
         removed += 1;
     }
 
@@ -347,4 +258,104 @@ pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::test_utils::make_temp_base;
+
+    #[test]
+    fn validate_feature_name_slug_accepts_valid_slug() {
+        assert!(validate_feature_name_slug("feature-123").is_ok());
+    }
+
+    #[test]
+    fn validate_feature_name_slug_rejects_spaces_and_uppercase() {
+        assert!(validate_feature_name_slug("My Feature").is_err());
+    }
+
+    #[test]
+    fn init_feature_does_not_block_new_feature_when_current_exists() {
+        let base = make_temp_base("init-feature-current-exists");
+        let paths = AiPaths::discover(&base);
+
+        init_feature_with_switch_option(&paths, "first-feature", false, true)
+            .expect("failed to init first feature");
+        init_feature_with_switch_option(&paths, "second-feature", false, true)
+            .expect("failed to init second feature");
+
+        assert!(paths.feature_dir("second-feature").is_dir());
+        let current_target =
+            fs::read_link(&paths.current_link).expect("failed to read current symlink");
+        assert_eq!(
+            current_target,
+            std::path::Path::new("features/second-feature")
+        );
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn clean_features_removes_all_non_current_feature_directories() {
+        let base = make_temp_base("clean-features");
+        let paths = AiPaths::discover(&base);
+
+        init_feature_with_switch_option(&paths, "active-feature", false, true)
+            .expect("failed to init active feature");
+        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+            .expect("failed to init stale feature");
+        init_feature_with_switch_option(&paths, "old-feature", false, false)
+            .expect("failed to init old feature");
+
+        let removed = clean_features(&paths, false).expect("failed to clean features");
+
+        assert_eq!(removed, 2);
+        assert!(paths.feature_dir("active-feature").is_dir());
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.feature_dir("old-feature").exists());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn clean_features_with_force_removes_current_and_all_feature_directories() {
+        let base = make_temp_base("clean-features-force");
+        let paths = AiPaths::discover(&base);
+
+        init_feature_with_switch_option(&paths, "active-feature", false, true)
+            .expect("failed to init active feature");
+        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+            .expect("failed to init stale feature");
+
+        let removed = clean_features(&paths, true).expect("failed to clean features with force");
+
+        assert_eq!(removed, 2);
+        assert!(!paths.feature_dir("active-feature").exists());
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.current_link.exists());
+        assert!(paths.features_dir.is_dir());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn clean_features_with_force_removes_all_features_without_active_current() {
+        let base = make_temp_base("clean-features-force-no-current");
+        let paths = AiPaths::discover(&base);
+
+        ensure_workspace(&paths).expect("failed to create workspace");
+        fs::create_dir_all(paths.feature_dir("stale-feature"))
+            .expect("failed to create stale feature");
+        fs::create_dir_all(paths.feature_dir("old-feature")).expect("failed to create old feature");
+
+        let removed = clean_features(&paths, true).expect("failed to clean features with force");
+
+        assert_eq!(removed, 2);
+        assert!(!paths.feature_dir("stale-feature").exists());
+        assert!(!paths.feature_dir("old-feature").exists());
+        assert!(!paths.current_link.exists());
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
 }

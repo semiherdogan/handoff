@@ -1,6 +1,6 @@
 use crate::templates::manager::{
-    TemplateManager, DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME,
-    DEFAULT_SESSION_TEMPLATE_NAME, DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME,
+    DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE_NAME,
+    DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME, TemplateManager,
 };
 use anyhow::{Context, Result};
 use std::fs;
@@ -17,8 +17,12 @@ pub fn ensure_feature_files(
     feature_name: &str,
     template_manager: &TemplateManager,
 ) -> Result<()> {
-    fs::create_dir_all(feature_dir)
-        .with_context(|| format!("Failed to create feature directory: {}", feature_dir.display()))?;
+    fs::create_dir_all(feature_dir).with_context(|| {
+        format!(
+            "Failed to create feature directory: {}",
+            feature_dir.display()
+        )
+    })?;
 
     let feature_template = template_manager
         .get_template(DEFAULT_FEATURE_TEMPLATE_NAME)
@@ -79,7 +83,9 @@ fn validate_file_exists(path: &Path, display_name: &str) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ensure_feature_files, DESIGN_FILE, FEATURE_FILE, SESSION_FILE, SPEC_FILE, STATE_FILE};
+    use super::{
+        DESIGN_FILE, FEATURE_FILE, SESSION_FILE, SPEC_FILE, STATE_FILE, ensure_feature_files,
+    };
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
     use crate::templates::manager::TemplateManager;
@@ -95,8 +101,17 @@ mod tests {
         ensure_feature_files(&feature_dir, "new-flow", &template_manager)
             .expect("should create feature files");
 
-        for name in [FEATURE_FILE, SPEC_FILE, DESIGN_FILE, STATE_FILE, SESSION_FILE] {
-            assert!(feature_dir.join(name).is_file(), "missing expected file: {name}");
+        for name in [
+            FEATURE_FILE,
+            SPEC_FILE,
+            DESIGN_FILE,
+            STATE_FILE,
+            SESSION_FILE,
+        ] {
+            assert!(
+                feature_dir.join(name).is_file(),
+                "missing expected file: {name}"
+            );
         }
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");

@@ -1,6 +1,6 @@
 use crate::cli::PromptKind;
-use crate::core::paths::AiPaths;
 use crate::commands::prompt_output;
+use crate::core::paths::AiPaths;
 use crate::templates::manager::TemplateManager;
 use crate::templates::prompts;
 use anyhow::Result;

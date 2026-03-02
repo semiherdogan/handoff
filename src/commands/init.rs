@@ -39,11 +39,7 @@ fn init_summary(paths: &AiPaths, feature_name: &str, set_as_current: bool) -> St
     if set_as_current {
         return format!(
             "Initialized feature: {feature_name}\n\nNext:\n1. Edit: {}\n2. Then run: handoff start --copy\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during execution)\n- {} (AI-managed during execution)",
-            feature_file,
-            spec_file,
-            design_file,
-            state_file,
-            session_file,
+            feature_file, spec_file, design_file, state_file, session_file,
         );
     }
 
@@ -52,7 +48,6 @@ fn init_summary(paths: &AiPaths, feature_name: &str, set_as_current: bool) -> St
         feature_dir.join(feature::FEATURE_FILE).display()
     )
 }
-
 
 #[cfg(test)]
 mod tests {

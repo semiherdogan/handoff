@@ -89,8 +89,7 @@ mod tests {
 
         let template_dir = paths.ai_dir.join("templates");
         fs::create_dir_all(&template_dir).expect("create template dir");
-        fs::write(template_dir.join("default_feature.md"), "custom content")
-            .expect("write custom");
+        fs::write(template_dir.join("default_feature.md"), "custom content").expect("write custom");
 
         run(&paths, true).expect("export --force should succeed");
 

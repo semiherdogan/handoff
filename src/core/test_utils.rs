@@ -7,10 +7,7 @@ pub fn make_temp_base(label: &str) -> PathBuf {
         .duration_since(UNIX_EPOCH)
         .expect("system time before unix epoch")
         .as_nanos();
-    let dir = std::env::temp_dir().join(format!(
-        "handoff-{label}-{}-{nanos}",
-        std::process::id()
-    ));
+    let dir = std::env::temp_dir().join(format!("handoff-{label}-{}-{nanos}", std::process::id()));
     fs::create_dir_all(&dir).expect("failed to create temp test dir");
     dir
 }

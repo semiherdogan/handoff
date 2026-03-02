@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 
 #[derive(Debug, Clone)]
 pub struct StateSummary {
@@ -45,10 +45,10 @@ pub fn parse_state(content: &str) -> StateSummary {
         .collect::<Vec<_>>();
 
     let not_started = current_step.eq_ignore_ascii_case("Not started");
-    let not_generated = execution_plan_section
-        .lines()
-        .map(str::trim)
-        .any(|line| line.eq_ignore_ascii_case("Not yet generated") || line.eq_ignore_ascii_case("Not yet generated."));
+    let not_generated = execution_plan_section.lines().map(str::trim).any(|line| {
+        line.eq_ignore_ascii_case("Not yet generated")
+            || line.eq_ignore_ascii_case("Not yet generated.")
+    });
     let has_any_step = completed_steps + pending_steps + current_steps > 0;
 
     StateSummary {
@@ -86,12 +86,12 @@ pub fn current_execution_plan_step(content: &str) -> Option<String> {
     let execution_plan_section = section_content(content, "Execution Plan")?;
 
     for line in execution_plan_section.lines() {
-        if let Some(normalized) = normalize_step_prefix(line) {
-            if let Some(rest) = normalized.strip_prefix("[>]") {
-                let step = rest.trim_start().to_owned();
-                if !step.is_empty() {
-                    return Some(step);
-                }
+        if let Some(normalized) = normalize_step_prefix(line)
+            && let Some(rest) = normalized.strip_prefix("[>]")
+        {
+            let step = rest.trim_start().to_owned();
+            if !step.is_empty() {
+                return Some(step);
             }
         }
     }
@@ -261,7 +261,11 @@ mod tests {
 
     #[test]
     fn current_execution_plan_step_returns_current_marker_text() {
-        let content = state_doc("Current", "- [x] one\n- [>] implement api\n- [ ] test", "None");
+        let content = state_doc(
+            "Current",
+            "- [x] one\n- [>] implement api\n- [ ] test",
+            "None",
+        );
 
         let current = current_execution_plan_step(&content);
         assert_eq!(current.as_deref(), Some("implement api"));
