@@ -164,5 +164,6 @@ Also keep active-feature errors deterministic:
 When updating workflow behavior, also update:
 
 - `README.md` (usage flow and command guidance)
+- `CHANGELOG.md` (record user-facing changes in Keep a Changelog format)
 - default templates in `templates/default/` (if prompt/state contract changes)
 - start/continue/spec/design/tasks prompt contracts to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety where applicable
