@@ -38,6 +38,24 @@ pub enum Command {
         #[arg(long)]
         raw: bool,
     },
+    Spec {
+        #[arg(long)]
+        copy: bool,
+        #[arg(long)]
+        raw: bool,
+    },
+    Design {
+        #[arg(long)]
+        copy: bool,
+        #[arg(long)]
+        raw: bool,
+    },
+    Tasks {
+        #[arg(long)]
+        copy: bool,
+        #[arg(long)]
+        raw: bool,
+    },
     Prompt {
         target: Option<PromptKind>,
         #[arg(long)]
@@ -72,6 +90,9 @@ pub enum Command {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum PromptKind {
     Start,
+    Spec,
+    Design,
+    Tasks,
     Continue,
 }
 

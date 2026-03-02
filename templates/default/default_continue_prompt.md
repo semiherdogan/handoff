@@ -4,6 +4,8 @@ Read:
 - .handoff/current/SESSION.md
 - .handoff/current/STATE.md
 - .handoff/current/FEATURE.md
+- .handoff/current/SPEC.md (if present)
+- .handoff/current/DESIGN.md (if present)
 
 --------------------------------------------------
 Role
@@ -43,6 +45,7 @@ Structured Reasoning Requirements
 - Do not introduce unstated assumptions.
 - Explicitly evaluate risk before modifying multiple files.
 - Prefer evidence from FEATURE.md and repository context over familiarity.
+- Prefer evidence from SPEC.md, DESIGN.md, FEATURE.md, and repository context over familiarity.
 
 --------------------------------------------------
 Internal Alternative Evaluation

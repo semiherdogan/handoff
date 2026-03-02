@@ -11,7 +11,7 @@ Guidelines for AI/code agents and contributors working in this repository.
 
 ## Core Intent
 
-`handoff` manages a structured feature workspace under `.handoff/` and generates prompts (`start` / `continue`) for coding assistants.
+`handoff` manages a structured feature workspace under `.handoff/` and generates prompts (`start`, `spec`, `design`, `tasks`, `continue`) for coding assistants.
 
 The tool should remain:
 
@@ -40,9 +40,19 @@ Expected structure:
   features/
     <feature-name>/
       FEATURE.md
+      SPEC.md
+      DESIGN.md
       STATE.md
       SESSION.md
 ```
+
+Artifact responsibilities:
+
+- `FEATURE.md`: raw feature intent and owner constraints
+- `SPEC.md`: normalized behavioral requirements and acceptance criteria
+- `DESIGN.md`: technical design scaffold; may stay lightweight for simple features
+- `STATE.md`: execution plan and progress markers
+- `SESSION.md`: continuation-safe session summary
 
 ## STATE.md Invariants (Important)
 
@@ -71,8 +81,11 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff init [feature] [--force]`
 - `handoff switch <feature>`
 - `handoff start [--copy] [--raw]`
+- `handoff spec [--copy] [--raw]`
+- `handoff design [--copy] [--raw]`
+- `handoff tasks [--copy] [--raw]`
 - `handoff continue [--copy] [--raw]`
-- `handoff prompt [start|continue] [--copy] [--raw]`
+- `handoff prompt [start|spec|design|tasks|continue] [--copy] [--raw]`
 - `handoff status`
 - `handoff version`
 - `handoff list`
@@ -86,9 +99,12 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 ## Command Intent (When to Use What)
 
 - `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
-- `start`: generate initial prompt for first session
+- `start`: generate an orchestration-aware start prompt; reuse existing planning artifacts when present, otherwise create them in-session before implementation
+- `spec`: generate a prompt that turns `FEATURE.md` into `SPEC.md`
+- `design`: generate a prompt that turns `FEATURE.md` + `SPEC.md` into `DESIGN.md`
+- `tasks`: generate a prompt that turns `SPEC.md` (+ optional `DESIGN.md`) into the `STATE.md` execution plan
 - `continue`: generate continuation prompt with STATE guard checks
-- `prompt`: raw prompt generator (`start` or `continue`) without continue guard semantics
+- `prompt`: raw prompt generator (`start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
 - `status`: summarize active feature state
 - `version`: print CLI version from Cargo package metadata
 - `switch` / `list`: move between feature workspaces
@@ -149,4 +165,4 @@ When updating workflow behavior, also update:
 
 - `README.md` (usage flow and command guidance)
 - default templates in `templates/default/` (if prompt/state contract changes)
-- start/continue prompt contract to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety
+- start/continue/spec/design/tasks prompt contracts to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety where applicable

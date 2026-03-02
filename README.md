@@ -14,7 +14,7 @@ AI coding assistants lose context between sessions. Every time you start a new c
 
 `handoff` keeps structured state between coding sessions so your AI assistant can continue autonomously without losing track.
 
-It manages a local `.handoff/` workspace per feature — tracking the goal (`FEATURE.md`), execution plan and progress (`STATE.md`), and session context (`SESSION.md`). When a session ends, you run `handoff continue` and paste the generated prompt into your next conversation. The assistant picks up exactly where it left off.
+It manages a local `.handoff/` workspace per feature — tracking the goal (`FEATURE.md`), optional planning artifacts (`SPEC.md`, `DESIGN.md`), execution plan and progress (`STATE.md`), and session context (`SESSION.md`). When a session ends, you run `handoff continue` and paste the generated prompt into your next conversation. The assistant picks up exactly where it left off.
 
 **No API keys. No cloud. No vendor lock-in.** It works with any AI coding assistant — Cursor, Windsurf, Copilot, Claude, ChatGPT, or anything that accepts a text prompt.
 
@@ -29,7 +29,8 @@ It manages a local `.handoff/` workspace per feature — tracking the goal (`FEA
 
 - `.handoff/` workspace with multi-feature support and active `current` symlink
 - embedded default templates with `.handoff/templates/` override support
-- `start` and `continue` prompt generation with clipboard copy (`--copy`)
+- orchestration-aware `start` prompt generation plus explicit `spec`, `design`, and `tasks` planning prompts
+- `continue` prompt generation with clipboard copy (`--copy`)
 - deterministic state guardrails for safe continuation across sessions
 
 <!-- ![Demo](./demo.gif) -->
@@ -56,16 +57,22 @@ handoff init my-feature
 
 # 3. Generate the start prompt
 handoff start --copy
-#    Paste into your coding assistant to begin execution.
+#    Paste into your coding assistant to create missing planning artifacts
+#    (SPEC.md / optional DESIGN.md / STATE.md) and begin execution.
 
-# 4. Continue in subsequent sessions
+# 4. Optional: inspect planning phases directly
+handoff spec --copy
+handoff design --copy
+handoff tasks --copy
+
+# 5. Continue in subsequent sessions
 handoff continue --copy
 #    Paste into a new conversation to resume from where you left off.
 
-# 5. Check progress
+# 6. Check progress
 handoff status
 
-# 6. Archive when done
+# 7. Archive when done
 handoff archive my-feature
 ```
 
@@ -74,9 +81,12 @@ handoff archive my-feature
 | Command | Description |
 |---|---|
 | `init [feature] [--force]` | Create or select a feature workspace |
-| `start [--copy] [--raw]` | Generate the initial session prompt |
+| `start [--copy] [--raw]` | Generate the orchestration-aware start prompt |
+| `spec [--copy] [--raw]` | Generate a prompt to create or rewrite `SPEC.md` |
+| `design [--copy] [--raw]` | Generate a prompt to create or rewrite `DESIGN.md` |
+| `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
-| `prompt start\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
+| `prompt start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state (`--follow` polls live) |
 | `switch <feature>` | Switch active feature |
 | `list` | List available features |
@@ -97,8 +107,38 @@ handoff archive my-feature
   features/
     <feature-name>/
       FEATURE.md
+      SPEC.md
+      DESIGN.md
       STATE.md
       SESSION.md
+```
+
+## Planning Workflow
+
+`handoff` now supports two ways to start work:
+
+1. Default path:
+   Run `handoff start --copy` and let the assistant create any missing planning artifacts before implementation.
+2. Advanced path:
+   Run `handoff spec`, `handoff design`, and `handoff tasks` explicitly if you want review checkpoints before coding.
+
+Recommended flow for most users:
+
+```bash
+handoff init my-feature
+# edit .handoff/current/FEATURE.md
+handoff start --copy
+```
+
+Recommended flow for planning-heavy features:
+
+```bash
+handoff init my-feature
+# edit .handoff/current/FEATURE.md
+handoff spec --copy
+handoff design --copy      # optional
+handoff tasks --copy
+handoff start --copy
 ```
 
 > **Tip:** To exclude `.handoff/` from Git without affecting `.gitignore` (so your AI assistant can still see it), use:
