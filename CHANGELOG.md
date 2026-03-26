@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the release workflow to current action versions, including Node 24-compatible `actions/checkout`, `actions/upload-artifact`, and `actions/download-artifact`.
+
 
 ## [v0.6.2] - 2026-03-26
 
