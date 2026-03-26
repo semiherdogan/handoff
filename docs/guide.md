@@ -46,21 +46,6 @@ handoff start --copy
 
 Use `handoff validate` when you want a hard answer to one question: "Is this feature ready to execute from `STATE.md`?"
 
-## Model Usage Pattern
-
-`handoff` is model-agnostic, but a split-model workflow often works well:
-
-1. Use a stronger reasoning model for planning-oriented commands such as `handoff generate`, `handoff spec`, `handoff design`, and `handoff tasks`.
-2. Use a cheaper or faster coding model for execution-oriented commands such as `handoff start` and `handoff continue`.
-3. Switch back to the stronger planning model if implementation drifts, the plan becomes inconsistent, or you need to regenerate planning artifacts.
-
-Example pattern:
-
-```text
-Strong planning model  -> handoff generate / spec / design / tasks
-Cheaper coding model   -> handoff start / continue
-```
-
 ## Git Tip
 
 If you want your AI assistant to see `.handoff/` locally without committing it:
