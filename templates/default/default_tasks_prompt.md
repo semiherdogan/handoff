@@ -9,6 +9,11 @@ Goal
 Generate an execution-ready task list in .handoff/current/STATE.md.
 
 --------------------------------------------------
+Language Requirements
+
+{{language_instruction}}
+
+--------------------------------------------------
 Execution Protocol (Required)
 
 1. Derive tasks from SPEC.md and optional DESIGN.md.

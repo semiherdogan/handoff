@@ -48,6 +48,7 @@ Expected structure:
 
 Artifact responsibilities:
 
+- `config.toml`: workspace-level prompt settings such as the preferred prose language for generated prompts; missing `language` must fall back to English
 - `FEATURE.md`: raw feature intent and owner constraints
 - `SPEC.md`: normalized behavioral requirements and acceptance criteria
 - `DESIGN.md`: technical design scaffold; may stay lightweight for simple features
@@ -75,6 +76,11 @@ Guard behavior for `continue`:
 - fail if there are no remaining steps
 
 Deterministic guard errors are part of the contract; do not silently relax them.
+
+`STATE.md` parser-sensitive structure remains English-only unless the parser contract is intentionally changed:
+
+- section headers like `# Current Step`, `# Execution Plan`, and `# Risks`
+- execution markers `[ ]`, `[>]`, and `[x]`
 
 ## Commands (Current Surface)
 

@@ -11,6 +11,11 @@ Goal
 Choose the correct planning/execution phase from the current `.handoff/current/` artifacts, then move the feature forward without drift.
 
 --------------------------------------------------
+Language Requirements
+
+{{language_instruction}}
+
+--------------------------------------------------
 Artifact Status
 
 {{artifact_status}}

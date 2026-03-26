@@ -1,3 +1,4 @@
+use crate::core::config::DEFAULT_CONFIG_CONTENT;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::templates::manager::TemplateManager;
@@ -20,7 +21,7 @@ pub fn ensure_workspace(paths: &AiPaths) -> Result<()> {
     })?;
 
     if !paths.config_toml.exists() {
-        fs::write(&paths.config_toml, "# handoff v0.1 configuration\n")
+        fs::write(&paths.config_toml, DEFAULT_CONFIG_CONTENT)
             .with_context(|| format!("Failed to write file: {}", paths.config_toml.display()))?;
     }
 

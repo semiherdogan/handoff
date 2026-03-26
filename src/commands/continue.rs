@@ -1,4 +1,5 @@
 use crate::commands::prompt_output;
+use crate::core::config;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::core::state;
@@ -18,7 +19,13 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     state::ensure_execution_plan_initialized(&state_content)?;
 
     let template_manager = TemplateManager::new(paths);
-    let prompt = prompts::continuation_prompt(&template_manager);
+    let config = config::load(paths)?;
+    let prompt = prompts::continuation_prompt(
+        &template_manager,
+        &prompts::PromptOptions {
+            language_instruction: config.language_instruction(),
+        },
+    );
 
     prompt_output::output_prompt(&prompt, copy, raw)
 }

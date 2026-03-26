@@ -15,6 +15,11 @@ Goal
 Complete the remaining micro-steps defined in .handoff/current/STATE.md.
 
 --------------------------------------------------
+Language Requirements
+
+{{language_instruction}}
+
+--------------------------------------------------
 Execution Protocol (Required)
 
 1. Continue from the last unfinished micro-step.

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `.handoff/config.toml` language support for prompt generation with an English fallback when `language` is missing.
+
+### Changed
+
+- Updated `handoff init` to generate a default `config.toml` containing `language = "English"`.
+- Updated the default `start`, `spec`, `design`, `tasks`, and `continue` prompts to instruct assistants to write prose in the configured language while preserving parser-sensitive `STATE.md` structure in English.
+
 ## [0.5.1] - 2026-03-02
 
 ### Changed

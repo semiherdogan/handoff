@@ -52,27 +52,31 @@ Or use the [latest GitHub Release](https://github.com/semiherdogan/handoff/relea
 # 1. Create a feature workspace
 handoff init my-feature
 
-# 2. Define the feature
+# 2. Optional: set the workspace language in .handoff/config.toml
+#    Default is English. Example:
+#    language = "Turkish"
+
+# 3. Define the feature
 #    Edit .handoff/current/FEATURE.md with goal, requirements, and constraints.
 
-# 3. Generate the start prompt
+# 4. Generate the start prompt
 handoff start --copy
 #    Paste into your coding assistant to create missing planning artifacts
 #    (SPEC.md / optional DESIGN.md / STATE.md) and begin execution.
 
-# 4. Optional: inspect planning phases directly
+# 5. Optional: inspect planning phases directly
 handoff spec --copy
 handoff design --copy
 handoff tasks --copy
 
-# 5. Continue in subsequent sessions
+# 6. Continue in subsequent sessions
 handoff continue --copy
 #    Paste into a new conversation to resume from where you left off.
 
-# 6. Check progress
+# 7. Check progress
 handoff status
 
-# 7. Archive when done
+# 8. Archive when done
 handoff archive my-feature
 ```
 
@@ -112,6 +116,14 @@ handoff archive my-feature
       STATE.md
       SESSION.md
 ```
+
+`config.toml` currently supports:
+
+```toml
+language = "English"
+```
+
+If `language` is missing, `handoff` falls back to English when generating prompts. The language setting affects prompt instructions and AI-written prose, while parser-sensitive `STATE.md` structure remains in English.
 
 ## Planning Workflow
 

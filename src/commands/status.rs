@@ -255,8 +255,7 @@ fn spinner_frame(index: usize) -> &'static str {
 mod tests {
     use super::{
         ArtifactStatus, classify_feature_or_session_artifact, follow_spinner_tick_interval,
-        follow_status_refresh_interval, format_follow_line, spinner_frame,
-        next_recommendation,
+        follow_status_refresh_interval, format_follow_line, next_recommendation, spinner_frame,
     };
     use crate::core::state::StateSummary;
     use std::time::Duration;

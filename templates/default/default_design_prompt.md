@@ -8,6 +8,11 @@ Goal
 Produce the smallest coherent implementation design that satisfies the spec.
 
 --------------------------------------------------
+Language Requirements
+
+{{language_instruction}}
+
+--------------------------------------------------
 Execution Protocol (Required)
 
 1. Read FEATURE.md and SPEC.md.

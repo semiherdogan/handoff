@@ -7,6 +7,11 @@ Goal
 Convert the raw feature request into a clear, implementation-ready behavioral spec.
 
 --------------------------------------------------
+Language Requirements
+
+{{language_instruction}}
+
+--------------------------------------------------
 Execution Protocol (Required)
 
 1. Read .handoff/current/FEATURE.md carefully.
