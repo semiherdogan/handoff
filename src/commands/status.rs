@@ -20,6 +20,16 @@ struct ArtifactStatus {
     session: String,
 }
 
+impl ArtifactStatus {
+    fn all_healthy(&self) -> bool {
+        self.feature == "ready"
+            && self.spec == "ready"
+            && self.design == "ready"
+            && matches!(self.state.as_str(), "planned" | "complete")
+            && self.session == "ready"
+    }
+}
+
 pub fn run(paths: &AiPaths, follow: bool) -> Result<()> {
     if follow {
         return run_follow(paths);
@@ -191,12 +201,14 @@ fn print_standard_status(
     println!("- Current Step: {}", summary.current_step);
     println!("- Remaining steps: {}", summary.remaining_steps);
     println!("- Completed steps: {}", summary.completed_steps);
-    println!("Artifacts:");
-    println!("- FEATURE.md: {}", artifacts.feature);
-    println!("- SPEC.md: {}", artifacts.spec);
-    println!("- DESIGN.md: {}", artifacts.design);
-    println!("- STATE.md: {}", artifacts.state);
-    println!("- SESSION.md: {}", artifacts.session);
+    if !artifacts.all_healthy() {
+        println!("Artifacts:");
+        println!("- FEATURE.md: {}", artifacts.feature);
+        println!("- SPEC.md: {}", artifacts.spec);
+        println!("- DESIGN.md: {}", artifacts.design);
+        println!("- STATE.md: {}", artifacts.state);
+        println!("- SESSION.md: {}", artifacts.session);
+    }
 
     if summary.known_risks.is_empty() {
         println!("Known risks: None");
@@ -207,7 +219,9 @@ fn print_standard_status(
         }
     }
 
-    println!("Next: {}", next_recommendation(summary, artifacts));
+    println!();
+    println!("Next:");
+    println!("- {}", next_recommendation(summary, artifacts));
 }
 
 fn planning_status(
@@ -250,6 +264,8 @@ fn blocked_reason(
 }
 
 fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<ArtifactStatus> {
+    let state_validation = state::validate_execution_plan(state_content);
+
     Ok(ArtifactStatus {
         feature: classify_feature_or_session_artifact(
             &fs::read_to_string(feature_dir.join(feature::FEATURE_FILE)).with_context(|| {
@@ -266,11 +282,7 @@ fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<Artifact
             feature::DESIGN_FILE,
             "Not yet generated.",
         )?,
-        state: if state::ensure_execution_plan_initialized(state_content).is_ok() {
-            "planned".to_owned()
-        } else {
-            "scaffolded".to_owned()
-        },
+        state: classify_state_artifact(state_validation).to_owned(),
         session: classify_feature_or_session_artifact(
             &fs::read_to_string(feature_dir.join(feature::SESSION_FILE)).with_context(|| {
                 format!(
@@ -281,6 +293,15 @@ fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<Artifact
             "None yet.",
         ),
     })
+}
+
+fn classify_state_artifact(validation: ExecutionPlanValidation) -> &'static str {
+    match validation {
+        ExecutionPlanValidation::Ready => "planned",
+        ExecutionPlanValidation::NoRemainingSteps => "complete",
+        ExecutionPlanValidation::NotInitialized => "scaffolded",
+        ExecutionPlanValidation::MultipleCurrentSteps => "invalid",
+    }
 }
 
 fn classify_generated_artifact(
@@ -341,8 +362,8 @@ fn spinner_frame(index: usize) -> &'static str {
 mod tests {
     use super::{
         ArtifactStatus, blocked_reason, classify_feature_or_session_artifact,
-        follow_spinner_tick_interval, follow_status_refresh_interval, format_follow_line,
-        next_recommendation, planning_status, spinner_frame,
+        classify_state_artifact, follow_spinner_tick_interval, follow_status_refresh_interval,
+        format_follow_line, next_recommendation, planning_status, spinner_frame,
     };
     use crate::core::state::{ExecutionPlanValidation, StateSummary};
     use std::time::Duration;
@@ -547,6 +568,31 @@ mod tests {
         assert_eq!(
             blocked_reason(ExecutionPlanValidation::Ready, &artifacts),
             None
+        );
+    }
+
+    #[test]
+    fn artifact_status_all_healthy_accepts_complete_state() {
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "ready".to_owned(),
+            state: "complete".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert!(artifacts.all_healthy());
+    }
+
+    #[test]
+    fn classify_state_artifact_treats_finished_plan_as_complete() {
+        assert_eq!(
+            classify_state_artifact(ExecutionPlanValidation::NoRemainingSteps),
+            "complete"
+        );
+        assert_eq!(
+            classify_state_artifact(ExecutionPlanValidation::MultipleCurrentSteps),
+            "invalid"
         );
     }
 }

@@ -115,11 +115,7 @@ fn artifact_diagnostics(
             feature::DESIGN_FILE,
             "Not yet generated.",
         )?,
-        state: if state::ensure_execution_plan_initialized(state_content).is_ok() {
-            "planned".to_owned()
-        } else {
-            "scaffolded".to_owned()
-        },
+        state: classify_state_artifact(state::validate_execution_plan(state_content)).to_owned(),
         session: classify_feature_or_session_artifact(
             &fs::read_to_string(feature_dir.join(feature::SESSION_FILE)).with_context(|| {
                 format!(
@@ -130,6 +126,15 @@ fn artifact_diagnostics(
             "None yet.",
         ),
     })
+}
+
+fn classify_state_artifact(validation: ExecutionPlanValidation) -> &'static str {
+    match validation {
+        ExecutionPlanValidation::Ready => "planned",
+        ExecutionPlanValidation::NoRemainingSteps => "complete",
+        ExecutionPlanValidation::NotInitialized => "scaffolded",
+        ExecutionPlanValidation::MultipleCurrentSteps => "invalid",
+    }
 }
 
 fn classify_generated_artifact(
@@ -161,7 +166,10 @@ fn classify_feature_or_session_artifact(content: &str, placeholder: &str) -> Str
 
 #[cfg(test)]
 mod tests {
-    use super::{ArtifactDiagnostics, blocked_reason, should_fail, validation_error_message};
+    use super::{
+        ArtifactDiagnostics, blocked_reason, classify_state_artifact, should_fail,
+        validation_error_message,
+    };
     use crate::core::state::ExecutionPlanValidation;
 
     #[test]
@@ -193,6 +201,14 @@ mod tests {
         assert_eq!(
             blocked_reason(ExecutionPlanValidation::NotInitialized, &diagnostics),
             Some("FEATURE.md still contains scaffold content and needs review.")
+        );
+    }
+
+    #[test]
+    fn validate_classifies_finished_plan_as_complete() {
+        assert_eq!(
+            classify_state_artifact(ExecutionPlanValidation::NoRemainingSteps),
+            "complete"
         );
     }
 }
