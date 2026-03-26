@@ -181,7 +181,7 @@ fn print_standard_status(
     println!(
         "Execution plan validation: {} ({})",
         validation.status_label(),
-        validation.message()
+        validation.summary_message()
     );
     println!("Current Step: {}", summary.current_step);
     println!("Remaining steps: {}", summary.remaining_steps);

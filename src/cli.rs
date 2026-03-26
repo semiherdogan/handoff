@@ -73,6 +73,7 @@ pub enum Command {
         #[arg(long)]
         follow: bool,
     },
+    Validate,
     Version,
     List,
     Clean {

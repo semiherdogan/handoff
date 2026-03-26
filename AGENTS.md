@@ -100,6 +100,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff continue [--copy] [--raw]`
 - `handoff prompt [generate|start|spec|design|tasks|continue] [--copy] [--raw]`
 - `handoff status`
+- `handoff validate`
 - `handoff version`
 - `handoff list`
 - `handoff clean [--force]`
@@ -120,6 +121,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
 - `status`: summarize active feature state, configured workflow language, and execution-plan validation
+- `validate`: explicitly validate the current execution plan and fail when it is missing or structurally invalid
 - `version`: print the CLI build version; `handoff --version` must match `handoff version`
 - `switch` / `list`: move between feature workspaces
 - `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.handoff/current`

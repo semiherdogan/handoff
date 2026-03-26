@@ -29,7 +29,18 @@ impl ExecutionPlanValidation {
         }
     }
 
-    pub fn message(&self) -> &'static str {
+    pub fn summary_message(&self) -> &'static str {
+        match self {
+            Self::Ready => "Execution plan is valid.",
+            Self::NotInitialized => "Execution plan has not been initialized yet.",
+            Self::MultipleCurrentSteps => {
+                "Execution plan is invalid because multiple current steps ([>]) were found."
+            }
+            Self::NoRemainingSteps => "Execution plan is complete. No remaining steps.",
+        }
+    }
+
+    pub fn guard_message(&self) -> &'static str {
         match self {
             Self::Ready => "Execution plan is valid.",
             Self::NotInitialized => "Execution plan not initialized. Run `handoff start` first.",
@@ -113,7 +124,7 @@ pub fn validate_execution_plan(content: &str) -> ExecutionPlanValidation {
 pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
     match validate_execution_plan(content) {
         ExecutionPlanValidation::Ready => Ok(()),
-        validation => Err(anyhow!(validation.message())),
+        validation => Err(anyhow!(validation.guard_message())),
     }
 }
 

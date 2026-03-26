@@ -17,4 +17,5 @@ pub mod status;
 pub mod switch;
 pub mod tasks;
 pub mod upgrade;
+pub mod validate;
 pub mod version;

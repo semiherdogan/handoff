@@ -24,6 +24,7 @@ fn run() -> Result<()> {
         Command::Tasks { copy, raw } => commands::tasks::run(&paths, copy, raw),
         Command::Prompt { target, copy, raw } => commands::prompt::run(&paths, target, copy, raw),
         Command::Status { follow } => commands::status::run(&paths, follow),
+        Command::Validate => commands::validate::run(&paths),
         Command::Version => commands::version::run(),
         Command::List => commands::list::run(&paths),
         Command::Clean { force } => commands::clean::run(&paths, force),

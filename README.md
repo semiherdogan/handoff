@@ -97,6 +97,7 @@ handoff archive my-feature
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
 | `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
+| `validate` | Validate the current execution plan and report whether it is ready, complete, or invalid |
 | `switch <feature>` | Switch active feature |
 | `list` | List available features |
 | `clean [--force]` | Remove non-active features (`--force` removes all) |
@@ -129,6 +130,8 @@ language = "English"
 ```
 
 If `language` is missing, `handoff` falls back to English when generating prompts. The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, and `SESSION.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax. Parser-sensitive `STATE.md` structure remains in English.
+
+`handoff status` reports the configured workflow language, whether planning is ready, and the current execution-plan validation result so you can tell quickly whether to run `generate`, `continue`, or archive the feature. Use `handoff validate` when you want an explicit pass/fail check for the current execution plan. It exits successfully for ready or already-complete plans, and fails for uninitialized or structurally invalid plans.
 
 ## Planning Workflow
 

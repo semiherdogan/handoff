@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `handoff validate` to explicitly validate the current execution plan and fail fast for uninitialized or structurally invalid `STATE.md` plans.
+
 ### Changed
 
 - Clarified that `language` controls handoff artifact prose only and does not change code syntax, identifier naming, or repository conventions.
+- Updated `handoff status` to show configured workflow language, planning readiness, and execution-plan validation details.
+- Tightened template registry and export tests so the full default template set is asserted exactly.
 
 
 
