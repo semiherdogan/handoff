@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [v0.6.1] - 2026-03-26
+
 ### Added
 
 - Added `handoff validate` to explicitly validate the current execution plan and fail fast for uninitialized or structurally invalid `STATE.md` plans.
@@ -18,7 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Refined `handoff status` formatting, taught `status --follow` to stop cleanly on blocked plans, and expanded `handoff validate` with compact artifact diagnostics.
 - Refined `handoff status` further so `Next` is visually separated, healthy artifact blocks stay hidden, and completed execution plans classify `STATE.md` as complete instead of scaffolded.
 - Tightened template registry and export tests so the full default template set is asserted exactly.
-
 
 
 ## [v0.6.0] - 2026-03-26
@@ -36,12 +38,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Updated the default `FEATURE.md` template to state that `.handoff/current/` is reserved for handoff artifacts and that permanent project documentation belongs in normal repository locations.
 - Clarified that `language` controls handoff artifact prose only and does not change code syntax, identifier naming, or repository conventions.
 
-
 ## [v0.5.1] - 2026-03-02
 
 ### Changed
 
 - Aligned `handoff --version` with `handoff version` so both now report the build-time `HANDOFF_VERSION` value.
+
 
 ## [v0.5.0] - 2026-03-02
 
