@@ -183,6 +183,9 @@ fn print_standard_status(
         validation.status_label(),
         validation.summary_message()
     );
+    if let Some(reason) = blocked_reason(validation, artifacts) {
+        println!("Why blocked: {reason}");
+    }
     println!("Current Step: {}", summary.current_step);
     println!("Remaining steps: {}", summary.remaining_steps);
     println!("Completed steps: {}", summary.completed_steps);
@@ -222,6 +225,25 @@ fn planning_status(
             "execution complete"
         }
         ExecutionPlanValidation::NoRemainingSteps => "ready to archive",
+    }
+}
+
+fn blocked_reason(
+    validation: ExecutionPlanValidation,
+    artifacts: &ArtifactStatus,
+) -> Option<&'static str> {
+    if artifacts.feature == "needs review" {
+        return Some("FEATURE.md still contains scaffold content and needs review.");
+    }
+
+    match validation {
+        ExecutionPlanValidation::NotInitialized => {
+            Some("STATE.md does not contain a valid execution plan yet.")
+        }
+        ExecutionPlanValidation::MultipleCurrentSteps => {
+            Some("STATE.md contains multiple current steps ([>]) and must be fixed.")
+        }
+        ExecutionPlanValidation::Ready | ExecutionPlanValidation::NoRemainingSteps => None,
     }
 }
 
@@ -316,9 +338,9 @@ fn spinner_frame(index: usize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::{
-        ArtifactStatus, classify_feature_or_session_artifact, follow_spinner_tick_interval,
-        follow_status_refresh_interval, format_follow_line, next_recommendation, planning_status,
-        spinner_frame,
+        ArtifactStatus, blocked_reason, classify_feature_or_session_artifact,
+        follow_spinner_tick_interval, follow_status_refresh_interval, format_follow_line,
+        next_recommendation, planning_status, spinner_frame,
     };
     use crate::core::state::{ExecutionPlanValidation, StateSummary};
     use std::time::Duration;
@@ -471,6 +493,58 @@ mod tests {
                 &artifacts
             ),
             "invalid execution plan"
+        );
+    }
+
+    #[test]
+    fn blocked_reason_prioritizes_feature_review() {
+        let artifacts = ArtifactStatus {
+            feature: "needs review".to_owned(),
+            spec: "scaffolded".to_owned(),
+            design: "scaffolded".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "needs review".to_owned(),
+        };
+
+        assert_eq!(
+            blocked_reason(ExecutionPlanValidation::NotInitialized, &artifacts),
+            Some("FEATURE.md still contains scaffold content and needs review.")
+        );
+    }
+
+    #[test]
+    fn blocked_reason_reports_uninitialized_state_plan() {
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "scaffolded".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert_eq!(
+            blocked_reason(ExecutionPlanValidation::NotInitialized, &artifacts),
+            Some("STATE.md does not contain a valid execution plan yet.")
+        );
+    }
+
+    #[test]
+    fn blocked_reason_reports_multiple_current_steps() {
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "ready".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert_eq!(
+            blocked_reason(ExecutionPlanValidation::MultipleCurrentSteps, &artifacts),
+            Some("STATE.md contains multiple current steps ([>]) and must be fixed.")
+        );
+        assert_eq!(
+            blocked_reason(ExecutionPlanValidation::Ready, &artifacts),
+            None
         );
     }
 }
