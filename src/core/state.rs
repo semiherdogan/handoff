@@ -10,6 +10,37 @@ pub struct StateSummary {
     pub execution_plan_initialized: bool,
 }
 
+/// Validation outcome shared by guards and user-facing status reporting.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExecutionPlanValidation {
+    Ready,
+    NotInitialized,
+    MultipleCurrentSteps,
+    NoRemainingSteps,
+}
+
+impl ExecutionPlanValidation {
+    pub fn status_label(&self) -> &'static str {
+        match self {
+            Self::Ready => "valid",
+            Self::NotInitialized => "not initialized",
+            Self::MultipleCurrentSteps => "invalid",
+            Self::NoRemainingSteps => "complete",
+        }
+    }
+
+    pub fn message(&self) -> &'static str {
+        match self {
+            Self::Ready => "Execution plan is valid.",
+            Self::NotInitialized => "Execution plan not initialized. Run `handoff start` first.",
+            Self::MultipleCurrentSteps => {
+                "Invalid execution plan: multiple current steps ([>]) found."
+            }
+            Self::NoRemainingSteps => "No remaining steps to continue.",
+        }
+    }
+}
+
 pub fn parse_state(content: &str) -> StateSummary {
     let current_step_section = section_content(content, "Current Step").unwrap_or_default();
     let execution_plan_section = section_content(content, "Execution Plan").unwrap_or_default();
@@ -61,25 +92,29 @@ pub fn parse_state(content: &str) -> StateSummary {
     }
 }
 
-pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
+pub fn validate_execution_plan(content: &str) -> ExecutionPlanValidation {
     let summary = parse_state(content);
+
     if summary.current_steps > 1 {
-        return Err(anyhow!(
-            "Invalid execution plan: multiple current steps ([>]) found."
-        ));
+        return ExecutionPlanValidation::MultipleCurrentSteps;
     }
 
     if summary.completed_steps > 0 && summary.remaining_steps == 0 {
-        return Err(anyhow!("No remaining steps to continue."));
+        return ExecutionPlanValidation::NoRemainingSteps;
     }
 
     if summary.execution_plan_initialized {
-        return Ok(());
+        return ExecutionPlanValidation::Ready;
     }
 
-    Err(anyhow!(
-        "Execution plan not initialized. Run `handoff start` first."
-    ))
+    ExecutionPlanValidation::NotInitialized
+}
+
+pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
+    match validate_execution_plan(content) {
+        ExecutionPlanValidation::Ready => Ok(()),
+        validation => Err(anyhow!(validation.message())),
+    }
 }
 
 pub fn current_execution_plan_step(content: &str) -> Option<String> {
@@ -180,7 +215,10 @@ fn normalize_step_prefix(line: &str) -> Option<&str> {
 
 #[cfg(test)]
 mod tests {
-    use super::{current_execution_plan_step, ensure_execution_plan_initialized, parse_state};
+    use super::{
+        ExecutionPlanValidation, current_execution_plan_step, ensure_execution_plan_initialized,
+        parse_state, validate_execution_plan,
+    };
 
     fn state_doc(current_step: &str, execution_plan: &str, risks: &str) -> String {
         format!(
@@ -202,6 +240,10 @@ mod tests {
         assert_eq!(summary.remaining_steps, 3);
         assert_eq!(summary.known_risks, vec!["parser drift".to_string()]);
         assert!(ensure_execution_plan_initialized(&content).is_ok());
+        assert_eq!(
+            validate_execution_plan(&content),
+            ExecutionPlanValidation::Ready
+        );
     }
 
     #[test]
@@ -210,6 +252,10 @@ mod tests {
 
         let error = ensure_execution_plan_initialized(&content).unwrap_err();
         assert_eq!(error.to_string(), "No remaining steps to continue.");
+        assert_eq!(
+            validate_execution_plan(&content),
+            ExecutionPlanValidation::NoRemainingSteps
+        );
     }
 
     #[test]
@@ -231,6 +277,10 @@ mod tests {
             error.to_string(),
             "Invalid execution plan: multiple current steps ([>]) found."
         );
+        assert_eq!(
+            validate_execution_plan(&content),
+            ExecutionPlanValidation::MultipleCurrentSteps
+        );
     }
 
     #[test]
@@ -241,6 +291,10 @@ mod tests {
         assert_eq!(
             error.to_string(),
             "Execution plan not initialized. Run `handoff start` first."
+        );
+        assert_eq!(
+            validate_execution_plan(&content),
+            ExecutionPlanValidation::NotInitialized
         );
     }
 

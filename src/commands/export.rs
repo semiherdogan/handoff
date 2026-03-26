@@ -60,6 +60,7 @@ pub fn run(paths: &AiPaths, force: bool) -> Result<()> {
 mod tests {
     use super::*;
     use crate::core::test_utils::make_temp_base;
+    use std::collections::BTreeSet;
 
     #[test]
     fn export_creates_templates_directory_and_files() {
@@ -72,6 +73,24 @@ mod tests {
         assert!(template_dir.is_dir());
 
         let expected = TemplateManager::default_templates();
+        let expected_names = expected
+            .iter()
+            .map(|(name, _)| (*name).to_owned())
+            .collect::<BTreeSet<_>>();
+        let actual_names = fs::read_dir(&template_dir)
+            .expect("should read templates dir")
+            .map(|entry| {
+                entry
+                    .expect("should read dir entry")
+                    .file_name()
+                    .into_string()
+                    .expect("template file name should be valid utf-8")
+            })
+            .collect::<BTreeSet<_>>();
+
+        assert_eq!(actual_names, expected_names);
+        assert_eq!(actual_names.len(), expected.len());
+
         for (name, content) in &expected {
             let file = template_dir.join(name);
             assert!(file.is_file(), "template file should exist: {name}");

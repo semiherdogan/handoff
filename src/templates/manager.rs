@@ -115,21 +115,34 @@ impl TemplateManager {
 #[cfg(test)]
 mod tests {
     use super::{
-        DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_TEMPLATE_NAME,
-        DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
-        DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+        DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
+        DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME,
+        DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE_NAME,
+        DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_TEMPLATE_NAME,
+        DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME,
+        DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
     };
 
     #[test]
-    fn default_templates_include_planning_artifacts_and_prompts() {
+    fn default_templates_match_expected_registry_exactly() {
         let templates = TemplateManager::default_templates();
         let names = templates.iter().map(|(name, _)| *name).collect::<Vec<_>>();
+        let expected = vec![
+            DEFAULT_FEATURE_TEMPLATE_NAME,
+            DEFAULT_SPEC_TEMPLATE_NAME,
+            DEFAULT_DESIGN_TEMPLATE_NAME,
+            DEFAULT_STATE_TEMPLATE_NAME,
+            DEFAULT_SESSION_TEMPLATE_NAME,
+            DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME,
+            DEFAULT_START_PROMPT_TEMPLATE_NAME,
+            DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
+            DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
+            DEFAULT_TASKS_PROMPT_TEMPLATE_NAME,
+            DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
+        ];
 
-        assert!(names.contains(&DEFAULT_SPEC_TEMPLATE_NAME));
-        assert!(names.contains(&DEFAULT_DESIGN_TEMPLATE_NAME));
-        assert!(names.contains(&DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME));
-        assert!(names.contains(&DEFAULT_SPEC_PROMPT_TEMPLATE_NAME));
-        assert!(names.contains(&DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME));
-        assert!(names.contains(&DEFAULT_TASKS_PROMPT_TEMPLATE_NAME));
+        assert_eq!(names, expected);
+        assert_eq!(templates.len(), expected.len());
+        assert!(templates.iter().all(|(_, content)| !content.is_empty()));
     }
 }

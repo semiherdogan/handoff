@@ -1,7 +1,8 @@
+use crate::core::config;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::core::state;
-use crate::core::state::StateSummary;
+use crate::core::state::{ExecutionPlanValidation, StateSummary};
 use crate::core::workspace;
 use anyhow::{Context, Result};
 use std::fs;
@@ -24,8 +25,8 @@ pub fn run(paths: &AiPaths, follow: bool) -> Result<()> {
         return run_follow(paths);
     }
 
-    let (feature_name, summary, _, artifacts) = load_status(paths)?;
-    print_standard_status(&feature_name, &summary, &artifacts);
+    let (feature_name, language, summary, validation, _, artifacts) = load_status(paths)?;
+    print_standard_status(&feature_name, &language, &summary, validation, &artifacts);
     Ok(())
 }
 
@@ -35,7 +36,14 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
     let mut spinner_idx = 0usize;
     let terminal_columns = terminal_columns();
     let mut last_status_refresh_at = Instant::now();
-    let (mut feature_name, mut summary, mut current_plan_step, mut artifacts) = load_status(paths)?;
+    let (
+        mut feature_name,
+        mut language,
+        mut summary,
+        mut validation,
+        mut current_plan_step,
+        mut artifacts,
+    ) = load_status(paths)?;
 
     loop {
         if summary.remaining_steps == 0 {
@@ -43,7 +51,7 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
             io::stdout()
                 .flush()
                 .with_context(|| "Failed to flush stdout")?;
-            print_standard_status(&feature_name, &summary, &artifacts);
+            print_standard_status(&feature_name, &language, &summary, validation, &artifacts);
             return Ok(());
         }
 
@@ -60,10 +68,18 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
         thread::sleep(spinner_tick_interval);
 
         if last_status_refresh_at.elapsed() >= status_refresh_interval {
-            let (next_feature_name, next_summary, next_plan_step, next_artifacts) =
-                load_status(paths)?;
+            let (
+                next_feature_name,
+                next_language,
+                next_summary,
+                next_validation,
+                next_plan_step,
+                next_artifacts,
+            ) = load_status(paths)?;
             feature_name = next_feature_name;
+            language = next_language;
             summary = next_summary;
+            validation = next_validation;
             current_plan_step = next_plan_step;
             artifacts = next_artifacts;
             last_status_refresh_at = Instant::now();
@@ -116,23 +132,57 @@ fn truncate_for_width(text: &str, max_chars: usize) -> String {
     truncated
 }
 
-fn load_status(paths: &AiPaths) -> Result<(String, StateSummary, Option<String>, ArtifactStatus)> {
+fn load_status(
+    paths: &AiPaths,
+) -> Result<(
+    String,
+    String,
+    StateSummary,
+    ExecutionPlanValidation,
+    Option<String>,
+    ArtifactStatus,
+)> {
     let active_feature_path = workspace::resolve_current_feature_path(paths)?;
     feature::validate_feature_files(&active_feature_path)?;
 
+    let config = config::load(paths)?;
     let feature_name = workspace::resolve_current_feature_name(paths)?;
     let state_path = active_feature_path.join(feature::STATE_FILE);
     let state_content = fs::read_to_string(&state_path)
         .with_context(|| format!("Failed to read file: {}", state_path.display()))?;
     let summary = state::parse_state(&state_content);
+    let validation = state::validate_execution_plan(&state_content);
     let current_plan_step = state::current_execution_plan_step(&state_content);
     let artifacts = artifact_statuses(&active_feature_path, &state_content)?;
 
-    Ok((feature_name, summary, current_plan_step, artifacts))
+    Ok((
+        feature_name,
+        config.language,
+        summary,
+        validation,
+        current_plan_step,
+        artifacts,
+    ))
 }
 
-fn print_standard_status(feature_name: &str, summary: &StateSummary, artifacts: &ArtifactStatus) {
+fn print_standard_status(
+    feature_name: &str,
+    language: &str,
+    summary: &StateSummary,
+    validation: ExecutionPlanValidation,
+    artifacts: &ArtifactStatus,
+) {
     println!("Active feature: {feature_name}");
+    println!("Language: {language}");
+    println!(
+        "Planning status: {}",
+        planning_status(summary, validation, artifacts)
+    );
+    println!(
+        "Execution plan validation: {} ({})",
+        validation.status_label(),
+        validation.message()
+    );
     println!("Current Step: {}", summary.current_step);
     println!("Remaining steps: {}", summary.remaining_steps);
     println!("Completed steps: {}", summary.completed_steps);
@@ -153,6 +203,26 @@ fn print_standard_status(feature_name: &str, summary: &StateSummary, artifacts: 
     }
 
     println!("Next: {}", next_recommendation(summary, artifacts));
+}
+
+fn planning_status(
+    summary: &StateSummary,
+    validation: ExecutionPlanValidation,
+    artifacts: &ArtifactStatus,
+) -> &'static str {
+    if artifacts.feature == "needs review" {
+        return "feature needs review";
+    }
+
+    match validation {
+        ExecutionPlanValidation::Ready => "ready to execute",
+        ExecutionPlanValidation::NotInitialized => "needs generation",
+        ExecutionPlanValidation::MultipleCurrentSteps => "invalid execution plan",
+        ExecutionPlanValidation::NoRemainingSteps if summary.remaining_steps == 0 => {
+            "execution complete"
+        }
+        ExecutionPlanValidation::NoRemainingSteps => "ready to archive",
+    }
 }
 
 fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<ArtifactStatus> {
@@ -247,9 +317,10 @@ fn spinner_frame(index: usize) -> &'static str {
 mod tests {
     use super::{
         ArtifactStatus, classify_feature_or_session_artifact, follow_spinner_tick_interval,
-        follow_status_refresh_interval, format_follow_line, next_recommendation, spinner_frame,
+        follow_status_refresh_interval, format_follow_line, next_recommendation, planning_status,
+        spinner_frame,
     };
-    use crate::core::state::StateSummary;
+    use crate::core::state::{ExecutionPlanValidation, StateSummary};
     use std::time::Duration;
 
     #[test]
@@ -372,6 +443,34 @@ mod tests {
         assert_eq!(
             next_recommendation(&summary, &artifacts),
             "run handoff generate --copy"
+        );
+    }
+
+    #[test]
+    fn planning_status_reports_invalid_plan() {
+        let summary = StateSummary {
+            current_step: "Implement".to_owned(),
+            completed_steps: 0,
+            current_steps: 2,
+            remaining_steps: 2,
+            known_risks: Vec::new(),
+            execution_plan_initialized: false,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "ready".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert_eq!(
+            planning_status(
+                &summary,
+                ExecutionPlanValidation::MultipleCurrentSteps,
+                &artifacts
+            ),
+            "invalid execution plan"
         );
     }
 }

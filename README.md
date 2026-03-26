@@ -96,7 +96,7 @@ handoff archive my-feature
 | `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
 | `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
-| `status [--follow]` | Show current execution state (`--follow` polls live) |
+| `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
 | `switch <feature>` | Switch active feature |
 | `list` | List available features |
 | `clean [--force]` | Remove non-active features (`--force` removes all) |
