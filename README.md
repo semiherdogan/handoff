@@ -103,3 +103,11 @@ To exclude `.handoff/` from Git without affecting `.gitignore`:
 > handoff ignore
 > ```
 Run it again to remove the entry from `.git/info/exclude`.
+
+## Contributing
+
+Focused, minimal changes are preferred. If you change behavior or workflow contracts, also update `README.md`, `CHANGELOG.md`, and relevant templates. See [AGENTS.md](./AGENTS.md) for repository-specific contributor guidance.
+
+## License
+
+MIT. See [LICENSE](./LICENSE).

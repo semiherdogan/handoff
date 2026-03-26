@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added help text to CLI arguments (`--copy`, `--raw`, `--force`, `--follow`).
 - Added a README usage pattern describing how to pair a stronger planning model with a cheaper/faster implementation model when using `handoff`.
 - Added `docs/guide.md` and `docs/reference.md` to move detailed workflow and command material out of the main README.
+- Added short `Contributing` and `License` footer sections to the README.
 
 ### Changed
 
