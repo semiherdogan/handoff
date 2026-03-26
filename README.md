@@ -128,7 +128,7 @@ handoff archive my-feature
 language = "English"
 ```
 
-If `language` is missing, `handoff` falls back to English when generating prompts. The language setting affects prompt instructions and AI-written prose, while parser-sensitive `STATE.md` structure remains in English.
+If `language` is missing, `handoff` falls back to English when generating prompts. The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, and `SESSION.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax. Parser-sensitive `STATE.md` structure remains in English.
 
 ## Planning Workflow
 
