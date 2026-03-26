@@ -46,7 +46,7 @@ fn run_follow(paths: &AiPaths) -> Result<()> {
     ) = load_status(paths)?;
 
     loop {
-        if summary.remaining_steps == 0 {
+        if validation != ExecutionPlanValidation::Ready || summary.remaining_steps == 0 {
             print!("\r\x1b[2K");
             io::stdout()
                 .flush()
@@ -173,22 +173,24 @@ fn print_standard_status(
     artifacts: &ArtifactStatus,
 ) {
     println!("Active feature: {feature_name}");
-    println!("Language: {language}");
+    println!("Workflow:");
+    println!("- Language: {language}");
     println!(
-        "Planning status: {}",
+        "- Planning status: {}",
         planning_status(summary, validation, artifacts)
     );
     println!(
-        "Execution plan validation: {} ({})",
+        "- Execution plan: {} ({})",
         validation.status_label(),
         validation.summary_message()
     );
     if let Some(reason) = blocked_reason(validation, artifacts) {
         println!("Why blocked: {reason}");
     }
-    println!("Current Step: {}", summary.current_step);
-    println!("Remaining steps: {}", summary.remaining_steps);
-    println!("Completed steps: {}", summary.completed_steps);
+    println!("Progress:");
+    println!("- Current Step: {}", summary.current_step);
+    println!("- Remaining steps: {}", summary.remaining_steps);
+    println!("- Completed steps: {}", summary.completed_steps);
     println!("Artifacts:");
     println!("- FEATURE.md: {}", artifacts.feature);
     println!("- SPEC.md: {}", artifacts.spec);

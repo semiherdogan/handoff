@@ -131,7 +131,7 @@ language = "English"
 
 If `language` is missing, `handoff` falls back to English when generating prompts. The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, and `SESSION.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax. Parser-sensitive `STATE.md` structure remains in English.
 
-`handoff status` reports the configured workflow language, whether planning is ready, the current execution-plan validation result, and when possible a concrete "Why blocked" reason so you can tell quickly whether to run `generate`, `continue`, fix `STATE.md`, or archive the feature. Use `handoff validate` when you want an explicit pass/fail check for the current execution plan. It exits successfully for ready or already-complete plans, and fails for uninitialized or structurally invalid plans.
+`handoff status` reports the configured workflow language, whether planning is ready, the current execution-plan validation result, and when possible a concrete "Why blocked" reason so you can tell quickly whether to run `generate`, `continue`, fix `STATE.md`, or archive the feature. Use `handoff validate` when you want an explicit pass/fail check for the current execution plan. It now includes the same compact artifact diagnostics as `status`, exits successfully for ready or already-complete plans, and fails for uninitialized or structurally invalid plans.
 
 ## Planning Workflow
 

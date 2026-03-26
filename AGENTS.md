@@ -120,8 +120,8 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `tasks`: generate a prompt that turns `SPEC.md` (+ optional `DESIGN.md`) into the `STATE.md` execution plan
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
-- `status`: summarize active feature state, configured workflow language, execution-plan validation, and the most likely blocking reason when work is not ready
-- `validate`: explicitly validate the current execution plan and fail when it is missing or structurally invalid
+- `status`: summarize active feature state, configured workflow language, execution-plan validation, blocking reason, and artifact readiness in a compact view
+- `validate`: explicitly validate the current execution plan and fail when it is missing or structurally invalid while still printing compact diagnostics
 - `version`: print the CLI build version; `handoff --version` must match `handoff version`
 - `switch` / `list`: move between feature workspaces
 - `clean`: remove all non-active feature directories; with `--force`, also remove active feature and clear `.handoff/current`
