@@ -1,7 +1,7 @@
 use crate::templates::manager::{
     DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
-    DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_START_PROMPT_TEMPLATE_NAME,
-    DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+    DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
+    DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
 };
 
 pub struct PromptOptions {
@@ -13,6 +13,13 @@ pub struct StartPromptContext {
     pub artifact_status: String,
     pub planning_mode: String,
     pub workflow_instructions: String,
+}
+
+pub fn generate_prompt(template_manager: &TemplateManager, options: &PromptOptions) -> String {
+    apply_shared_prompt_options(
+        template_manager.get_template(DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME),
+        options,
+    )
 }
 
 pub fn start_prompt(
@@ -65,7 +72,7 @@ fn apply_shared_prompt_options(template: String, options: &PromptOptions) -> Str
 
 #[cfg(test)]
 mod tests {
-    use super::{PromptOptions, spec_prompt};
+    use super::{PromptOptions, generate_prompt, spec_prompt};
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
     use crate::templates::manager::TemplateManager;
@@ -84,6 +91,24 @@ mod tests {
         );
 
         assert!(prompt.contains("Write prose in Turkish."));
+        assert!(!prompt.contains("{{language_instruction}}"));
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn generate_prompt_renders_language_instruction() {
+        let base = make_temp_base("generate-prompt-language");
+        let paths = AiPaths::discover(&base);
+        let manager = TemplateManager::new(&paths);
+        let prompt = generate_prompt(
+            &manager,
+            &PromptOptions {
+                language_instruction: "Write prose in Spanish.".to_owned(),
+            },
+        );
+
+        assert!(prompt.contains("Write prose in Spanish."));
         assert!(!prompt.contains("{{language_instruction}}"));
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");

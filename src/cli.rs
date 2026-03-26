@@ -32,6 +32,12 @@ pub enum Command {
         #[arg(long)]
         raw: bool,
     },
+    Generate {
+        #[arg(long)]
+        copy: bool,
+        #[arg(long)]
+        raw: bool,
+    },
     Start {
         #[arg(long)]
         copy: bool,
@@ -89,6 +95,7 @@ pub enum Command {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum PromptKind {
+    Generate,
     Start,
     Spec,
     Design,

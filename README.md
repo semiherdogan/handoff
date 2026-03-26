@@ -59,24 +59,28 @@ handoff init my-feature
 # 3. Define the feature
 #    Edit .handoff/current/FEATURE.md with goal, requirements, and constraints.
 
-# 4. Generate the start prompt
-handoff start --copy
-#    Paste into your coding assistant to create missing planning artifacts
-#    (SPEC.md / optional DESIGN.md / STATE.md) and begin execution.
+# 4. Generate the planning prompt
+handoff generate --copy
+#    Paste into your coding assistant to create or refresh
+#    SPEC.md / optional DESIGN.md / STATE.md / SESSION.md only.
 
-# 5. Optional: inspect planning phases directly
+# 5. Generate the execution prompt
+handoff start --copy
+#    Paste into your coding assistant to start implementation from the ready plan.
+
+# 6. Optional: inspect planning phases directly
 handoff spec --copy
 handoff design --copy
 handoff tasks --copy
 
-# 6. Continue in subsequent sessions
+# 7. Continue in subsequent sessions
 handoff continue --copy
 #    Paste into a new conversation to resume from where you left off.
 
-# 7. Check progress
+# 8. Check progress
 handoff status
 
-# 8. Archive when done
+# 9. Archive when done
 handoff archive my-feature
 ```
 
@@ -85,12 +89,13 @@ handoff archive my-feature
 | Command | Description |
 |---|---|
 | `init [feature] [--force]` | Create or select a feature workspace |
-| `start [--copy] [--raw]` | Generate the orchestration-aware start prompt |
+| `generate [--copy] [--raw]` | Generate a planning-only prompt that refreshes markdown artifacts without coding |
+| `start [--copy] [--raw]` | Generate an execution prompt only when a valid execution plan already exists |
 | `spec [--copy] [--raw]` | Generate a prompt to create or rewrite `SPEC.md` |
 | `design [--copy] [--raw]` | Generate a prompt to create or rewrite `DESIGN.md` |
 | `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
-| `prompt start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
+| `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state (`--follow` polls live) |
 | `switch <feature>` | Switch active feature |
 | `list` | List available features |
@@ -130,7 +135,7 @@ If `language` is missing, `handoff` falls back to English when generating prompt
 `handoff` now supports two ways to start work:
 
 1. Default path:
-   Run `handoff start --copy` and let the assistant create any missing planning artifacts before implementation.
+   Run `handoff generate --copy` to refresh planning artifacts, then run `handoff start --copy` to begin implementation.
 2. Advanced path:
    Run `handoff spec`, `handoff design`, and `handoff tasks` explicitly if you want review checkpoints before coding.
 
@@ -139,6 +144,7 @@ Recommended flow for most users:
 ```bash
 handoff init my-feature
 # edit .handoff/current/FEATURE.md
+handoff generate --copy
 handoff start --copy
 ```
 

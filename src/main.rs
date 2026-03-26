@@ -17,6 +17,7 @@ fn run() -> Result<()> {
         Command::Init { feature, force } => commands::init::run(&paths, feature.as_deref(), force),
         Command::Switch { feature } => commands::switch::run(&paths, &feature),
         Command::Continue { copy, raw } => commands::r#continue::run(&paths, copy, raw),
+        Command::Generate { copy, raw } => commands::generate::run(&paths, copy, raw),
         Command::Start { copy, raw } => commands::start::run(&paths, copy, raw),
         Command::Spec { copy, raw } => commands::spec::run(&paths, copy, raw),
         Command::Design { copy, raw } => commands::design::run(&paths, copy, raw),

@@ -86,12 +86,13 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 
 - `handoff init [feature] [--force]`
 - `handoff switch <feature>`
+- `handoff generate [--copy] [--raw]`
 - `handoff start [--copy] [--raw]`
 - `handoff spec [--copy] [--raw]`
 - `handoff design [--copy] [--raw]`
 - `handoff tasks [--copy] [--raw]`
 - `handoff continue [--copy] [--raw]`
-- `handoff prompt [start|spec|design|tasks|continue] [--copy] [--raw]`
+- `handoff prompt [generate|start|spec|design|tasks|continue] [--copy] [--raw]`
 - `handoff status`
 - `handoff version`
 - `handoff list`
@@ -105,12 +106,13 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 ## Command Intent (When to Use What)
 
 - `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
-- `start`: generate an orchestration-aware start prompt; reuse existing planning artifacts when present, otherwise create them in-session before implementation
+- `generate`: generate a planning-only prompt that updates `SPEC.md`, optional `DESIGN.md`, `STATE.md`, and `SESSION.md` without implementing code
+- `start`: generate an execution-only prompt; require an existing valid execution plan before implementation begins
 - `spec`: generate a prompt that turns `FEATURE.md` into `SPEC.md`
 - `design`: generate a prompt that turns `FEATURE.md` + `SPEC.md` into `DESIGN.md`
 - `tasks`: generate a prompt that turns `SPEC.md` (+ optional `DESIGN.md`) into the `STATE.md` execution plan
 - `continue`: generate continuation prompt with STATE guard checks
-- `prompt`: raw prompt generator (`start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
+- `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
 - `status`: summarize active feature state
 - `version`: print the CLI build version; `handoff --version` must match `handoff version`
 - `switch` / `list`: move between feature workspaces

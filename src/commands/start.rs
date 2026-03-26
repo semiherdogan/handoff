@@ -6,7 +6,7 @@ use crate::core::state;
 use crate::core::workspace;
 use crate::templates::manager::TemplateManager;
 use crate::templates::prompts;
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use std::fs;
 
 pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
@@ -18,11 +18,11 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
         .with_context(|| format!("Failed to read file: {}", state_path.display()))?;
     let spec_exists = feature::file_exists(&active_feature_path, feature::SPEC_FILE);
     let design_exists = feature::file_exists(&active_feature_path, feature::DESIGN_FILE);
-    let plan_ready = state::ensure_execution_plan_initialized(&state_content).is_ok();
+    ensure_start_ready(&state_content)?;
 
     let template_manager = TemplateManager::new(paths);
     let config = config::load(paths)?;
-    let context = build_start_prompt_context(spec_exists, design_exists, plan_ready);
+    let context = build_start_prompt_context(spec_exists, design_exists);
     let prompt = prompts::start_prompt(
         &template_manager,
         &context,
@@ -34,59 +34,46 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     prompt_output::output_prompt(&prompt, copy, raw)
 }
 
+fn ensure_start_ready(state_content: &str) -> Result<()> {
+    match state::ensure_execution_plan_initialized(state_content) {
+        Ok(()) => Ok(()),
+        Err(error)
+            if error.to_string()
+                == "Execution plan not initialized. Run `handoff start` first." =>
+        {
+            Err(anyhow!(
+                "Execution plan not ready. Run `handoff generate` first."
+            ))
+        }
+        Err(error) => Err(error),
+    }
+}
+
 fn build_start_prompt_context(
     spec_exists: bool,
     design_exists: bool,
-    plan_ready: bool,
 ) -> prompts::StartPromptContext {
-    if plan_ready {
-        return prompts::StartPromptContext {
-            read_files: "- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
-            artifact_status: format!(
-                "- FEATURE.md: present\n- SPEC.md: {}\n- DESIGN.md: {}\n- STATE.md: contains a valid execution plan\n- SESSION.md: present",
-                if spec_exists { "present" } else { "missing" },
-                if design_exists { "present" } else { "missing" }
-            ),
-            planning_mode: "Execution plan already exists. Do not restart planning. Reuse the current plan and begin with the active micro-step.".to_owned(),
-            workflow_instructions: "1. Read SESSION.md, STATE.md, and FEATURE.md first.\n2. If SPEC.md and/or DESIGN.md exist, use them as supporting planning context.\n3. Continue from the existing execution plan in STATE.md.\n4. Do not regenerate the plan unless you are logically blocked by a contradiction in the planning artifacts.\n5. Implement the current step, update STATE.md and SESSION.md after each step transition, and validate via build/tests.".to_owned(),
-        };
-    }
-
-    if spec_exists {
-        return prompts::StartPromptContext {
-            read_files: "- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md\n- .handoff/current/DESIGN.md (if present)\n- .handoff/current/STATE.md\n- .handoff/current/SESSION.md".to_owned(),
-            artifact_status: if design_exists {
-                "- FEATURE.md: present\n- SPEC.md: present\n- DESIGN.md: present\n- STATE.md: no valid execution plan yet\n- SESSION.md: present"
-            } else {
-                "- FEATURE.md: present\n- SPEC.md: present\n- DESIGN.md: missing\n- STATE.md: no valid execution plan yet\n- SESSION.md: present"
-            }
-            .to_owned(),
-            planning_mode: "Spec-first planning mode. Reuse SPEC.md as the behavioral source of truth, create DESIGN.md only if complexity justifies it, then generate STATE.md and begin execution.".to_owned(),
-            workflow_instructions: "1. Read FEATURE.md and SPEC.md.\n2. If DESIGN.md is missing, decide whether the feature is complex enough to require one. Create it only when it improves implementation quality.\n3. Generate or rewrite the execution plan in STATE.md from SPEC.md and optional DESIGN.md.\n4. Keep the plan to practical micro-steps with exactly one [>] if work remains.\n5. After the plan is ready, begin implementing the current step and keep STATE.md and SESSION.md updated.".to_owned(),
-        };
-    }
-
     prompts::StartPromptContext {
-        read_files: "- .handoff/current/FEATURE.md\n- .handoff/current/STATE.md\n- .handoff/current/SESSION.md".to_owned(),
-        artifact_status: "- FEATURE.md: present\n- SPEC.md: missing\n- DESIGN.md: missing\n- STATE.md: no valid execution plan yet\n- SESSION.md: present".to_owned(),
-        planning_mode: "Full orchestration mode. Create the missing planning artifacts in order before implementation: SPEC.md, optional DESIGN.md, then STATE.md.".to_owned(),
-        workflow_instructions: "1. Read FEATURE.md and normalize it into a concise SPEC.md with scope, requirements, edge cases, acceptance criteria, assumptions, and non-goals.\n2. Create DESIGN.md only if the task is complex enough to benefit from explicit technical planning.\n3. Generate the execution plan in STATE.md from SPEC.md and optional DESIGN.md.\n4. Keep the plan to practical micro-steps with exactly one [>] if work remains.\n5. Begin implementing the current step, validating with build/tests, and rewrite SESSION.md after each step transition.".to_owned(),
+        read_files: "- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
+        artifact_status: format!(
+            "- FEATURE.md: present\n- SPEC.md: {}\n- DESIGN.md: {}\n- STATE.md: contains a valid execution plan\n- SESSION.md: present",
+            if spec_exists { "present" } else { "missing" },
+            if design_exists { "present" } else { "missing" }
+        ),
+        planning_mode: "Execution-only mode. The planning artifacts are ready. Do not regenerate the plan unless you are logically blocked by a contradiction in the existing markdown artifacts.".to_owned(),
+        workflow_instructions: "1. Read SESSION.md, STATE.md, and FEATURE.md first.\n2. If SPEC.md and/or DESIGN.md exist, use them as supporting planning context.\n3. Continue from the existing execution plan in STATE.md.\n4. Implement only the current micro-step, then update STATE.md and SESSION.md after the step transition.\n5. Validate with build/tests before proceeding to the next micro-step.".to_owned(),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::build_start_prompt_context;
+    use super::{build_start_prompt_context, ensure_start_ready};
 
     #[test]
-    fn start_prompt_prefers_existing_execution_plan() {
-        let context = build_start_prompt_context(true, true, true);
+    fn start_prompt_uses_execution_only_mode() {
+        let context = build_start_prompt_context(true, true);
 
-        assert!(
-            context
-                .planning_mode
-                .contains("Execution plan already exists")
-        );
+        assert!(context.planning_mode.contains("Execution-only mode"));
         assert!(
             context
                 .workflow_instructions
@@ -95,26 +82,36 @@ mod tests {
     }
 
     #[test]
-    fn start_prompt_uses_spec_first_mode_when_spec_exists_without_plan() {
-        let context = build_start_prompt_context(true, false, false);
+    fn start_prompt_lists_missing_optional_design_artifact() {
+        let context = build_start_prompt_context(true, false);
 
-        assert!(context.planning_mode.contains("Spec-first planning mode"));
-        assert!(
-            context
-                .workflow_instructions
-                .contains("Read FEATURE.md and SPEC.md")
+        assert!(context.artifact_status.contains("SPEC.md: present"));
+        assert!(context.artifact_status.contains("DESIGN.md: missing"));
+    }
+
+    #[test]
+    fn start_requires_generate_when_execution_plan_is_missing() {
+        let error = ensure_start_ready(
+            "# State\n\n# Current Step\nNot started\n\n# Execution Plan\nNot yet generated.\n",
+        )
+        .unwrap_err();
+
+        assert_eq!(
+            error.to_string(),
+            "Execution plan not ready. Run `handoff generate` first."
         );
     }
 
     #[test]
-    fn start_prompt_falls_back_to_full_orchestration_when_spec_is_missing() {
-        let context = build_start_prompt_context(false, false, false);
+    fn start_preserves_deterministic_invalid_plan_errors() {
+        let error = ensure_start_ready(
+            "# State\n\n# Current Step\nImplement\n\n# Execution Plan\n- [>] one\n- [>] two\n",
+        )
+        .unwrap_err();
 
-        assert!(context.planning_mode.contains("Full orchestration mode"));
-        assert!(
-            context
-                .workflow_instructions
-                .contains("normalize it into a concise SPEC.md")
+        assert_eq!(
+            error.to_string(),
+            "Invalid execution plan: multiple current steps ([>]) found."
         );
     }
 }

@@ -222,15 +222,7 @@ fn next_recommendation(summary: &StateSummary, artifacts: &ArtifactStatus) -> &'
     }
 
     if !summary.execution_plan_initialized {
-        if artifacts.spec == "scaffolded" {
-            return "run handoff start --copy";
-        }
-
-        if artifacts.design == "scaffolded" {
-            return "run handoff tasks --copy";
-        }
-
-        return "run handoff start --copy";
+        return "run handoff generate --copy";
     }
 
     if summary.remaining_steps == 0 {
@@ -356,6 +348,30 @@ mod tests {
         assert_eq!(
             next_recommendation(&summary, &artifacts),
             "run handoff continue --copy"
+        );
+    }
+
+    #[test]
+    fn next_recommendation_suggests_generate_when_plan_is_missing() {
+        let summary = StateSummary {
+            current_step: "Not started".to_owned(),
+            completed_steps: 0,
+            current_steps: 0,
+            remaining_steps: 0,
+            known_risks: Vec::new(),
+            execution_plan_initialized: false,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "scaffolded".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "needs review".to_owned(),
+        };
+
+        assert_eq!(
+            next_recommendation(&summary, &artifacts),
+            "run handoff generate --copy"
         );
     }
 }

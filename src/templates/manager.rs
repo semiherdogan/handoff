@@ -7,6 +7,7 @@ pub const DEFAULT_SPEC_TEMPLATE_NAME: &str = "default_spec.md";
 pub const DEFAULT_DESIGN_TEMPLATE_NAME: &str = "default_design.md";
 pub const DEFAULT_STATE_TEMPLATE_NAME: &str = "default_state.md";
 pub const DEFAULT_SESSION_TEMPLATE_NAME: &str = "default_session.md";
+pub const DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME: &str = "default_generate_prompt.md";
 pub const DEFAULT_START_PROMPT_TEMPLATE_NAME: &str = "default_start_prompt.md";
 pub const DEFAULT_SPEC_PROMPT_TEMPLATE_NAME: &str = "default_spec_prompt.md";
 pub const DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME: &str = "default_design_prompt.md";
@@ -18,6 +19,8 @@ const DEFAULT_SPEC_TEMPLATE: &str = include_str!("../../templates/default/defaul
 const DEFAULT_DESIGN_TEMPLATE: &str = include_str!("../../templates/default/default_design.md");
 const DEFAULT_STATE_TEMPLATE: &str = include_str!("../../templates/default/default_state.md");
 const DEFAULT_SESSION_TEMPLATE: &str = include_str!("../../templates/default/default_session.md");
+const DEFAULT_GENERATE_PROMPT_TEMPLATE: &str =
+    include_str!("../../templates/default/default_generate_prompt.md");
 const DEFAULT_START_PROMPT_TEMPLATE: &str =
     include_str!("../../templates/default/default_start_prompt.md");
 const DEFAULT_SPEC_PROMPT_TEMPLATE: &str =
@@ -51,6 +54,10 @@ impl TemplateManager {
             (DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_DESIGN_TEMPLATE),
             (DEFAULT_STATE_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE),
             (DEFAULT_SESSION_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE),
+            (
+                DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME,
+                DEFAULT_GENERATE_PROMPT_TEMPLATE,
+            ),
             (
                 DEFAULT_START_PROMPT_TEMPLATE_NAME,
                 DEFAULT_START_PROMPT_TEMPLATE,
@@ -94,6 +101,7 @@ impl TemplateManager {
             DEFAULT_DESIGN_TEMPLATE_NAME => DEFAULT_DESIGN_TEMPLATE.to_owned(),
             DEFAULT_STATE_TEMPLATE_NAME => DEFAULT_STATE_TEMPLATE.to_owned(),
             DEFAULT_SESSION_TEMPLATE_NAME => DEFAULT_SESSION_TEMPLATE.to_owned(),
+            DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME => DEFAULT_GENERATE_PROMPT_TEMPLATE.to_owned(),
             DEFAULT_START_PROMPT_TEMPLATE_NAME => DEFAULT_START_PROMPT_TEMPLATE.to_owned(),
             DEFAULT_SPEC_PROMPT_TEMPLATE_NAME => DEFAULT_SPEC_PROMPT_TEMPLATE.to_owned(),
             DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME => DEFAULT_DESIGN_PROMPT_TEMPLATE.to_owned(),
@@ -108,8 +116,8 @@ impl TemplateManager {
 mod tests {
     use super::{
         DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_TEMPLATE_NAME,
-        DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_TEMPLATE_NAME,
-        DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+        DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
+        DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
     };
 
     #[test]
@@ -119,6 +127,7 @@ mod tests {
 
         assert!(names.contains(&DEFAULT_SPEC_TEMPLATE_NAME));
         assert!(names.contains(&DEFAULT_DESIGN_TEMPLATE_NAME));
+        assert!(names.contains(&DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME));
         assert!(names.contains(&DEFAULT_SPEC_PROMPT_TEMPLATE_NAME));
         assert!(names.contains(&DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME));
         assert!(names.contains(&DEFAULT_TASKS_PROMPT_TEMPLATE_NAME));
