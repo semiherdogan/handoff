@@ -6,34 +6,38 @@ Local-first prompt generator — no provider API calls, no network required at r
 
 ![Handoff](./cover.jpg)
 
-## The Problem
+## What This Is
 
-AI coding assistants lose context between sessions. Every time you start a new conversation, the assistant has no memory of what was done, what's in progress, or what comes next. You end up re-explaining the feature, repeating constraints, and hoping it picks up where it left off.
+`handoff` gives AI coding sessions a small local workspace so planning and execution can survive across multiple chats.
 
-## What handoff Does
+Instead of starting every session from scratch, you keep a feature folder with a few markdown artifacts:
 
-`handoff` keeps structured state between coding sessions so your AI assistant can continue autonomously without losing track.
+- `FEATURE.md`: what you want
+- `SPEC.md`: normalized requirements
+- `DESIGN.md`: optional technical design
+- `STATE.md`: execution plan and progress
+- `SESSION.md`: continuation-safe session summary
 
-It manages a local `.handoff/` workspace per feature — tracking the goal (`FEATURE.md`), optional planning artifacts (`SPEC.md`, `DESIGN.md`), execution plan and progress (`STATE.md`), and session context (`SESSION.md`). When a session ends, you run `handoff continue` and paste the generated prompt into your next conversation. The assistant picks up exactly where it left off.
+`handoff` then generates prompts like `generate`, `start`, and `continue` so your assistant can plan, execute, and resume without drifting.
 
-**No API keys. No cloud. No vendor lock-in.** It works with any AI coding assistant — Cursor, Windsurf, Copilot, Claude, ChatGPT, or anything that accepts a text prompt.
+**No API keys. No cloud. No vendor lock-in.** It works with any AI coding assistant that accepts a text prompt.
 
-### Use it when you
+## Use It When You
 
 - Work on features that span multiple AI sessions
 - Want deterministic, structured progress tracking across conversations
 - Need to hand off context between different assistants or team members
 - Run autonomous dev loops and need guardrails to prevent drift
 
-## Features
+## How It Works
 
-- `.handoff/` workspace with multi-feature support and active `current` symlink
-- embedded default templates with `.handoff/templates/` override support
-- orchestration-aware `start` prompt generation plus explicit `spec`, `design`, and `tasks` planning prompts
-- `continue` prompt generation with clipboard copy (`--copy`)
-- deterministic state guardrails for safe continuation across sessions
+1. Create a feature workspace with `handoff init`.
+2. Describe the feature in `FEATURE.md`.
+3. Run `handoff generate --copy` and paste the prompt into your AI assistant to build or refresh the planning artifacts.
+4. Run `handoff start --copy` to begin implementation from the ready plan.
+5. Run `handoff continue --copy` in later sessions to resume from the saved state.
 
-<!-- ![Demo](./demo.gif) -->
+That is the whole idea: a small local workspace plus prompt generation for planning, execution, and continuation.
 
 ## Installation
 
@@ -49,158 +53,36 @@ Or use the [latest GitHub Release](https://github.com/semiherdogan/handoff/relea
 ## Quick Start
 
 ```bash
-# 1. Create a feature workspace
 handoff init my-feature
-
-# 2. Optional: set the workspace language in .handoff/config.toml
-#    Default is English. Example:
-#    language = "Turkish"
-
-# 3. Define the feature
-#    Edit .handoff/current/FEATURE.md with goal, requirements, and constraints.
-
-# 4. Generate the planning prompt
+# edit .handoff/current/FEATURE.md
 handoff generate --copy
-#    Paste into your coding assistant to create or refresh
-#    SPEC.md / optional DESIGN.md / STATE.md / SESSION.md only.
-
-# 5. Generate the execution prompt
 handoff start --copy
-#    Paste into your coding assistant to start implementation from the ready plan.
-
-# 6. Optional: inspect planning phases directly
-handoff spec --copy
-handoff design --copy
-handoff tasks --copy
-
-# 7. Continue in subsequent sessions
 handoff continue --copy
-#    Paste into a new conversation to resume from where you left off.
-
-# 8. Check progress
 handoff status
-
-# 9. Archive when done
-handoff archive my-feature
 ```
 
-## Commands
+If you just want the fastest path, that is enough.
 
-| Command | Description |
-|---|---|
-| `init [feature] [--force]` | Create or select a feature workspace |
-| `generate [--copy] [--raw]` | Generate a planning-only prompt that refreshes markdown artifacts without coding |
-| `start [--copy] [--raw]` | Generate an execution prompt only when a valid execution plan already exists |
-| `spec [--copy] [--raw]` | Generate a prompt to create or rewrite `SPEC.md` |
-| `design [--copy] [--raw]` | Generate a prompt to create or rewrite `DESIGN.md` |
-| `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
-| `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
-| `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
-| `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
-| `validate` | Validate the current execution plan and report whether it is ready, complete, or invalid |
-| `switch <feature>` | Switch active feature |
-| `list` | List available features |
-| `clean [--force]` | Remove non-active features (`--force` removes all) |
-| `archive <feature>` | Archive a feature (clears `current` if active) |
-| `export [--force]` | Export default templates to `.handoff/templates/` for customization |
-| `ignore` | Toggle `.handoff/` in `.git/info/exclude` (add if absent, remove if present) |
-| `completion <shell>` | Generate shell completions (`bash`, `zsh`, `fish`, `powershell`, `elvish`) |
-| `upgrade` | Upgrade to the latest GitHub release |
-| `version` | Print CLI version |
+## Learn More
 
-## Workspace Layout
+- [Guide](./docs/guide.md): normal workflows, planning-heavy flow, model usage pattern
+- [Reference](./docs/reference.md): command list, workspace layout, config, status/validate, shell completions
+- [Changelog](./CHANGELOG.md): user-facing changes
 
-```text
-.handoff/
-  config.toml
-  current -> features/<feature-name>
-  features/
-    <feature-name>/
-      FEATURE.md
-      SPEC.md
-      DESIGN.md
-      STATE.md
-      SESSION.md
-```
+## Why It Helps
 
-`config.toml` currently supports:
+AI assistants are good at local execution and bad at long-lived continuity. `handoff` gives them a stable, explicit workspace so:
 
-```toml
-language = "English"
-```
+- planning does not need to be repeated every session
+- execution can continue from a real step list
+- session context is preserved in plain local files
+- you can switch assistants without losing structure
 
-If `language` is missing, `handoff` falls back to English when generating prompts. The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, and `SESSION.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax. Parser-sensitive `STATE.md` structure remains in English.
+## Tip
 
-`handoff status` reports the configured workflow language, whether planning is ready, the current execution-plan validation result, and when possible a concrete "Why blocked" reason so you can tell quickly whether to run `generate`, `continue`, fix `STATE.md`, or archive the feature. Use `handoff validate` when you want an explicit pass/fail check for the current execution plan. It now includes the same compact artifact diagnostics as `status`, exits successfully for ready or already-complete plans, and fails for uninitialized or structurally invalid plans.
+To exclude `.handoff/` from Git without affecting `.gitignore`:
 
-## Planning Workflow
-
-`handoff` now supports two ways to start work:
-
-1. Default path:
-   Run `handoff generate --copy` to refresh planning artifacts, then run `handoff start --copy` to begin implementation.
-2. Advanced path:
-   Run `handoff spec`, `handoff design`, and `handoff tasks` explicitly if you want review checkpoints before coding.
-
-Recommended flow for most users:
-
-```bash
-handoff init my-feature
-# edit .handoff/current/FEATURE.md
-handoff generate --copy
-handoff start --copy
-```
-
-Recommended flow for planning-heavy features:
-
-```bash
-handoff init my-feature
-# edit .handoff/current/FEATURE.md
-handoff spec --copy
-handoff design --copy      # optional
-handoff tasks --copy
-handoff start --copy
-```
-
-## Model Usage Pattern
-
-`handoff` is model-agnostic, but a split-model workflow often works well:
-
-1. Use a stronger reasoning model for planning-oriented commands such as `handoff generate`, `handoff spec`, `handoff design`, and `handoff tasks`.
-2. Use a cheaper or faster coding model for execution-oriented commands such as `handoff start` and `handoff continue`.
-3. Switch back to the stronger planning model if implementation drifts, the plan becomes inconsistent, or you need to regenerate planning artifacts.
-
-Example pattern:
-
-```text
-Strong planning model  -> handoff generate / spec / design / tasks
-Cheaper coding model   -> handoff start / continue
-```
-
-This keeps planning quality high while reducing cost and latency during implementation loops.
-
-> **Tip:** To exclude `.handoff/` from Git without affecting `.gitignore` (so your AI assistant can still see it), use:
 > ```bash
 > handoff ignore
 > ```
-> Run it again to remove the entry. This toggles `.handoff/` in `.git/info/exclude`.
-
-## Shell Completions
-
-```bash
-# Generate and load dynamically (zsh)
-source <(handoff completion zsh)
-
-# Or persist to a completions directory
-handoff completion zsh > ~/.zsh/completions/_handoff
-```
-
-If using an alias (e.g. `ho`), map it with `compdef _handoff ho`.
-
-## Development
-
-```bash
-cargo build          # build
-cargo run -- <cmd>   # run via cargo
-cargo test           # run tests
-```
+Run it again to remove the entry from `.git/info/exclude`.

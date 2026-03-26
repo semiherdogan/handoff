@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added doc comments to all `Command`, `PromptKind`, and `CompletionShell` enum variants in `src/cli.rs` for improved `--help` output.
 - Added help text to CLI arguments (`--copy`, `--raw`, `--force`, `--follow`).
 - Added a README usage pattern describing how to pair a stronger planning model with a cheaper/faster implementation model when using `handoff`.
+- Added `docs/guide.md` and `docs/reference.md` to move detailed workflow and command material out of the main README.
+
+### Changed
+
+- Simplified `README.md` into a shorter onboarding document focused on what `handoff` is, why it exists, and the fastest happy path.
 
 
 ## [v0.6.1] - 2026-03-26

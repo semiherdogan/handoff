@@ -27,6 +27,7 @@ The tool should remain:
 - `src/core/`: workspace, feature file handling, state parsing/guards
 - `src/templates/`: template manager + prompt resolvers
 - `templates/default/`: embedded default markdown templates
+- `docs/`: guide and reference documentation that keep `README.md` focused on onboarding
 - `.github/workflows/release.yml`: tag-triggered release pipeline
 
 ## Workspace Contract
