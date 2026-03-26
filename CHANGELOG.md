@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 
-## [0.6.0] - 2026-03-02
+## [v0.6.0] - 2026-03-02
 
 ### Added
 
@@ -22,13 +22,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Updated the default `FEATURE.md` template to state that `.handoff/current/` is reserved for handoff artifacts and that permanent project documentation belongs in normal repository locations.
 
 
-## [0.5.1] - 2026-03-02
+## [v0.5.1] - 2026-03-02
 
 ### Changed
 
 - Aligned `handoff --version` with `handoff version` so both now report the build-time `HANDOFF_VERSION` value.
 
-## [0.5.0] - 2026-03-02
+## [v0.5.0] - 2026-03-02
 
 ### Added
 
