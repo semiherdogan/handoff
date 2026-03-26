@@ -185,3 +185,5 @@ When updating workflow behavior, also update:
 - `CHANGELOG.md` (record user-facing changes in Keep a Changelog format)
 - default templates in `templates/default/` (if prompt/state contract changes)
 - start/continue/spec/design/tasks prompt contracts to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety where applicable
+
+When a task is completed and it results in a user-facing change, add an entry to `CHANGELOG.md` under the `Unreleased` section before finishing.
