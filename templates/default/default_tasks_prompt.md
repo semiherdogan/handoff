@@ -9,7 +9,7 @@ Goal
 Generate an execution-ready task list in .handoff/current/STATE.md.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 

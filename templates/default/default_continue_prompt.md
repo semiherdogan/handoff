@@ -15,7 +15,7 @@ Goal
 Complete the remaining micro-steps defined in .handoff/current/STATE.md.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 

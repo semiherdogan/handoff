@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Updated `handoff init` to generate a default `config.toml` containing `language = "English"`.
 - Updated the default `start`, `spec`, `design`, `tasks`, and `continue` prompts to instruct assistants to write prose in the configured language while preserving parser-sensitive `STATE.md` structure in English.
 - Updated `handoff start` to require an existing valid execution plan and direct users to `handoff generate` when planning artifacts are not ready.
+- Updated the default `FEATURE.md` template to state that `.handoff/current/` is reserved for handoff artifacts and that permanent project documentation belongs in normal repository locations.
 
 ## [0.5.1] - 2026-03-02
 

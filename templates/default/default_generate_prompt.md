@@ -11,7 +11,7 @@ Goal
 Create or refresh the planning markdown artifacts needed for execution, then stop before any code changes.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 

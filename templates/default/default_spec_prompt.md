@@ -7,7 +7,7 @@ Goal
 Convert the raw feature request into a clear, implementation-ready behavioral spec.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 

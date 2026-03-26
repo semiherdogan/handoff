@@ -11,7 +11,7 @@ Goal
 Execute the current micro-step from the existing `.handoff/current/` plan and move the feature forward without drift.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 

@@ -31,6 +31,9 @@ Explicitly list what is NOT part of this feature.
 - Keep architecture stable unless required.
 - Avoid speculative improvements.
 - Do not introduce premature abstractions.
+- `.handoff/current/` is reserved only for `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, and `SESSION.md`.
+- Do not place extra project documentation, analysis notes, reports, or drafts inside `.handoff/current/`.
+- If permanent project docs are needed, place them in the normal repository location such as `docs/`, the repository root, or the closest relevant module directory.
 
 ## Context
 Describe relevant architecture, modules, constraints, or dependencies.

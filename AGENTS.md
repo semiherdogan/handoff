@@ -55,6 +55,12 @@ Artifact responsibilities:
 - `STATE.md`: execution plan and progress markers
 - `SESSION.md`: continuation-safe session summary
 
+`.handoff/current/` is reserved for handoff workflow artifacts only:
+
+- allowed files: `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, `SESSION.md`
+- do not place extra project documentation, analysis notes, reports, or drafts there
+- if permanent project docs are needed, put them in normal repository locations such as `docs/`, the repository root, or the closest relevant module directory
+
 ## STATE.md Invariants (Important)
 
 Execution plan markers:

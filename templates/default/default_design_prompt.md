@@ -8,7 +8,7 @@ Goal
 Produce the smallest coherent implementation design that satisfies the spec.
 
 --------------------------------------------------
-Language Requirements
+Language and Workspace Requirements
 
 {{language_instruction}}
 
