@@ -16,6 +16,7 @@ fn run() -> Result<()> {
     match cli.command {
         Command::Init { feature, force } => commands::init::run(&paths, feature.as_deref(), force),
         Command::Switch { feature } => commands::switch::run(&paths, &feature),
+        Command::Run { copy, raw } => commands::run::run(&paths, copy, raw),
         Command::Continue { copy, raw } => commands::r#continue::run(&paths, copy, raw),
         Command::Generate { copy, raw } => commands::generate::run(&paths, copy, raw),
         Command::Start { copy, raw } => commands::start::run(&paths, copy, raw),
@@ -24,6 +25,7 @@ fn run() -> Result<()> {
         Command::Tasks { copy, raw } => commands::tasks::run(&paths, copy, raw),
         Command::Prompt { target, copy, raw } => commands::prompt::run(&paths, target, copy, raw),
         Command::Status { follow } => commands::status::run(&paths, follow),
+        Command::Next => commands::next::run(&paths),
         Command::Validate => commands::validate::run(&paths),
         Command::Version => commands::version::run(),
         Command::List => commands::list::run(&paths),

@@ -9,8 +9,8 @@ Use this path for most features:
 ```bash
 handoff init my-feature
 # edit .handoff/current/FEATURE.md
-handoff generate --copy
-handoff start --copy
+handoff run --copy
+handoff next
 ```
 
 What each step does:
@@ -19,12 +19,12 @@ What each step does:
    Creates or selects a feature workspace under `.handoff/features/<feature-name>/`.
 2. Edit `FEATURE.md`
    Describe the goal, constraints, deliverables, and acceptance criteria.
-3. `handoff generate --copy`
-   Produces a planning-only prompt for your AI assistant to update `SPEC.md`, optional `DESIGN.md`, `STATE.md`, and `SESSION.md`.
-4. `handoff start --copy`
-   Produces an execution prompt that starts from the existing plan.
+3. `handoff run --copy`
+   Loads the active feature state and emits the right next prompt. It chooses planning when `STATE.md` is not ready and execution when the saved plan is ready.
+4. `handoff next`
+   Shows the next task or blocking action without generating a prompt.
 5. `handoff continue --copy`
-   Resumes later sessions from the current plan and session context.
+   Remains available when you want the continuation prompt directly instead of letting `handoff run` decide.
 
 ## Planning-Heavy Workflow
 

@@ -30,6 +30,13 @@ pub enum Command {
         /// Feature name to switch to
         feature: String,
     },
+    /// Load the active state and emit the next prompt to run
+    Run {
+        #[arg(long, help = "Copy prompt to clipboard")]
+        copy: bool,
+        #[arg(long, help = "Output raw prompt without formatting")]
+        raw: bool,
+    },
     /// Generate a continuation prompt (requires valid execution plan)
     Continue {
         #[arg(long, help = "Copy prompt to clipboard")]
@@ -86,6 +93,8 @@ pub enum Command {
         #[arg(long, help = "Continuously monitor status")]
         follow: bool,
     },
+    /// Show the next task or blocking action for the active feature
+    Next,
     /// Validate the current execution plan
     Validate,
     /// Print the CLI build version

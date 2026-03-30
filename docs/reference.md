@@ -5,6 +5,7 @@
 | Command | Description |
 |---|---|
 | `init [feature] [--force]` | Create or select a feature workspace |
+| `run [--copy] [--raw]` | Load the active state and emit the next prompt automatically (`generate`, `start`, or `continue`) |
 | `generate [--copy] [--raw]` | Generate a planning-only prompt that refreshes markdown artifacts without coding |
 | `start [--copy] [--raw]` | Generate an execution prompt only when a valid execution plan already exists |
 | `spec [--copy] [--raw]` | Generate a prompt to create or rewrite `SPEC.md` |
@@ -13,6 +14,7 @@
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
 | `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
+| `next` | Show the next task or blocking action for the active feature |
 | `validate` | Validate the current execution plan and report whether it is ready, complete, or invalid |
 | `switch <feature>` | Switch active feature |
 | `list` | List available features |

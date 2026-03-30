@@ -93,6 +93,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 
 - `handoff init [feature] [--force]`
 - `handoff switch <feature>`
+- `handoff run [--copy] [--raw]`
 - `handoff generate [--copy] [--raw]`
 - `handoff start [--copy] [--raw]`
 - `handoff spec [--copy] [--raw]`
@@ -101,6 +102,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff continue [--copy] [--raw]`
 - `handoff prompt [generate|start|spec|design|tasks|continue] [--copy] [--raw]`
 - `handoff status`
+- `handoff next`
 - `handoff validate`
 - `handoff version`
 - `handoff list`
@@ -115,6 +117,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 
 - `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
 - `generate`: generate a planning-only prompt that updates `SPEC.md`, optional `DESIGN.md`, `STATE.md`, and `SESSION.md` without implementing code
+- `run`: inspect the active workspace state and emit the next prompt automatically (`generate`, `start`, or `continue`)
 - `start`: generate an execution-only prompt; require an existing valid execution plan before implementation begins
 - `spec`: generate a prompt that turns `FEATURE.md` into `SPEC.md`
 - `design`: generate a prompt that turns `FEATURE.md` + `SPEC.md` into `DESIGN.md`
@@ -122,6 +125,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
 - `status`: summarize active feature state, configured workflow language, execution-plan validation, blocking reason, and artifact readiness in a compact view
+- `next`: show the next task or blocking action without generating a prompt
 - `validate`: explicitly validate the current execution plan and fail when it is missing or structurally invalid while still printing compact diagnostics
 - `version`: print the CLI build version; `handoff --version` must match `handoff version`
 - `switch` / `list`: move between feature workspaces

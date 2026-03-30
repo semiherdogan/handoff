@@ -38,7 +38,7 @@ fn init_summary(paths: &AiPaths, feature_name: &str, set_as_current: bool) -> St
 
     if set_as_current {
         return format!(
-            "Initialized feature: {feature_name}\n\nNext:\n1. Edit: {}\n2. Then run: handoff generate --copy\n3. After planning artifacts are ready, run: handoff start --copy\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)",
+            "Initialized feature: {feature_name}\n\nNext:\n1. Edit: {}\n2. Then run: handoff run --copy\n3. Use handoff next to inspect the current task without generating a prompt\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)",
             feature_file, spec_file, design_file, state_file, session_file,
         );
     }
@@ -80,8 +80,8 @@ mod tests {
 
         assert!(summary.contains("Initialized feature: my-feature"));
         assert!(summary.contains(".handoff/current/FEATURE.md"));
-        assert!(summary.contains("Then run: handoff generate --copy"));
-        assert!(summary.contains("run: handoff start --copy"));
+        assert!(summary.contains("Then run: handoff run --copy"));
+        assert!(summary.contains("Use handoff next"));
         assert!(summary.contains("AI-managed"));
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");

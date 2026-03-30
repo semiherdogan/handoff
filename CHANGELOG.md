@@ -6,8 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `handoff run` to load the active feature state and emit the next prompt automatically, choosing between planning and execution flows from the saved workspace.
+- Added `handoff next` to show the next task or blocking action without generating a prompt.
+
 ### Changed
 
+- Updated `handoff init`, `README.md`, and the guides to use `handoff run` / `handoff next` as the default continuity-first workflow.
 - Updated the release workflow to current action versions, including Node 24-compatible `actions/checkout`, `actions/upload-artifact`, and `actions/download-artifact`.
 
 

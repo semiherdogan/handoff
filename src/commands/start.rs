@@ -49,7 +49,7 @@ fn ensure_start_ready(state_content: &str) -> Result<()> {
     }
 }
 
-fn build_start_prompt_context(
+pub(crate) fn build_start_prompt_context(
     spec_exists: bool,
     design_exists: bool,
 ) -> prompts::StartPromptContext {
