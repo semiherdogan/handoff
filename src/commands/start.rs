@@ -3,6 +3,7 @@ use crate::core::config;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
 use crate::core::state;
+use crate::core::state::ExecutionPlanValidation;
 use crate::core::workspace;
 use crate::templates::manager::TemplateManager;
 use crate::templates::prompts;
@@ -49,17 +50,12 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
 }
 
 fn ensure_start_ready(state_content: &str) -> Result<()> {
-    match state::ensure_execution_plan_initialized(state_content) {
-        Ok(()) => Ok(()),
-        Err(error)
-            if error.to_string()
-                == "Execution plan not initialized. Run `handoff start` first." =>
-        {
-            Err(anyhow!(
-                "Execution plan not ready. Run `handoff generate` first."
-            ))
-        }
-        Err(error) => Err(error),
+    match state::validate_execution_plan(state_content) {
+        ExecutionPlanValidation::Ready => Ok(()),
+        ExecutionPlanValidation::NotInitialized => Err(anyhow!(
+            "Execution plan not ready. Run `handoff generate` first."
+        )),
+        validation => Err(anyhow!(validation.guard_message())),
     }
 }
 

@@ -8,10 +8,6 @@ use anyhow::{Context, Result};
 use std::fs;
 use std::path::Path;
 
-const FEATURE_PLACEHOLDER: &str = "Describe the concrete objective of this feature.";
-const GENERATED_PLACEHOLDER: &str = "Not yet generated.";
-const SESSION_PLACEHOLDER: &str = "None yet.";
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArtifactStatus {
     pub feature: String,
@@ -104,68 +100,12 @@ fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<Artifact
     let state_validation = state::validate_execution_plan(state_content);
 
     Ok(ArtifactStatus {
-        feature: classify_feature_or_session_artifact(
-            &fs::read_to_string(feature_dir.join(feature::FEATURE_FILE)).with_context(|| {
-                format!(
-                    "Failed to read file: {}",
-                    feature_dir.join(feature::FEATURE_FILE).display()
-                )
-            })?,
-            FEATURE_PLACEHOLDER,
-        ),
-        spec: classify_generated_artifact(feature_dir, feature::SPEC_FILE, GENERATED_PLACEHOLDER)?,
-        design: classify_generated_artifact(
-            feature_dir,
-            feature::DESIGN_FILE,
-            GENERATED_PLACEHOLDER,
-        )?,
-        state: classify_state_artifact(state_validation).to_owned(),
-        session: classify_feature_or_session_artifact(
-            &fs::read_to_string(feature_dir.join(feature::SESSION_FILE)).with_context(|| {
-                format!(
-                    "Failed to read file: {}",
-                    feature_dir.join(feature::SESSION_FILE).display()
-                )
-            })?,
-            SESSION_PLACEHOLDER,
-        ),
+        feature: feature::classify_feature_artifact(feature_dir)?,
+        spec: feature::classify_spec_artifact(feature_dir)?,
+        design: feature::classify_design_artifact(feature_dir)?,
+        state: state_validation.artifact_status_label().to_owned(),
+        session: feature::classify_session_artifact(feature_dir)?,
     })
-}
-
-fn classify_state_artifact(validation: ExecutionPlanValidation) -> &'static str {
-    match validation {
-        ExecutionPlanValidation::Ready => "planned",
-        ExecutionPlanValidation::NoRemainingSteps => "complete",
-        ExecutionPlanValidation::NotInitialized => "scaffolded",
-        ExecutionPlanValidation::MultipleCurrentSteps => "invalid",
-    }
-}
-
-fn classify_generated_artifact(
-    feature_dir: &Path,
-    file_name: &str,
-    placeholder: &str,
-) -> Result<String> {
-    let content = fs::read_to_string(feature_dir.join(file_name)).with_context(|| {
-        format!(
-            "Failed to read file: {}",
-            feature_dir.join(file_name).display()
-        )
-    })?;
-
-    Ok(if content.contains(placeholder) {
-        "scaffolded".to_owned()
-    } else {
-        "ready".to_owned()
-    })
-}
-
-fn classify_feature_or_session_artifact(content: &str, placeholder: &str) -> String {
-    if content.contains(placeholder) {
-        "needs review".to_owned()
-    } else {
-        "ready".to_owned()
-    }
 }
 
 #[cfg(test)]

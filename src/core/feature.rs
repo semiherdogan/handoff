@@ -11,6 +11,9 @@ pub const SPEC_FILE: &str = "SPEC.md";
 pub const DESIGN_FILE: &str = "DESIGN.md";
 pub const STATE_FILE: &str = "STATE.md";
 pub const SESSION_FILE: &str = "SESSION.md";
+pub const FEATURE_OBJECTIVE_PLACEHOLDER: &str = "Describe the concrete objective of this feature.";
+pub const GENERATED_ARTIFACT_PLACEHOLDER: &str = "Not yet generated.";
+pub const SESSION_SUMMARY_PLACEHOLDER: &str = "None yet.";
 
 #[derive(Debug, Clone)]
 pub struct FeatureTemplateSeed {
@@ -75,6 +78,22 @@ pub fn validate_file(feature_dir: &Path, file_name: &str) -> Result<()> {
     validate_file_exists(&feature_dir.join(file_name), file_name)
 }
 
+pub fn classify_feature_artifact(feature_dir: &Path) -> Result<String> {
+    classify_review_artifact(feature_dir, FEATURE_FILE, FEATURE_OBJECTIVE_PLACEHOLDER)
+}
+
+pub fn classify_spec_artifact(feature_dir: &Path) -> Result<String> {
+    classify_generated_artifact(feature_dir, SPEC_FILE)
+}
+
+pub fn classify_design_artifact(feature_dir: &Path) -> Result<String> {
+    classify_generated_artifact(feature_dir, DESIGN_FILE)
+}
+
+pub fn classify_session_artifact(feature_dir: &Path) -> Result<String> {
+    classify_review_artifact(feature_dir, SESSION_FILE, SESSION_SUMMARY_PLACEHOLDER)
+}
+
 fn write_if_missing(path: &Path, content: &str) -> Result<()> {
     if !path.exists() {
         fs::write(path, content)
@@ -90,11 +109,46 @@ fn validate_file_exists(path: &Path, display_name: &str) -> Result<()> {
     Ok(())
 }
 
+fn classify_generated_artifact(feature_dir: &Path, file_name: &str) -> Result<String> {
+    let content = fs::read_to_string(feature_dir.join(file_name)).with_context(|| {
+        format!(
+            "Failed to read file: {}",
+            feature_dir.join(file_name).display()
+        )
+    })?;
+
+    Ok(if content.contains(GENERATED_ARTIFACT_PLACEHOLDER) {
+        "scaffolded".to_owned()
+    } else {
+        "ready".to_owned()
+    })
+}
+
+fn classify_review_artifact(
+    feature_dir: &Path,
+    file_name: &str,
+    placeholder: &str,
+) -> Result<String> {
+    let content = fs::read_to_string(feature_dir.join(file_name)).with_context(|| {
+        format!(
+            "Failed to read file: {}",
+            feature_dir.join(file_name).display()
+        )
+    })?;
+
+    Ok(if content.contains(placeholder) {
+        "needs review".to_owned()
+    } else {
+        "ready".to_owned()
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
         DESIGN_FILE, FEATURE_FILE, FeatureTemplateSeed, SESSION_FILE, SPEC_FILE, STATE_FILE,
-        ensure_feature_files,
+        classify_design_artifact, classify_feature_artifact, classify_session_artifact,
+        classify_spec_artifact, ensure_feature_files,
     };
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
@@ -137,6 +191,74 @@ mod tests {
         assert!(feature_content.contains("Detected repository context sources:"));
         assert!(feature_content.contains("- README.md"));
         assert!(feature_content.contains("- AGENTS.md missing"));
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn artifact_classifiers_use_shared_placeholder_contract() {
+        let base = make_temp_base("feature-classify");
+        let paths = AiPaths::discover(&base);
+        let template_manager = TemplateManager::new(&paths);
+        let feature_dir = paths.feature_dir("classify");
+
+        ensure_feature_files(
+            &feature_dir,
+            "classify",
+            &template_manager,
+            &FeatureTemplateSeed {
+                context_sources: "- README.md".to_owned(),
+                context_gaps: "- None.".to_owned(),
+            },
+        )
+        .expect("should create feature files");
+
+        assert_eq!(
+            classify_feature_artifact(&feature_dir).expect("should classify feature"),
+            "needs review"
+        );
+        assert_eq!(
+            classify_spec_artifact(&feature_dir).expect("should classify spec"),
+            "scaffolded"
+        );
+        assert_eq!(
+            classify_design_artifact(&feature_dir).expect("should classify design"),
+            "scaffolded"
+        );
+        assert_eq!(
+            classify_session_artifact(&feature_dir).expect("should classify session"),
+            "needs review"
+        );
+
+        fs::write(feature_dir.join(SPEC_FILE), "Ready spec.\n").expect("should rewrite spec");
+        fs::write(feature_dir.join(DESIGN_FILE), "Ready design.\n").expect("should rewrite design");
+        fs::write(
+            feature_dir.join(FEATURE_FILE),
+            "# Feature\n\nReal objective.\n",
+        )
+        .expect("should rewrite feature");
+        fs::write(
+            feature_dir.join(SESSION_FILE),
+            "# Session Summary\n\nImplemented.\n",
+        )
+        .expect("should rewrite session");
+
+        assert_eq!(
+            classify_feature_artifact(&feature_dir).expect("should classify feature"),
+            "ready"
+        );
+        assert_eq!(
+            classify_spec_artifact(&feature_dir).expect("should classify spec"),
+            "ready"
+        );
+        assert_eq!(
+            classify_design_artifact(&feature_dir).expect("should classify design"),
+            "ready"
+        );
+        assert_eq!(
+            classify_session_artifact(&feature_dir).expect("should classify session"),
+            "ready"
+        );
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }

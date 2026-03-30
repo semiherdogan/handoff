@@ -40,6 +40,15 @@ impl ExecutionPlanValidation {
         }
     }
 
+    pub fn artifact_status_label(&self) -> &'static str {
+        match self {
+            Self::Ready => "planned",
+            Self::NoRemainingSteps => "complete",
+            Self::NotInitialized => "scaffolded",
+            Self::MultipleCurrentSteps => "invalid",
+        }
+    }
+
     pub fn guard_message(&self) -> &'static str {
         match self {
             Self::Ready => "Execution plan is valid.",
@@ -254,6 +263,26 @@ mod tests {
         assert_eq!(
             validate_execution_plan(&content),
             ExecutionPlanValidation::Ready
+        );
+    }
+
+    #[test]
+    fn validation_exposes_artifact_status_labels() {
+        assert_eq!(
+            ExecutionPlanValidation::Ready.artifact_status_label(),
+            "planned"
+        );
+        assert_eq!(
+            ExecutionPlanValidation::NotInitialized.artifact_status_label(),
+            "scaffolded"
+        );
+        assert_eq!(
+            ExecutionPlanValidation::MultipleCurrentSteps.artifact_status_label(),
+            "invalid"
+        );
+        assert_eq!(
+            ExecutionPlanValidation::NoRemainingSteps.artifact_status_label(),
+            "complete"
         );
     }
 
