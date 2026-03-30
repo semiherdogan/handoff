@@ -7,13 +7,33 @@ use anyhow::Result;
 pub fn run(paths: &AiPaths) -> Result<()> {
     let snapshot = workflow::load_snapshot(paths)?;
 
-    println!("Active feature: {}", snapshot.feature_name);
-    println!("Current step: {}", snapshot.summary.current_step);
-    println!("Next task: {}", next_task_label(&snapshot));
+    println!("State memory");
     println!(
-        "Suggested command: {}",
+        "- Loaded active feature '{}' with workflow language '{}'.",
+        snapshot.feature_name, snapshot.language
+    );
+    println!(
+        "- Execution plan: {} ({})",
+        snapshot.validation.status_label(),
+        snapshot.validation.summary_message()
+    );
+    println!(
+        "- Progress snapshot: {} completed, {} remaining.",
+        snapshot.summary.completed_steps, snapshot.summary.remaining_steps
+    );
+    println!("Next task");
+    println!("- {}", next_task_label(&snapshot));
+    if let Some(reason) = workflow::blocked_reason(snapshot.validation, &snapshot.artifacts) {
+        println!("Why blocked");
+        println!("- {reason}");
+    }
+    println!("Next command");
+    println!(
+        "- {}",
         workflow::next_recommendation(&snapshot.summary, &snapshot.artifacts)
     );
+    println!("Run mode");
+    println!("- {}", run_mode_label(&snapshot));
 
     Ok(())
 }
@@ -41,9 +61,29 @@ fn next_task_label(snapshot: &WorkflowSnapshot) -> String {
     }
 }
 
+fn run_mode_label(snapshot: &WorkflowSnapshot) -> &'static str {
+    if snapshot.artifacts.feature == "needs review" {
+        return "No prompt yet. Review FEATURE.md first.";
+    }
+
+    match snapshot.validation {
+        ExecutionPlanValidation::NotInitialized => "handoff run will emit a planning prompt.",
+        ExecutionPlanValidation::Ready if snapshot.summary.completed_steps == 0 => {
+            "handoff run will emit a start prompt."
+        }
+        ExecutionPlanValidation::Ready => "handoff run will emit a continuation prompt.",
+        ExecutionPlanValidation::MultipleCurrentSteps => {
+            "No prompt yet. Fix STATE.md so only one [>] step exists."
+        }
+        ExecutionPlanValidation::NoRemainingSteps => {
+            "No prompt needed. The execution plan is already complete."
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::next_task_label;
+    use super::{next_task_label, run_mode_label};
     use crate::core::state::{ExecutionPlanValidation, StateSummary};
     use crate::core::workflow::{ArtifactStatus, WorkflowSnapshot};
 
@@ -84,6 +124,17 @@ mod tests {
         assert_eq!(
             next_task_label(&snapshot(ExecutionPlanValidation::NotInitialized)),
             "Generate the planning artifacts from the reviewed feature brief."
+        );
+    }
+
+    #[test]
+    fn run_mode_reports_continuation_for_in_progress_feature() {
+        let mut snapshot = snapshot(ExecutionPlanValidation::Ready);
+        snapshot.summary.completed_steps = 2;
+
+        assert_eq!(
+            run_mode_label(&snapshot),
+            "handoff run will emit a continuation prompt."
         );
     }
 }

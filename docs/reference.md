@@ -63,9 +63,17 @@ Parser-sensitive `STATE.md` structure remains in English.
 - configured workflow language
 - planning status
 - execution-plan validation
+- continuity signal
 - a blocking reason when applicable
 - progress summary
-- next recommended action
+- next recommended action and focus
+
+`handoff next` reports:
+
+- the loaded state snapshot
+- the next task or blocking action
+- the next recommended command
+- the prompt mode that `handoff run` will emit
 
 `handoff validate` gives a more explicit execution-plan check and exits with failure for uninitialized or structurally invalid plans.
 

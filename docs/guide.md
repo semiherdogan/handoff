@@ -41,7 +41,8 @@ handoff start --copy
 
 ## Status and Validation
 
-- `handoff status` gives a compact overview of the active feature, workflow language, planning state, execution-plan validation, and next action.
+- `handoff status` makes the saved state visible: active feature, plan validity, continuity signal, current progress, artifact readiness, and the next command/focus.
+- `handoff next` is the faster version when you only care about the immediate next task, block, and the prompt mode `handoff run` will choose.
 - `handoff validate` performs an explicit pass/fail check for the current execution plan.
 
 Use `handoff validate` when you want a hard answer to one question: "Is this feature ready to execute from `STATE.md`?"

@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Repositioned the README around AI continuity and project memory instead of generic prompt generation.
 - Updated prompt-producing commands to print a consistent `What happened` / `What changed` / `Next` summary before the generated prompt.
+- Updated `handoff status` and `handoff next` to surface stronger continuity signals, progress visibility, blocking reasons, and the prompt mode `handoff run` will choose.
 - Updated `handoff init`, `README.md`, and the guides to use `handoff run` / `handoff next` as the default continuity-first workflow.
 - Updated the release workflow to current action versions, including Node 24-compatible `actions/checkout`, `actions/upload-artifact`, and `actions/download-artifact`.
 

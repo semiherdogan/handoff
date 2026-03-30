@@ -122,9 +122,9 @@ fn print_standard_status(
     validation: ExecutionPlanValidation,
     artifacts: &ArtifactStatus,
 ) {
-    println!("Active feature: {feature_name}");
-    println!("Workflow:");
-    println!("- Language: {language}");
+    println!("State memory");
+    println!("- Active feature: {feature_name}");
+    println!("- Workflow language: {language}");
     println!(
         "- Planning status: {}",
         planning_status(summary, validation, artifacts)
@@ -137,12 +137,16 @@ fn print_standard_status(
     if let Some(reason) = workflow::blocked_reason(validation, artifacts) {
         println!("Why blocked: {reason}");
     }
-    println!("Progress:");
+    println!("Progress");
     println!("- Current Step: {}", summary.current_step);
     println!("- Remaining steps: {}", summary.remaining_steps);
     println!("- Completed steps: {}", summary.completed_steps);
+    println!(
+        "- State continuity: {}",
+        continuity_signal(summary, validation, artifacts)
+    );
     if !artifacts.all_healthy() {
-        println!("Artifacts:");
+        println!("Artifacts");
         println!("- FEATURE.md: {}", artifacts.feature);
         println!("- SPEC.md: {}", artifacts.spec);
         println!("- DESIGN.md: {}", artifacts.design);
@@ -153,15 +157,18 @@ fn print_standard_status(
     if summary.known_risks.is_empty() {
         println!("Known risks: None");
     } else {
-        println!("Known risks:");
+        println!("Known risks");
         for risk in &summary.known_risks {
             println!("- {risk}");
         }
     }
 
-    println!();
-    println!("Next:");
-    println!("- {}", workflow::next_recommendation(summary, artifacts));
+    println!("Next");
+    println!(
+        "- Command: {}",
+        workflow::next_recommendation(summary, artifacts)
+    );
+    println!("- Focus: {}", next_focus(summary, validation, artifacts));
 }
 
 fn planning_status(
@@ -184,6 +191,57 @@ fn planning_status(
     }
 }
 
+fn continuity_signal(
+    summary: &StateSummary,
+    validation: ExecutionPlanValidation,
+    artifacts: &ArtifactStatus,
+) -> &'static str {
+    if artifacts.feature == "needs review" {
+        return "feature brief still needs review before the workflow can carry context forward";
+    }
+
+    match validation {
+        ExecutionPlanValidation::NotInitialized => {
+            "workspace scaffold exists, but planning state has not been generated yet"
+        }
+        ExecutionPlanValidation::Ready if summary.completed_steps == 0 => {
+            "planning is ready and execution can start from the saved state"
+        }
+        ExecutionPlanValidation::Ready => {
+            "execution can continue from the saved plan and session context"
+        }
+        ExecutionPlanValidation::MultipleCurrentSteps => {
+            "continuity is blocked until STATE.md has exactly one [>] step"
+        }
+        ExecutionPlanValidation::NoRemainingSteps => {
+            "execution history is preserved and the feature is ready to close out"
+        }
+    }
+}
+
+fn next_focus(
+    summary: &StateSummary,
+    validation: ExecutionPlanValidation,
+    artifacts: &ArtifactStatus,
+) -> String {
+    if artifacts.feature == "needs review" {
+        return "Replace the placeholder brief in .handoff/current/FEATURE.md.".to_owned();
+    }
+
+    match validation {
+        ExecutionPlanValidation::NotInitialized => {
+            "Generate SPEC.md, optional DESIGN.md, STATE.md, and SESSION.md.".to_owned()
+        }
+        ExecutionPlanValidation::Ready => summary.current_step.clone(),
+        ExecutionPlanValidation::MultipleCurrentSteps => {
+            "Repair STATE.md so only one step is marked as [>].".to_owned()
+        }
+        ExecutionPlanValidation::NoRemainingSteps => {
+            "Archive the feature or initialize the next one.".to_owned()
+        }
+    }
+}
+
 fn spinner_frame(index: usize) -> &'static str {
     // Root cause: the previous pseudo-progress frames looked like partial completion,
     // which made follow mode feel noisy instead of indicating simple liveness.
@@ -198,8 +256,8 @@ fn spinner_frame(index: usize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::{
-        follow_spinner_tick_interval, follow_status_refresh_interval, format_follow_line,
-        planning_status, spinner_frame,
+        continuity_signal, follow_spinner_tick_interval, follow_status_refresh_interval,
+        format_follow_line, next_focus, planning_status, spinner_frame,
     };
     use crate::core::state::{ExecutionPlanValidation, StateSummary};
     use crate::core::workflow::{ArtifactStatus, blocked_reason, next_recommendation};
@@ -374,6 +432,58 @@ mod tests {
         assert_eq!(
             blocked_reason(ExecutionPlanValidation::Ready, &artifacts),
             None
+        );
+    }
+
+    #[test]
+    fn continuity_signal_reports_resume_ready_state() {
+        let summary = StateSummary {
+            current_step: "Implement".to_owned(),
+            completed_steps: 2,
+            current_steps: 1,
+            remaining_steps: 1,
+            known_risks: Vec::new(),
+            execution_plan_initialized: true,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "ready".to_owned(),
+            spec: "ready".to_owned(),
+            design: "ready".to_owned(),
+            state: "planned".to_owned(),
+            session: "ready".to_owned(),
+        };
+
+        assert_eq!(
+            continuity_signal(&summary, ExecutionPlanValidation::Ready, &artifacts),
+            "execution can continue from the saved plan and session context"
+        );
+    }
+
+    #[test]
+    fn next_focus_prefers_feature_review_when_brief_is_placeholder() {
+        let summary = StateSummary {
+            current_step: "Not started".to_owned(),
+            completed_steps: 0,
+            current_steps: 0,
+            remaining_steps: 0,
+            known_risks: Vec::new(),
+            execution_plan_initialized: false,
+        };
+        let artifacts = ArtifactStatus {
+            feature: "needs review".to_owned(),
+            spec: "scaffolded".to_owned(),
+            design: "scaffolded".to_owned(),
+            state: "scaffolded".to_owned(),
+            session: "needs review".to_owned(),
+        };
+
+        assert_eq!(
+            next_focus(
+                &summary,
+                ExecutionPlanValidation::NotInitialized,
+                &artifacts
+            ),
+            "Replace the placeholder brief in .handoff/current/FEATURE.md."
         );
     }
 
