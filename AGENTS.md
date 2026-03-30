@@ -100,7 +100,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff design [--copy] [--raw]`
 - `handoff tasks [--copy] [--raw]`
 - `handoff continue [--copy] [--raw]`
-- `handoff prompt [generate|start|spec|design|tasks|continue] [--copy] [--raw]`
+- `handoff prompt [generate|start|spec|design|tasks|continue|context] [--copy] [--raw]`
 - `handoff status`
 - `handoff next`
 - `handoff validate`
@@ -116,6 +116,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 ## Command Intent (When to Use What)
 
 - `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
+- `init`: create/select feature workspace, scan repository context readiness, and point users to `handoff prompt context` when high-value context is missing
 - `generate`: generate a planning-only prompt that updates `SPEC.md`, optional `DESIGN.md`, `STATE.md`, and `SESSION.md` without implementing code
 - `run`: inspect the active workspace state and emit the next prompt automatically (`generate`, `start`, or `continue`)
 - `start`: generate an execution-only prompt; require an existing valid execution plan before implementation begins
@@ -124,6 +125,7 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `tasks`: generate a prompt that turns `SPEC.md` (+ optional `DESIGN.md`) into the `STATE.md` execution plan
 - `continue`: generate continuation prompt with STATE guard checks
 - `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
+- `prompt context`: generate a repo-context improvement prompt that helps create or improve files such as `README.md` or `AGENTS.md` without implementing code
 - `status`: summarize active feature state, configured workflow language, execution-plan validation, blocking reason, and artifact readiness in a compact view
 - `next`: show the next task or blocking action without generating a prompt
 - `validate`: explicitly validate the current execution plan and fail when it is missing or structurally invalid while still printing compact diagnostics

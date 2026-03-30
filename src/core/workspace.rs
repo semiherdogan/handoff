@@ -1,5 +1,6 @@
 use crate::core::config::DEFAULT_CONFIG_CONTENT;
 use crate::core::feature;
+use crate::core::feature::FeatureTemplateSeed;
 use crate::core::paths::AiPaths;
 use crate::templates::manager::TemplateManager;
 use anyhow::{Context, Result, anyhow};
@@ -70,6 +71,7 @@ pub fn init_feature_with_switch_option(
     feature_name: &str,
     force: bool,
     set_as_current: bool,
+    template_seed: &FeatureTemplateSeed,
 ) -> Result<()> {
     ensure_workspace(paths)?;
 
@@ -87,7 +89,7 @@ pub fn init_feature_with_switch_option(
 
     let feature_dir = paths.feature_dir(feature_name);
     let template_manager = TemplateManager::new(paths);
-    feature::ensure_feature_files(&feature_dir, feature_name, &template_manager)?;
+    feature::ensure_feature_files(&feature_dir, feature_name, &template_manager, template_seed)?;
 
     if set_as_current {
         set_current_feature(paths, feature_name)?;
@@ -264,7 +266,15 @@ pub fn archive_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::feature::FeatureTemplateSeed;
     use crate::core::test_utils::make_temp_base;
+
+    fn seed() -> FeatureTemplateSeed {
+        FeatureTemplateSeed {
+            context_sources: "- README.md".to_owned(),
+            context_gaps: "- None.".to_owned(),
+        }
+    }
 
     #[test]
     fn validate_feature_name_slug_accepts_valid_slug() {
@@ -281,9 +291,9 @@ mod tests {
         let base = make_temp_base("init-feature-current-exists");
         let paths = AiPaths::discover(&base);
 
-        init_feature_with_switch_option(&paths, "first-feature", false, true)
+        init_feature_with_switch_option(&paths, "first-feature", false, true, &seed())
             .expect("failed to init first feature");
-        init_feature_with_switch_option(&paths, "second-feature", false, true)
+        init_feature_with_switch_option(&paths, "second-feature", false, true, &seed())
             .expect("failed to init second feature");
 
         assert!(paths.feature_dir("second-feature").is_dir());
@@ -302,11 +312,11 @@ mod tests {
         let base = make_temp_base("clean-features");
         let paths = AiPaths::discover(&base);
 
-        init_feature_with_switch_option(&paths, "active-feature", false, true)
+        init_feature_with_switch_option(&paths, "active-feature", false, true, &seed())
             .expect("failed to init active feature");
-        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+        init_feature_with_switch_option(&paths, "stale-feature", false, false, &seed())
             .expect("failed to init stale feature");
-        init_feature_with_switch_option(&paths, "old-feature", false, false)
+        init_feature_with_switch_option(&paths, "old-feature", false, false, &seed())
             .expect("failed to init old feature");
 
         let removed = clean_features(&paths, false).expect("failed to clean features");
@@ -324,9 +334,9 @@ mod tests {
         let base = make_temp_base("clean-features-force");
         let paths = AiPaths::discover(&base);
 
-        init_feature_with_switch_option(&paths, "active-feature", false, true)
+        init_feature_with_switch_option(&paths, "active-feature", false, true, &seed())
             .expect("failed to init active feature");
-        init_feature_with_switch_option(&paths, "stale-feature", false, false)
+        init_feature_with_switch_option(&paths, "stale-feature", false, false, &seed())
             .expect("failed to init stale feature");
 
         let removed = clean_features(&paths, true).expect("failed to clean features with force");

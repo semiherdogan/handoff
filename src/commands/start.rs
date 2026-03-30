@@ -28,7 +28,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
         &template_manager,
         &context,
         &prompts::PromptOptions {
-            language_instruction: config.language_instruction(),
+            language_instruction: config.workflow_language_instruction(),
         },
     );
 
@@ -68,7 +68,7 @@ pub(crate) fn build_start_prompt_context(
     design_exists: bool,
 ) -> prompts::StartPromptContext {
     prompts::StartPromptContext {
-        read_files: "- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
+        read_files: "- AGENTS.md (if present)\n- README.md (if present)\n- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
         artifact_status: format!(
             "- FEATURE.md: present\n- SPEC.md: {}\n- DESIGN.md: {}\n- STATE.md: contains a valid execution plan\n- SESSION.md: present",
             if spec_exists { "present" } else { "missing" },

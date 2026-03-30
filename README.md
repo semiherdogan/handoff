@@ -46,9 +46,18 @@ handoff status
 What happens:
 
 - `handoff init` creates the feature workspace
+- `handoff init` also scans context readiness and tells you if `README.md` or `AGENTS.md` are missing
 - `handoff run` chooses the right prompt from the saved state
 - `handoff next` shows the next task or blocking action
 - `handoff status` makes the current state visible
+
+If the repo is missing high-value context, run:
+
+```bash
+handoff prompt context --copy
+```
+
+That prompt helps you improve `README.md`, `AGENTS.md`, or other context files only when they would materially help future AI sessions.
 
 ## How It Works
 

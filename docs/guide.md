@@ -16,7 +16,7 @@ handoff next
 What each step does:
 
 1. `handoff init`
-   Creates or selects a feature workspace under `.handoff/features/<feature-name>/`.
+   Creates or selects a feature workspace under `.handoff/features/<feature-name>/` and scans the repo for context readiness.
 2. Edit `FEATURE.md`
    Describe the goal, constraints, deliverables, and acceptance criteria.
 3. `handoff run --copy`
@@ -25,6 +25,14 @@ What each step does:
    Shows the next task or blocking action without generating a prompt.
 5. `handoff continue --copy`
    Remains available when you want the continuation prompt directly instead of letting `handoff run` decide.
+
+If `handoff init` reports missing high-value context such as `README.md` or `AGENTS.md`, run:
+
+```bash
+handoff prompt context --copy
+```
+
+Use that prompt to improve repository context only when it will materially help future AI sessions.
 
 ## Planning-Heavy Workflow
 

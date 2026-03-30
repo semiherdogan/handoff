@@ -1,7 +1,8 @@
 use crate::templates::manager::{
-    DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
-    DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
-    DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+    DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME, DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
+    DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME,
+    DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_START_PROMPT_TEMPLATE_NAME,
+    DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
 };
 
 pub struct PromptOptions {
@@ -13,6 +14,11 @@ pub struct StartPromptContext {
     pub artifact_status: String,
     pub planning_mode: String,
     pub workflow_instructions: String,
+}
+
+pub struct ContextPromptContext {
+    pub existing_context_sources: String,
+    pub missing_context_sources: String,
 }
 
 pub fn generate_prompt(template_manager: &TemplateManager, options: &PromptOptions) -> String {
@@ -66,13 +72,35 @@ pub fn continuation_prompt(template_manager: &TemplateManager, options: &PromptO
     )
 }
 
+pub fn context_prompt(
+    template_manager: &TemplateManager,
+    context: &ContextPromptContext,
+    options: &PromptOptions,
+) -> String {
+    apply_shared_prompt_options(
+        template_manager
+            .get_template(DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME)
+            .replace(
+                "{{existing_context_sources}}",
+                &context.existing_context_sources,
+            )
+            .replace(
+                "{{missing_context_sources}}",
+                &context.missing_context_sources,
+            ),
+        options,
+    )
+}
+
 fn apply_shared_prompt_options(template: String, options: &PromptOptions) -> String {
     template.replace("{{language_instruction}}", &options.language_instruction)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{PromptOptions, generate_prompt, spec_prompt};
+    use super::{
+        ContextPromptContext, PromptOptions, context_prompt, generate_prompt, spec_prompt,
+    };
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
     use crate::templates::manager::TemplateManager;
@@ -110,6 +138,30 @@ mod tests {
 
         assert!(prompt.contains("Write prose in Spanish."));
         assert!(!prompt.contains("{{language_instruction}}"));
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn context_prompt_renders_dynamic_context_sections() {
+        let base = make_temp_base("context-prompt");
+        let paths = AiPaths::discover(&base);
+        let manager = TemplateManager::new(&paths);
+        let prompt = context_prompt(
+            &manager,
+            &ContextPromptContext {
+                existing_context_sources: "- README.md".to_owned(),
+                missing_context_sources: "- High value: AGENTS.md".to_owned(),
+            },
+            &PromptOptions {
+                language_instruction: "Write prose in English.".to_owned(),
+            },
+        );
+
+        assert!(prompt.contains("- README.md"));
+        assert!(prompt.contains("- High value: AGENTS.md"));
+        assert!(!prompt.contains("{{existing_context_sources}}"));
+        assert!(!prompt.contains("{{missing_context_sources}}"));
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }

@@ -1,6 +1,8 @@
 We are in specification mode.
 
 Read:
+- AGENTS.md (if present)
+- README.md (if present)
 - .handoff/current/FEATURE.md
 
 Goal
@@ -14,7 +16,7 @@ Language and Workspace Requirements
 --------------------------------------------------
 Execution Protocol (Required)
 
-1. Read .handoff/current/FEATURE.md carefully.
+1. Read AGENTS.md and README.md first when present, then read .handoff/current/FEATURE.md carefully.
 2. Create or fully rewrite .handoff/current/SPEC.md.
 3. Normalize ambiguity into explicit scope, requirements, edge cases, assumptions, and acceptance criteria.
 4. Separate in-scope work from out-of-scope work.

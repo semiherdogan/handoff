@@ -1,6 +1,8 @@
 We are continuing an autonomous development session.
 
 Read:
+- AGENTS.md (if present)
+- README.md (if present)
 - .handoff/current/SESSION.md
 - .handoff/current/STATE.md
 - .handoff/current/FEATURE.md

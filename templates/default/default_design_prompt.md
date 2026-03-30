@@ -1,6 +1,8 @@
 We are in design mode.
 
 Read:
+- AGENTS.md (if present)
+- README.md (if present)
 - .handoff/current/FEATURE.md
 - .handoff/current/SPEC.md
 
@@ -15,7 +17,7 @@ Language and Workspace Requirements
 --------------------------------------------------
 Execution Protocol (Required)
 
-1. Read FEATURE.md and SPEC.md.
+1. Read AGENTS.md and README.md first when present, then read FEATURE.md and SPEC.md.
 2. Create or fully rewrite .handoff/current/DESIGN.md.
 3. Align the design to the existing repository structure and project conventions.
 4. Identify the most likely files or modules that will change.

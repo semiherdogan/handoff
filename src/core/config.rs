@@ -19,9 +19,16 @@ impl Default for WorkspaceConfig {
 }
 
 impl WorkspaceConfig {
-    pub fn language_instruction(&self) -> String {
+    pub fn workflow_language_instruction(&self) -> String {
         format!(
             "- Write handoff workflow prose and markdown artifact content in {}.\n- This language setting applies only to handoff artifacts and prompt prose. Do not use it to choose programming language syntax, identifier names, file names, API names, configuration keys, or repository conventions.\n- Keep code, identifiers, and repository-facing text aligned with the existing project conventions unless the feature explicitly requires different user-facing output.\n- Keep file names, paths, markdown structure, and code/config syntax unchanged unless the task requires a real structural change.\n- `.handoff/current/` is reserved only for `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, and `SESSION.md`.\n- Do not propose or create extra analysis, report, notes, or documentation files inside `.handoff/current/`.\n- If a new permanent project document is needed, place it in the normal repository location such as `docs/`, the repository root, or the closest relevant module directory.\n- In `.handoff/current/STATE.md`, keep these section headers in English: `# Current Step`, `# Execution Plan`, `# Completed Steps`, `# Remaining Steps`, `# Known Issues`, `# Risks`, `# Architectural Notes`, and `# Drift Warnings`.\n- Do not translate or alter execution markers `[ ]`, `[>]`, or `[x]`.",
+            self.language
+        )
+    }
+
+    pub fn repository_context_language_instruction(&self) -> String {
+        format!(
+            "- Write repository documentation prose in {}.\n- Keep code, identifiers, API names, file names, and repository conventions aligned with the existing project.\n- Prefer updating `README.md` for onboarding, installation, and usage guidance.\n- Prefer updating `AGENTS.md` for repository rules, contributor/agent guidance, and execution constraints.\n- Only create files under `docs/` when the detail clearly does not fit in `README.md` or `AGENTS.md`.\n- Do not invent architecture, workflows, or product behavior that are not supported by the repository.\n- Do not implement code changes in this mode.",
             self.language
         )
     }
@@ -118,11 +125,11 @@ mod tests {
     }
 
     #[test]
-    fn language_instruction_mentions_state_contract() {
+    fn workflow_language_instruction_mentions_state_contract() {
         let instruction = WorkspaceConfig {
             language: "Turkish".to_owned(),
         }
-        .language_instruction();
+        .workflow_language_instruction();
 
         assert!(instruction.contains("Turkish"));
         assert!(instruction.contains("applies only to handoff artifacts"));
@@ -130,5 +137,19 @@ mod tests {
         assert!(instruction.contains(".handoff/current/` is reserved"));
         assert!(instruction.contains("keep these section headers in English"));
         assert!(instruction.contains("[>]"));
+    }
+
+    #[test]
+    fn repository_context_language_instruction_stays_repo_focused() {
+        let instruction = WorkspaceConfig {
+            language: "English".to_owned(),
+        }
+        .repository_context_language_instruction();
+
+        assert!(instruction.contains("repository documentation prose in English"));
+        assert!(instruction.contains("Prefer updating `README.md`"));
+        assert!(instruction.contains("Prefer updating `AGENTS.md`"));
+        assert!(!instruction.contains(".handoff/current/STATE.md"));
+        assert!(!instruction.contains("[>]"));
     }
 }

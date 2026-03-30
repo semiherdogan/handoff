@@ -24,7 +24,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let prompt = prompts::continuation_prompt(
         &template_manager,
         &prompts::PromptOptions {
-            language_instruction: config.language_instruction(),
+            language_instruction: config.workflow_language_instruction(),
         },
     );
 

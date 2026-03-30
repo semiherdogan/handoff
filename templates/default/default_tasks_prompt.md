@@ -1,6 +1,8 @@
 We are in task planning mode.
 
 Read:
+- AGENTS.md (if present)
+- README.md (if present)
 - .handoff/current/SPEC.md
 - .handoff/current/DESIGN.md (if it exists)
 - .handoff/current/STATE.md
@@ -16,7 +18,7 @@ Language and Workspace Requirements
 --------------------------------------------------
 Execution Protocol (Required)
 
-1. Derive tasks from SPEC.md and optional DESIGN.md.
+1. Read AGENTS.md and README.md first when present, then derive tasks from SPEC.md and optional DESIGN.md.
 2. Write the execution plan into .handoff/current/STATE.md under "Execution Plan".
 3. Break work into practical micro-steps.
 4. Keep each step narrowly scoped and executable.

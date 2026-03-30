@@ -36,5 +36,11 @@ Explicitly list what is NOT part of this feature.
 - If permanent project docs are needed, place them in the normal repository location such as `docs/`, the repository root, or the closest relevant module directory.
 
 ## Context
-Describe relevant architecture, modules, constraints, or dependencies.
-Check AGENTS.md, README.md for more information.
+Detected repository context sources:
+{{context_sources}}
+
+Context gaps that may affect AI onboarding or continuity:
+{{context_gaps}}
+
+Describe relevant architecture, modules, constraints, or dependencies for this feature.
+Check existing repository context sources before writing the final brief.

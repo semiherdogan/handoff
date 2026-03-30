@@ -10,9 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added `handoff run` to load the active feature state and emit the next prompt automatically, choosing between planning and execution flows from the saved workspace.
 - Added `handoff next` to show the next task or blocking action without generating a prompt.
+- Added repository context-readiness scanning to `handoff init` plus a new `handoff prompt context` flow for improving missing high-value context such as `README.md` and `AGENTS.md`.
 
 ### Changed
 
+- Narrowed `handoff prompt context` language instructions so repository-context prompts no longer include `.handoff/current/STATE.md` workflow rules.
 - Repositioned the README around AI continuity and project memory instead of generic prompt generation.
 - Updated prompt-producing commands to print a consistent `What happened` / `What changed` / `Next` summary before the generated prompt.
 - Updated `handoff status` and `handoff next` to surface stronger continuity signals, progress visibility, blocking reasons, and the prompt mode `handoff run` will choose.

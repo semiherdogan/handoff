@@ -141,6 +141,8 @@ pub enum PromptKind {
     Tasks,
     /// Continuation prompt (requires valid execution plan)
     Continue,
+    /// Generate prompt to improve missing repository context files
+    Context,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]

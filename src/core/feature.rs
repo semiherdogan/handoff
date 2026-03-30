@@ -12,10 +12,17 @@ pub const DESIGN_FILE: &str = "DESIGN.md";
 pub const STATE_FILE: &str = "STATE.md";
 pub const SESSION_FILE: &str = "SESSION.md";
 
+#[derive(Debug, Clone)]
+pub struct FeatureTemplateSeed {
+    pub context_sources: String,
+    pub context_gaps: String,
+}
+
 pub fn ensure_feature_files(
     feature_dir: &Path,
     feature_name: &str,
     template_manager: &TemplateManager,
+    seed: &FeatureTemplateSeed,
 ) -> Result<()> {
     fs::create_dir_all(feature_dir).with_context(|| {
         format!(
@@ -26,7 +33,9 @@ pub fn ensure_feature_files(
 
     let feature_template = template_manager
         .get_template(DEFAULT_FEATURE_TEMPLATE_NAME)
-        .replace("{{feature_name}}", feature_name);
+        .replace("{{feature_name}}", feature_name)
+        .replace("{{context_sources}}", &seed.context_sources)
+        .replace("{{context_gaps}}", &seed.context_gaps);
     let spec_template = template_manager.get_template(DEFAULT_SPEC_TEMPLATE_NAME);
     let design_template = template_manager.get_template(DEFAULT_DESIGN_TEMPLATE_NAME);
     let state_template = template_manager.get_template(DEFAULT_STATE_TEMPLATE_NAME);
@@ -84,7 +93,8 @@ fn validate_file_exists(path: &Path, display_name: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{
-        DESIGN_FILE, FEATURE_FILE, SESSION_FILE, SPEC_FILE, STATE_FILE, ensure_feature_files,
+        DESIGN_FILE, FEATURE_FILE, FeatureTemplateSeed, SESSION_FILE, SPEC_FILE, STATE_FILE,
+        ensure_feature_files,
     };
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
@@ -98,8 +108,16 @@ mod tests {
         let template_manager = TemplateManager::new(&paths);
         let feature_dir = paths.feature_dir("new-flow");
 
-        ensure_feature_files(&feature_dir, "new-flow", &template_manager)
-            .expect("should create feature files");
+        ensure_feature_files(
+            &feature_dir,
+            "new-flow",
+            &template_manager,
+            &FeatureTemplateSeed {
+                context_sources: "- README.md".to_owned(),
+                context_gaps: "- AGENTS.md missing".to_owned(),
+            },
+        )
+        .expect("should create feature files");
 
         for name in [
             FEATURE_FILE,
@@ -113,6 +131,12 @@ mod tests {
                 "missing expected file: {name}"
             );
         }
+
+        let feature_content =
+            fs::read_to_string(feature_dir.join(FEATURE_FILE)).expect("should read feature file");
+        assert!(feature_content.contains("Detected repository context sources:"));
+        assert!(feature_content.contains("- README.md"));
+        assert!(feature_content.contains("- AGENTS.md missing"));
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }

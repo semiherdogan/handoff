@@ -13,7 +13,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let template_manager = TemplateManager::new(paths);
     let config = config::load(paths)?;
     let prompt_options = prompts::PromptOptions {
-        language_instruction: config.language_instruction(),
+        language_instruction: config.workflow_language_instruction(),
     };
     let prepared = prepare_run_prompt(&snapshot, &template_manager, &prompt_options)?;
 

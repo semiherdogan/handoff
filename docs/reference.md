@@ -12,7 +12,7 @@
 | `design [--copy] [--raw]` | Generate a prompt to create or rewrite `DESIGN.md` |
 | `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
-| `prompt generate\|start\|spec\|design\|tasks\|continue [--copy] [--raw]` | Raw prompt output (no guard checks) |
+| `prompt generate\|start\|spec\|design\|tasks\|continue\|context [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
 | `next` | Show the next task or blocking action for the active feature |
 | `validate` | Validate the current execution plan and report whether it is ready, complete, or invalid |
@@ -74,6 +74,10 @@ Parser-sensitive `STATE.md` structure remains in English.
 - the next task or blocking action
 - the next recommended command
 - the prompt mode that `handoff run` will emit
+
+`handoff init` also scans repository context readiness and calls out missing high-value context such as `README.md` or `AGENTS.md`.
+
+Use `handoff prompt context --copy` when you want a prompt that improves missing repository context without implementing code.
 
 `handoff validate` gives a more explicit execution-plan check and exits with failure for uninitialized or structurally invalid plans.
 

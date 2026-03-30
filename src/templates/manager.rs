@@ -13,6 +13,7 @@ pub const DEFAULT_SPEC_PROMPT_TEMPLATE_NAME: &str = "default_spec_prompt.md";
 pub const DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME: &str = "default_design_prompt.md";
 pub const DEFAULT_TASKS_PROMPT_TEMPLATE_NAME: &str = "default_tasks_prompt.md";
 pub const DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME: &str = "default_continue_prompt.md";
+pub const DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME: &str = "default_context_prompt.md";
 
 const DEFAULT_FEATURE_TEMPLATE: &str = include_str!("../../templates/default/default_feature.md");
 const DEFAULT_SPEC_TEMPLATE: &str = include_str!("../../templates/default/default_spec.md");
@@ -31,6 +32,8 @@ const DEFAULT_TASKS_PROMPT_TEMPLATE: &str =
     include_str!("../../templates/default/default_tasks_prompt.md");
 const DEFAULT_CONTINUE_PROMPT_TEMPLATE: &str =
     include_str!("../../templates/default/default_continue_prompt.md");
+const DEFAULT_CONTEXT_PROMPT_TEMPLATE: &str =
+    include_str!("../../templates/default/default_context_prompt.md");
 
 pub struct TemplateManager {
     override_dir: PathBuf,
@@ -78,6 +81,10 @@ impl TemplateManager {
                 DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
                 DEFAULT_CONTINUE_PROMPT_TEMPLATE,
             ),
+            (
+                DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME,
+                DEFAULT_CONTEXT_PROMPT_TEMPLATE,
+            ),
         ]
     }
 
@@ -107,6 +114,7 @@ impl TemplateManager {
             DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME => DEFAULT_DESIGN_PROMPT_TEMPLATE.to_owned(),
             DEFAULT_TASKS_PROMPT_TEMPLATE_NAME => DEFAULT_TASKS_PROMPT_TEMPLATE.to_owned(),
             DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME => DEFAULT_CONTINUE_PROMPT_TEMPLATE.to_owned(),
+            DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME => DEFAULT_CONTEXT_PROMPT_TEMPLATE.to_owned(),
             _ => String::new(),
         }
     }
@@ -115,12 +123,12 @@ impl TemplateManager {
 #[cfg(test)]
 mod tests {
     use super::{
-        DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
-        DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME,
-        DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE_NAME,
-        DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_TEMPLATE_NAME,
-        DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME,
-        DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+        DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME, DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
+        DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_DESIGN_TEMPLATE_NAME,
+        DEFAULT_FEATURE_TEMPLATE_NAME, DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME,
+        DEFAULT_SESSION_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
+        DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_START_PROMPT_TEMPLATE_NAME,
+        DEFAULT_STATE_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
     };
 
     #[test]
@@ -139,6 +147,7 @@ mod tests {
             DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME,
             DEFAULT_TASKS_PROMPT_TEMPLATE_NAME,
             DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
+            DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME,
         ];
 
         assert_eq!(names, expected);

@@ -1,6 +1,8 @@
 We are in planning generation mode.
 
 Read:
+- AGENTS.md (if present)
+- README.md (if present)
 - .handoff/current/FEATURE.md
 - .handoff/current/SPEC.md
 - .handoff/current/DESIGN.md
@@ -18,7 +20,7 @@ Language and Workspace Requirements
 --------------------------------------------------
 Execution Protocol (Required)
 
-1. Read `.handoff/current/FEATURE.md` carefully.
+1. Read `AGENTS.md` and `README.md` first when present, then read `.handoff/current/FEATURE.md` carefully.
 2. Create or fully rewrite `.handoff/current/SPEC.md` from the feature intent.
 3. Create or fully rewrite `.handoff/current/DESIGN.md` only if the feature is complex enough to benefit from explicit technical planning. Otherwise keep the file lightweight and clearly note that a detailed design is not needed.
 4. Create or fully rewrite `.handoff/current/STATE.md` with an execution-ready micro-step plan grounded in SPEC.md and optional DESIGN.md.
