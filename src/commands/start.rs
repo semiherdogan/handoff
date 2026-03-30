@@ -12,6 +12,7 @@ use std::fs;
 pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let active_feature_path = workspace::resolve_current_feature_path(paths)?;
     feature::validate_feature_files(&active_feature_path)?;
+    let feature_name = workspace::resolve_current_feature_name(paths)?;
 
     let state_path = active_feature_path.join(feature::STATE_FILE);
     let state_content = fs::read_to_string(&state_path)
@@ -31,7 +32,20 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
         },
     );
 
-    prompt_output::output_prompt(&prompt, copy, raw)
+    prompt_output::output_prompt_with_summary(
+        &prompt,
+        copy,
+        raw,
+        Some(prompt_output::PromptSummary {
+            title: "Start Prompt".to_owned(),
+            what_happened: "Prepared an execution prompt from the active execution plan.".to_owned(),
+            what_changed: format!(
+                "No repository files changed. The prompt reuses STATE.md and SESSION.md from the active feature workspace '{feature_name}'."
+            ),
+            next: "Paste this prompt into your AI assistant to begin executing the current micro-step without regenerating the plan."
+                .to_owned(),
+        }),
+    )
 }
 
 fn ensure_start_ready(state_content: &str) -> Result<()> {

@@ -17,16 +17,26 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     };
     let prepared = prepare_run_prompt(&snapshot, &template_manager, &prompt_options)?;
 
-    if !raw {
-        println!("Active feature: {}", snapshot.feature_name);
-        println!("Workflow language: {}", snapshot.language);
-        println!("Current step: {}", snapshot.summary.current_step);
-        println!("Next task: {}", prepared.next_task);
-        println!("Prompt mode: {}", prepared.mode_label);
-        println!();
-    }
-
-    prompt_output::output_prompt(&prepared.prompt, copy, raw)
+    prompt_output::output_prompt_with_summary(
+        &prepared.prompt,
+        copy,
+        raw,
+        Some(prompt_output::PromptSummary {
+            title: "Run Prompt".to_owned(),
+            what_happened: format!(
+                "Loaded the active state and selected the '{}' prompt mode automatically.",
+                prepared.mode_label
+            ),
+            what_changed: format!(
+                "No repository files changed. Active feature: '{}'. Workflow language: '{}'. Current step: '{}'.",
+                snapshot.feature_name, snapshot.language, snapshot.summary.current_step
+            ),
+            next: format!(
+                "Paste this prompt into your AI assistant. Current next task: {}",
+                prepared.next_task
+            ),
+        }),
+    )
 }
 
 struct PreparedRunPrompt {

@@ -1,43 +1,75 @@
 # handoff
 
-Lightweight, model-agnostic autonomous dev loop manager.
+AI coding tools forget your project.
 
-Local-first prompt generator — no provider API calls, no network required at runtime.
+`handoff` doesn't.
+
+Local-first project memory layer for AI-assisted development.
+
+It keeps a feature workspace on disk so your spec, plan, progress, and continuation context survive across sessions.
 
 ![Handoff](./cover.jpg)
 
-## What This Is
+## The Problem
 
-`handoff` gives AI coding sessions a small local workspace so planning and execution can survive across multiple chats.
+Without a memory layer:
 
-Instead of starting every session from scratch, you keep a feature folder with a few markdown artifacts:
+- context disappears between chats
+- you repeat the same setup and constraints
+- execution drifts away from earlier decisions
+- “what should I do next?” becomes manual work again
 
-- `FEATURE.md`: what you want
+## What Handoff Is
+
+`handoff` gives each feature a small local workspace:
+
+- `FEATURE.md`: the raw feature brief
 - `SPEC.md`: normalized requirements
 - `DESIGN.md`: optional technical design
 - `STATE.md`: execution plan and progress
 - `SESSION.md`: continuation-safe session summary
 
-`handoff` then generates prompts like `generate`, `start`, and `continue` so your assistant can plan, execute, and resume without drifting.
+Then it generates the right prompt for the current state so your assistant can plan, execute, and continue without losing the thread.
 
-**No API keys. No cloud. No vendor lock-in.** It works with any AI coding assistant that accepts a text prompt.
+**No API keys. No cloud. No provider lock-in.** It works with any AI coding assistant that accepts a text prompt.
 
-## Use It When You
+## Quick Demo
 
-- Work on features that span multiple AI sessions
-- Want deterministic, structured progress tracking across conversations
-- Need to hand off context between different assistants or team members
-- Run autonomous dev loops and need guardrails to prevent drift
+```bash
+handoff init my-feature
+# edit .handoff/current/FEATURE.md
+handoff run --copy
+handoff next
+handoff status
+```
+
+What happens:
+
+- `handoff init` creates the feature workspace
+- `handoff run` chooses the right prompt from the saved state
+- `handoff next` shows the next task or blocking action
+- `handoff status` makes the current state visible
 
 ## How It Works
 
-1. Create a feature workspace with `handoff init`.
-2. Describe the feature in `FEATURE.md`.
-3. Run `handoff run --copy` and paste the prompt into your AI assistant.
-4. Let `handoff` switch between planning and execution prompts based on the saved state.
-5. Run `handoff next` any time you want the next task without generating a prompt.
+1. Capture the feature intent in `FEATURE.md`.
+2. Shape it into a spec and execution plan.
+3. Track execution in `STATE.md` and `SESSION.md`.
+4. Continue later from the saved project state.
 
-That is the whole idea: a small local workspace plus prompt generation for planning, execution, and continuation.
+## Why It Converts Better Than Ad-Hoc Prompting
+
+- your assistant stops restarting from scratch every session
+- the next step stays explicit instead of living in chat history
+- planning and execution stay separated
+- you can switch models or assistants without throwing away progress
+
+## Use It When You
+
+- build with AI across multiple sessions
+- work solo and need continuity without extra process overhead
+- want deterministic state instead of chat-based memory
+- hand off work between assistants or teammates
 
 ## Installation
 
@@ -50,23 +82,17 @@ Or use the [latest GitHub Release](https://github.com/semiherdogan/handoff/relea
 
 > **macOS:** If macOS blocks the binary, allow it from **System Settings → Privacy & Security**.
 
-## Quick Start
-
-```bash
-handoff init my-feature
-# edit .handoff/current/FEATURE.md
-handoff run --copy
-handoff next
-handoff status
-```
-
-If you just want the fastest path, that is enough.
-
 ## Learn More
 
 - [Guide](./docs/guide.md): normal workflows, planning-heavy flow, model usage pattern
 - [Reference](./docs/reference.md): command list, workspace layout, config, status/validate, shell completions
 - [Changelog](./CHANGELOG.md): user-facing changes
+
+## Who It Is For
+
+- solo developers shipping with AI
+- indie hackers building in public
+- teams that want a plain-text project memory layer around coding assistants
 
 ## Model Usage Pattern
 
@@ -85,14 +111,11 @@ Cheaper coding model   -> handoff run / start / continue
 
 This keeps planning quality high while reducing cost and latency during implementation loops.
 
-## Why It Helps
+## Start Here
 
-AI assistants are good at local execution and bad at long-lived continuity. `handoff` gives them a stable, explicit workspace so:
-
-- planning does not need to be repeated every session
-- execution can continue from a real step list
-- session context is preserved in plain local files
-- you can switch assistants without losing structure
+```bash
+handoff init my-feature
+```
 
 ## Tip
 

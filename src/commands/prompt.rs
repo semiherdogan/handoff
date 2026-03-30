@@ -32,5 +32,17 @@ pub fn run(paths: &AiPaths, kind: Option<PromptKind>, copy: bool, raw: bool) -> 
         PromptKind::Continue => prompts::continuation_prompt(&template_manager, &prompt_options),
     };
 
-    prompt_output::output_prompt(&prompt, copy, raw)
+    prompt_output::output_prompt_with_summary(
+        &prompt,
+        copy,
+        raw,
+        Some(prompt_output::PromptSummary {
+            title: "Raw Prompt".to_owned(),
+            what_happened: format!("Prepared a raw {:?} prompt without workflow guard checks.", selected),
+            what_changed: "No repository files changed. This command emits the template directly from the current configuration."
+                .to_owned(),
+            next: "Paste this prompt into your AI assistant only if you intentionally want to bypass the guided workflow command."
+                .to_owned(),
+        }),
+    )
 }
