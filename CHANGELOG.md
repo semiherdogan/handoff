@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [v0.7.1] - 2026-04-04
+
 ### Changed
 
 - Added "challenge the input" rules to spec, generate, and tasks prompts so the AI flags vague or contradictory feature descriptions instead of silently filling gaps with assumptions.
@@ -13,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Removed duplicate reasoning instruction from continue prompt.
 - Removed "Internal Alternative Evaluation" section from continue prompt to reduce rule complexity.
 - Removed duplicated `.handoff/current/` reservation rules from the injected language instruction since they already exist in the FEATURE.md template.
+
 
 ## [v0.7.0] - 2026-03-30
 
