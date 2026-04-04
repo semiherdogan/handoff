@@ -26,7 +26,8 @@ Execution Protocol (Required)
 4. Create or fully rewrite `.handoff/current/STATE.md` with an execution-ready micro-step plan grounded in SPEC.md and optional DESIGN.md.
 5. Rewrite `.handoff/current/SESSION.md` so the next execution session can safely continue from the generated plan.
 6. Ensure exactly one step is marked as `[>]` in `.handoff/current/STATE.md` when work remains.
-7. Stop after updating the markdown artifacts. Do not implement code, edit source files, or run the execution loop.
+7. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly in SPEC.md under "Open Questions" instead of filling them with assumptions.
+8. Stop after updating the markdown artifacts. Do not implement code, edit source files, or run the execution loop.
 
 STATE.md step formatting rules (STRICT):
 - Use markdown list form only:

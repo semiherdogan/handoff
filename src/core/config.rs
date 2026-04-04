@@ -21,7 +21,7 @@ impl Default for WorkspaceConfig {
 impl WorkspaceConfig {
     pub fn workflow_language_instruction(&self) -> String {
         format!(
-            "- Write handoff workflow prose and markdown artifact content in {}.\n- This language setting applies only to handoff artifacts and prompt prose. Do not use it to choose programming language syntax, identifier names, file names, API names, configuration keys, or repository conventions.\n- Keep code, identifiers, and repository-facing text aligned with the existing project conventions unless the feature explicitly requires different user-facing output.\n- Keep file names, paths, markdown structure, and code/config syntax unchanged unless the task requires a real structural change.\n- `.handoff/current/` is reserved only for `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, and `SESSION.md`.\n- Do not propose or create extra analysis, report, notes, or documentation files inside `.handoff/current/`.\n- If a new permanent project document is needed, place it in the normal repository location such as `docs/`, the repository root, or the closest relevant module directory.\n- In `.handoff/current/STATE.md`, keep these section headers in English: `# Current Step`, `# Execution Plan`, `# Completed Steps`, `# Remaining Steps`, `# Known Issues`, `# Risks`, `# Architectural Notes`, and `# Drift Warnings`.\n- Do not translate or alter execution markers `[ ]`, `[>]`, or `[x]`.",
+            "- Write handoff workflow prose and markdown artifact content in {}.\n- This language setting applies only to handoff artifacts and prompt prose. Do not use it to choose programming language syntax, identifier names, file names, API names, configuration keys, or repository conventions.\n- Keep code, identifiers, and repository-facing text aligned with the existing project conventions unless the feature explicitly requires different user-facing output.\n- Keep file names, paths, markdown structure, and code/config syntax unchanged unless the task requires a real structural change.\n- In `.handoff/current/STATE.md`, keep these section headers in English: `# Current Step`, `# Execution Plan`, `# Completed Steps`, `# Remaining Steps`, `# Known Issues`, `# Risks`, `# Architectural Notes`, and `# Drift Warnings`.\n- Do not translate or alter execution markers `[ ]`, `[>]`, or `[x]`.",
             self.language
         )
     }
@@ -134,7 +134,6 @@ mod tests {
         assert!(instruction.contains("Turkish"));
         assert!(instruction.contains("applies only to handoff artifacts"));
         assert!(instruction.contains("Do not use it to choose programming language syntax"));
-        assert!(instruction.contains(".handoff/current/` is reserved"));
         assert!(instruction.contains("keep these section headers in English"));
         assert!(instruction.contains("[>]"));
     }

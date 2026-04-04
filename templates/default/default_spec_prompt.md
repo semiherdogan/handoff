@@ -22,6 +22,7 @@ Execution Protocol (Required)
 4. Separate in-scope work from out-of-scope work.
 5. Keep requirements concrete and testable.
 6. Preserve the user's intent; do not invent unsupported product behavior.
+7. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly under "Open Questions" instead of filling them with assumptions.
 
 --------------------------------------------------
 Constraints

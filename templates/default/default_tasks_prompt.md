@@ -37,6 +37,7 @@ Additional requirements:
 - Keep the plan grounded in SPEC.md.
 - Avoid bundling unrelated concerns into one step.
 - Prefer 5-10 micro-steps when reasonable.
+- If SPEC.md or DESIGN.md contain contradictions or gaps that block task planning, flag them explicitly instead of guessing.
 
 --------------------------------------------------
 Constraints

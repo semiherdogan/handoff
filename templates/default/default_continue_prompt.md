@@ -51,17 +51,7 @@ Structured Reasoning Requirements
 - Do not assume unstated architecture.
 - Do not introduce unstated assumptions.
 - Explicitly evaluate risk before modifying multiple files.
-- Prefer evidence from FEATURE.md and repository context over familiarity.
 - Prefer evidence from SPEC.md, DESIGN.md, FEATURE.md, and repository context over familiarity.
-
---------------------------------------------------
-Internal Alternative Evaluation
-
-Before committing to implementation decisions:
-1. Consider 2–3 alternative approaches internally.
-2. Evaluate trade-offs briefly.
-3. Choose the most coherent with existing architecture.
-4. Do NOT output alternatives unless necessary.
 
 --------------------------------------------------
 Constraints
@@ -101,3 +91,4 @@ Before Context Ends
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
 - Update .handoff/current/STATE.md fully.
 - Rewrite .handoff/current/SESSION.md for safe continuation.
+- When all steps are marked [x] and no work remains, write a final summary in SESSION.md stating what was delivered and any follow-up items. Do not mark a feature complete if tests fail or known issues remain.

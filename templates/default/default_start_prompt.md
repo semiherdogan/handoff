@@ -82,3 +82,4 @@ Before Context Ends
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
 - Update .handoff/current/STATE.md.
 - Rewrite .handoff/current/SESSION.md for safe continuation.
+- When all steps are marked [x] and no work remains, write a final summary in SESSION.md stating what was delivered and any follow-up items. Do not mark a feature complete if tests fail or known issues remain.
