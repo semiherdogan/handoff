@@ -2,6 +2,10 @@
 
 This guide explains the normal `handoff` workflow in a little more detail than the main README.
 
+If you want a concrete example, read [Worked Example](./worked-example.md).
+If you want the system model, read [Architecture](./architecture.md).
+If you hit a blocked workspace, read [Troubleshooting](./troubleshooting.md).
+
 ## Default Workflow
 
 Use this path for most features:
@@ -47,6 +51,17 @@ handoff tasks --copy
 handoff start --copy
 ```
 
+## Which Command Should You Use?
+
+Use this decision rule:
+
+- `handoff run` is the default. Use it when you want `handoff` to inspect saved state and choose the next prompt for you.
+- `handoff generate` is for planning-only refresh when you do not want implementation to start yet.
+- `handoff start` is for direct execution when a valid plan already exists.
+- `handoff continue` is for direct continuation when execution is already underway.
+- `handoff spec`, `handoff design`, and `handoff tasks` are for manual planning checkpoints when you want explicit review steps.
+- `handoff prompt <kind>` is for raw prompt selection when you already know exactly which prompt you want.
+
 ## Status and Validation
 
 - `handoff status` makes the saved state visible: active feature, plan validity, continuity signal, current progress, artifact readiness, and the next command/focus.
@@ -54,6 +69,20 @@ handoff start --copy
 - `handoff validate` performs an explicit pass/fail check for the current execution plan.
 
 Use `handoff validate` when you want a hard answer to one question: "Is this feature ready to execute from `STATE.md`?"
+
+## What Good Repository Context Looks Like
+
+`README.md` and `AGENTS.md` should do more than exist.
+
+They are most useful when they document:
+
+- build, test, and run commands
+- repo structure and module boundaries
+- project-specific conventions
+- important invariants and guardrails
+- high-value troubleshooting notes
+
+If those files are thin, stale, or generic, later AI sessions still lose time.
 
 ## Git Tip
 

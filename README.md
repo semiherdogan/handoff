@@ -93,7 +93,10 @@ Or use the [latest GitHub Release](https://github.com/semiherdogan/handoff/relea
 
 ## Learn More
 
-- [Guide](./docs/guide.md): normal workflows, planning-heavy flow, model usage pattern
+- [Guide](./docs/guide.md): normal workflows, command choice, planning-heavy flow, model usage pattern
+- [Worked Example](./docs/worked-example.md): end-to-end example from `FEATURE.md` to continued execution
+- [Architecture](./docs/architecture.md): core concepts, state model, and product boundaries
+- [Troubleshooting](./docs/troubleshooting.md): common failure modes and concrete recovery steps
 - [Reference](./docs/reference.md): command list, workspace layout, config, status/validate, shell completions
 - [Changelog](./CHANGELOG.md): user-facing changes
 

@@ -1,5 +1,12 @@
 # Reference
 
+## Documentation Map
+
+- [Guide](./guide.md): workflow selection and normal usage
+- [Worked Example](./worked-example.md): end-to-end feature lifecycle
+- [Architecture](./architecture.md): core concepts and product boundaries
+- [Troubleshooting](./troubleshooting.md): blocked states and recovery steps
+
 ## Commands
 
 | Command | Description |

@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `docs/worked-example.md` with a concrete end-to-end `handoff` workflow example from `FEATURE.md` to continued execution.
+- Added `docs/architecture.md` to document the core workspace model, state contract, and product boundaries.
+- Added `docs/troubleshooting.md` covering common blocked states and concrete recovery steps.
+
+### Changed
+
+- Expanded `docs/guide.md` with a command choice guide and a clearer definition of good repository context.
+- Updated `docs/reference.md` and `README.md` to link the broader documentation set instead of only the basic guide and command reference.
+
 
 ## [v0.7.1] - 2026-04-04
 
