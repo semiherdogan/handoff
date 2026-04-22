@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [v0.7.2] - 2026-04-22
+
 ### Added
 
 - Added `docs/worked-example.md` with a concrete end-to-end `handoff` workflow example from `FEATURE.md` to continued execution.
