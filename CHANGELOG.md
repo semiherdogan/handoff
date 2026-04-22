@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Simplified the release workflow to publish only the macOS arm64 release artifact and removed the Ubuntu build artifact.
+
 
 ## [v0.7.2] - 2026-04-22
 
