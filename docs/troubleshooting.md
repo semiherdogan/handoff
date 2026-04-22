@@ -117,12 +117,12 @@ Symptoms:
 
 Fix:
 
-- read `README.md` and `AGENTS.md` again
+- read `README.md`, `AGENTS.md`, and `CLAUDE.md` again if present
 - inspect `.handoff/current/SESSION.md`
 - use `handoff status` and `handoff next`
 - regenerate planning if the feature intent changed materially
 
-## `README.md` and `AGENTS.md` exist, but sessions are still weak
+## `README.md`, `AGENTS.md`, or `CLAUDE.md` exist, but sessions are still weak
 
 Cause:
 

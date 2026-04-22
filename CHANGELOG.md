@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Updated repository context auto-detection so `CLAUDE.md` is listed as a detected context source when present.
 - Expanded `docs/guide.md` with a command choice guide and a clearer definition of good repository context.
 - Updated `docs/reference.md` and `README.md` to link the broader documentation set instead of only the basic guide and command reference.
 

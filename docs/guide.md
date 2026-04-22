@@ -72,7 +72,7 @@ Use `handoff validate` when you want a hard answer to one question: "Is this fea
 
 ## What Good Repository Context Looks Like
 
-`README.md` and `AGENTS.md` should do more than exist.
+`README.md`, `AGENTS.md`, and `CLAUDE.md` can all help, but they should do more than exist.
 
 They are most useful when they document:
 

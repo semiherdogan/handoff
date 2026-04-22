@@ -70,6 +70,7 @@ pub fn scan(paths: &AiPaths) -> ContextScan {
     for entry in [
         "README.md",
         "AGENTS.md",
+        "CLAUDE.md",
         "docs/",
         "Cargo.toml",
         "package.json",
@@ -172,12 +173,14 @@ mod tests {
         fs::create_dir_all(&paths.ai_dir).expect("should create .handoff");
         fs::write(base.join("README.md"), "# Demo\n").expect("should write readme");
         fs::write(base.join("AGENTS.md"), "# Rules\n").expect("should write agents");
+        fs::write(base.join("CLAUDE.md"), "# Claude\n").expect("should write claude");
         fs::write(base.join("Cargo.toml"), "[package]\nname=\"demo\"\n").expect("write cargo");
 
         let scan = scan(&paths);
 
         assert!(scan.found_sources.contains(&"README.md".to_owned()));
         assert!(scan.found_sources.contains(&"AGENTS.md".to_owned()));
+        assert!(scan.found_sources.contains(&"CLAUDE.md".to_owned()));
         assert!(scan.found_sources.contains(&"docs/".to_owned()));
         assert!(scan.found_sources.contains(&"src/".to_owned()));
         assert!(scan.high_value_missing.is_empty());

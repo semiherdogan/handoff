@@ -82,7 +82,7 @@ Parser-sensitive `STATE.md` structure remains in English.
 - the next recommended command
 - the prompt mode that `handoff run` will emit
 
-`handoff init` also scans repository context readiness and calls out missing high-value context such as `README.md` or `AGENTS.md`.
+`handoff init` also scans repository context readiness, detects files such as `README.md`, `AGENTS.md`, and `CLAUDE.md` when present, and calls out missing high-value context such as `README.md` or `AGENTS.md`.
 
 Use `handoff prompt context --copy` when you want a prompt that improves missing repository context without implementing code.
 

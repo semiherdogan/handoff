@@ -80,6 +80,8 @@ That is why `handoff init` can call out missing high-value context like:
 - `README.md`
 - `AGENTS.md`
 
+It also detects repository guidance files such as `CLAUDE.md` when they already exist.
+
 But repository context is separate from feature state:
 
 - repo docs explain the system
