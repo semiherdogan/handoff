@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.1/.schema/devbox.schema.json",
+  "packages": [
+    "rustc@latest",
+    "cargo@latest",
+    "rustfmt@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null"
+    ],
+    "scripts": {
+      "run": [
+        "cargo run -- \"$@\""
+      ],
+      "check": [
+        "cargo check"
+      ],
+      "fmt": [
+        "cargo fmt --check"
+      ],
+      "test": [
+        "cargo test"
+      ]
+    }
+  }
+}

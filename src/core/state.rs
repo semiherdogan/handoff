@@ -49,17 +49,6 @@ impl ExecutionPlanValidation {
         }
     }
 
-    pub fn guard_message(&self) -> &'static str {
-        match self {
-            Self::Ready => "Execution plan is valid.",
-            Self::NotInitialized => "Execution plan not initialized. Run `handoff start` first.",
-            Self::MultipleCurrentSteps => {
-                "Invalid execution plan: multiple current steps ([>]) found."
-            }
-            Self::NoRemainingSteps => "No remaining steps to continue.",
-        }
-    }
-
     pub fn guard_message_with_command(&self, command_name: &str) -> String {
         match self {
             Self::Ready => "Execution plan is valid.".to_owned(),
@@ -143,6 +132,7 @@ pub fn validate_execution_plan(content: &str) -> ExecutionPlanValidation {
     ExecutionPlanValidation::NotInitialized
 }
 
+#[cfg(test)]
 pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
     ensure_execution_plan_initialized_with_command(content, "handoff")
 }
