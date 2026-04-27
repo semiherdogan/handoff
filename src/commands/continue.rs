@@ -1,4 +1,5 @@
 use crate::commands::prompt_output;
+use crate::core::command_name;
 use crate::core::config;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
@@ -17,7 +18,10 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let state_path = active_feature_path.join(feature::STATE_FILE);
     let state_content = fs::read_to_string(&state_path)
         .with_context(|| format!("Failed to read file: {}", state_path.display()))?;
-    state::ensure_execution_plan_initialized(&state_content)?;
+    state::ensure_execution_plan_initialized_with_command(
+        &state_content,
+        &command_name::current(),
+    )?;
 
     let template_manager = TemplateManager::new(paths);
     let config = config::load(paths)?;

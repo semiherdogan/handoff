@@ -80,20 +80,24 @@ pub fn blocked_reason(
     }
 }
 
-pub fn next_recommendation(summary: &StateSummary, artifacts: &ArtifactStatus) -> &'static str {
+pub fn next_recommendation(
+    summary: &StateSummary,
+    artifacts: &ArtifactStatus,
+    command_name: &str,
+) -> String {
     if artifacts.feature == "needs review" {
-        return "edit .handoff/current/FEATURE.md";
+        return "edit .handoff/current/FEATURE.md".to_owned();
     }
 
     if !summary.execution_plan_initialized {
-        return "run handoff run --copy";
+        return format!("run {command_name} run --copy");
     }
 
     if summary.remaining_steps == 0 {
-        return "archive the feature or start a new one";
+        return "archive the feature or start a new one".to_owned();
     }
 
-    "run handoff run --copy"
+    format!("run {command_name} run --copy")
 }
 
 fn artifact_statuses(feature_dir: &Path, state_content: &str) -> Result<ArtifactStatus> {
@@ -132,7 +136,7 @@ mod tests {
         };
 
         assert_eq!(
-            next_recommendation(&summary, &artifacts),
+            next_recommendation(&summary, &artifacts, "handoff"),
             "edit .handoff/current/FEATURE.md"
         );
     }
@@ -156,7 +160,11 @@ mod tests {
         };
 
         assert_eq!(
-            next_recommendation(&summary, &artifacts),
+            next_recommendation(&summary, &artifacts, "ho"),
+            "run ho run --copy"
+        );
+        assert_eq!(
+            next_recommendation(&summary, &artifacts, "handoff"),
             "run handoff run --copy"
         );
     }

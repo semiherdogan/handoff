@@ -1,4 +1,5 @@
 use crate::commands::confirm;
+use crate::core::command_name;
 use crate::core::context;
 use crate::core::feature;
 use crate::core::feature::FeatureTemplateSeed;
@@ -35,7 +36,13 @@ pub fn run(paths: &AiPaths, feature: Option<&str>, force: bool) -> Result<()> {
 
     println!(
         "{}",
-        init_summary(paths, feature_name, set_as_current, &context_scan)
+        init_summary(
+            paths,
+            feature_name,
+            set_as_current,
+            &context_scan,
+            &command_name::current(),
+        )
     );
 
     Ok(())
@@ -50,6 +57,7 @@ fn init_summary(
     feature_name: &str,
     set_as_current: bool,
     context_scan: &context::ContextScan,
+    command_name: &str,
 ) -> String {
     let feature_dir = paths.feature_dir(feature_name);
     let feature_file = format!(".handoff/current/{}", feature::FEATURE_FILE);
@@ -58,7 +66,7 @@ fn init_summary(
     let state_file = format!(".handoff/current/{}", feature::STATE_FILE);
     let session_file = format!(".handoff/current/{}", feature::SESSION_FILE);
     let context_summary = format!(
-        "Context readiness:\n- Found sources:\n{}\n- High-value gaps:\n{}\n- Optional gaps:\n{}\n- Improve context with: handoff prompt context --copy",
+        "Context readiness:\n- Found sources:\n{}\n- High-value gaps:\n{}\n- Optional gaps:\n{}\n- Improve context with: {command_name} prompt context --copy",
         indent_block(&context_scan.found_sources_bullets(), 2),
         indent_block(&context_scan.high_value_missing_bullets(), 2),
         indent_block(&context_scan.optional_missing_bullets(), 2),
@@ -66,13 +74,13 @@ fn init_summary(
 
     if set_as_current {
         return format!(
-            "Initialized feature: {feature_name}\n\n{context_summary}\n\nNext:\n1. Edit: {}\n2. If the repo needs better onboarding/context docs, run: handoff prompt context --copy\n3. Then run: handoff run --copy\n4. Use handoff next to inspect the current task without generating a prompt\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)",
+            "Initialized feature: {feature_name}\n\n{context_summary}\n\nNext:\n1. Edit: {}\n2. If the repo needs better onboarding/context docs, run: {command_name} prompt context --copy\n3. Then run: {command_name} run --copy\n4. Use {command_name} next to inspect the current task without generating a prompt\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)",
             feature_file, spec_file, design_file, state_file, session_file,
         );
     }
 
     format!(
-        "Initialized feature: {feature_name}\n\n{context_summary}\n\nThis feature was not set as current.\nEdit: {}\nOr switch first with: handoff switch {feature_name}",
+        "Initialized feature: {feature_name}\n\n{context_summary}\n\nThis feature was not set as current.\nEdit: {}\nOr switch first with: {command_name} switch {feature_name}",
         feature_dir.join(feature::FEATURE_FILE).display()
     )
 }
@@ -148,6 +156,7 @@ mod tests {
                 high_value_missing: Vec::new(),
                 optional_missing: Vec::new(),
             },
+            "handoff",
         );
 
         assert!(summary.contains("Initialized feature: my-feature"));

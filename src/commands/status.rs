@@ -1,3 +1,4 @@
+use crate::core::command_name;
 use crate::core::paths::AiPaths;
 use crate::core::state::{ExecutionPlanValidation, StateSummary};
 use crate::core::workflow::{self, ArtifactStatus};
@@ -122,6 +123,7 @@ fn print_standard_status(
     validation: ExecutionPlanValidation,
     artifacts: &ArtifactStatus,
 ) {
+    let command_name = command_name::current();
     println!("State memory");
     println!("- Active feature: {feature_name}");
     println!("- Workflow language: {language}");
@@ -166,7 +168,7 @@ fn print_standard_status(
     println!("Next");
     println!(
         "- Command: {}",
-        workflow::next_recommendation(summary, artifacts)
+        workflow::next_recommendation(summary, artifacts, &command_name)
     );
     println!("- Focus: {}", next_focus(summary, validation, artifacts));
 }
@@ -318,7 +320,7 @@ mod tests {
         };
 
         assert_eq!(
-            next_recommendation(&summary, &artifacts),
+            next_recommendation(&summary, &artifacts, "handoff"),
             "edit .handoff/current/FEATURE.md"
         );
     }
@@ -342,7 +344,7 @@ mod tests {
         };
 
         assert_eq!(
-            next_recommendation(&summary, &artifacts),
+            next_recommendation(&summary, &artifacts, "handoff"),
             "run handoff run --copy"
         );
     }
@@ -366,7 +368,7 @@ mod tests {
         };
 
         assert_eq!(
-            next_recommendation(&summary, &artifacts),
+            next_recommendation(&summary, &artifacts, "handoff"),
             "run handoff run --copy"
         );
     }

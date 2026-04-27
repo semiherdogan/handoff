@@ -1,3 +1,4 @@
+use crate::core::command_name;
 use crate::core::config::DEFAULT_CONFIG_CONTENT;
 use crate::core::feature;
 use crate::core::feature::FeatureTemplateSeed;
@@ -130,7 +131,10 @@ fn remove_current_link(paths: &AiPaths) -> Result<()> {
 pub fn set_current_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
     let target_feature = paths.feature_dir(feature_name);
     if !target_feature.is_dir() {
-        anyhow::bail!("Feature '{feature_name}' not found. Run: handoff init {feature_name}");
+        anyhow::bail!(
+            "Feature '{feature_name}' not found. Run: {} init {feature_name}",
+            command_name::current()
+        );
     }
 
     remove_current_link(paths)?;
@@ -148,8 +152,12 @@ pub fn set_current_feature(paths: &AiPaths, feature_name: &str) -> Result<()> {
 }
 
 pub fn resolve_current_feature_path(paths: &AiPaths) -> Result<std::path::PathBuf> {
-    let target = fs::read_link(&paths.current_link)
-        .map_err(|_| anyhow!("No active feature found. Run: handoff init"))?;
+    let target = fs::read_link(&paths.current_link).map_err(|_| {
+        anyhow!(
+            "No active feature found. Run: {} init",
+            command_name::current()
+        )
+    })?;
 
     let absolute = if target.is_absolute() {
         target
@@ -158,7 +166,10 @@ pub fn resolve_current_feature_path(paths: &AiPaths) -> Result<std::path::PathBu
     };
 
     if !absolute.is_dir() {
-        return Err(anyhow!("No active feature found. Run: handoff init"));
+        return Err(anyhow!(
+            "No active feature found. Run: {} init",
+            command_name::current()
+        ));
     }
 
     Ok(absolute)
@@ -169,7 +180,12 @@ pub fn resolve_current_feature_name(paths: &AiPaths) -> Result<String> {
     let name = current_path
         .file_name()
         .and_then(|name| name.to_str())
-        .ok_or_else(|| anyhow!("No active feature found. Run: handoff init"))?;
+        .ok_or_else(|| {
+            anyhow!(
+                "No active feature found. Run: {} init",
+                command_name::current()
+            )
+        })?;
     Ok(name.to_owned())
 }
 

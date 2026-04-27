@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Updated command guidance to use the invoked binary name, such as `ho`, and fall back to `handoff` when the name cannot be detected.
 - Simplified the release workflow to publish only the macOS arm64 release artifact and removed the Ubuntu build artifact.
 
 

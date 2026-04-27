@@ -1,4 +1,5 @@
 use crate::cli::{Cli, CompletionShell};
+use crate::core::command_name;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap_complete::generate;
@@ -14,6 +15,6 @@ pub fn run(shell: CompletionShell) -> Result<()> {
         CompletionShell::Elvish => clap_complete::Shell::Elvish,
     };
 
-    generate(shell, &mut command, "handoff", &mut io::stdout());
+    generate(shell, &mut command, command_name::current(), &mut io::stdout());
     Ok(())
 }

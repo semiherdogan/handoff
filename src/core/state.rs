@@ -59,6 +59,19 @@ impl ExecutionPlanValidation {
             Self::NoRemainingSteps => "No remaining steps to continue.",
         }
     }
+
+    pub fn guard_message_with_command(&self, command_name: &str) -> String {
+        match self {
+            Self::Ready => "Execution plan is valid.".to_owned(),
+            Self::NotInitialized => {
+                format!("Execution plan not initialized. Run `{command_name} start` first.")
+            }
+            Self::MultipleCurrentSteps => {
+                "Invalid execution plan: multiple current steps ([>]) found.".to_owned()
+            }
+            Self::NoRemainingSteps => "No remaining steps to continue.".to_owned(),
+        }
+    }
 }
 
 pub fn parse_state(content: &str) -> StateSummary {
@@ -131,9 +144,19 @@ pub fn validate_execution_plan(content: &str) -> ExecutionPlanValidation {
 }
 
 pub fn ensure_execution_plan_initialized(content: &str) -> Result<()> {
+    ensure_execution_plan_initialized_with_command(content, "handoff")
+}
+
+pub fn ensure_execution_plan_initialized_with_command(
+    content: &str,
+    command_name: &str,
+) -> Result<()> {
     match validate_execution_plan(content) {
         ExecutionPlanValidation::Ready => Ok(()),
-        validation => Err(anyhow!(validation.guard_message())),
+        validation => Err(anyhow!(
+            "{}",
+            validation.guard_message_with_command(command_name)
+        )),
     }
 }
 

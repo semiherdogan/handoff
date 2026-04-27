@@ -1,3 +1,4 @@
+use crate::core::command_name;
 use crate::core::paths::AiPaths;
 use crate::core::state::{self, ExecutionPlanValidation};
 use crate::core::workflow::{self, ArtifactStatus};
@@ -9,7 +10,10 @@ pub fn run(paths: &AiPaths) -> Result<()> {
     print_validation_report(&snapshot.summary, snapshot.validation, &snapshot.artifacts);
 
     if should_fail(snapshot.validation) {
-        return Err(anyhow!(validation_error_message(snapshot.validation)));
+        return Err(anyhow!(
+            "{}",
+            validation_error_message(snapshot.validation, &command_name::current())
+        ));
     }
 
     Ok(())
@@ -22,16 +26,16 @@ fn should_fail(validation: ExecutionPlanValidation) -> bool {
     )
 }
 
-fn validation_error_message(validation: ExecutionPlanValidation) -> &'static str {
+fn validation_error_message(validation: ExecutionPlanValidation, command_name: &str) -> String {
     match validation {
         ExecutionPlanValidation::NotInitialized => {
-            "Execution plan not initialized. Run `handoff generate` first."
+            format!("Execution plan not initialized. Run `{command_name} generate` first.")
         }
         ExecutionPlanValidation::MultipleCurrentSteps => {
-            "Invalid execution plan: multiple current steps ([>]) found."
+            "Invalid execution plan: multiple current steps ([>]) found.".to_owned()
         }
-        ExecutionPlanValidation::Ready => "Execution plan is valid.",
-        ExecutionPlanValidation::NoRemainingSteps => "No remaining steps to continue.",
+        ExecutionPlanValidation::Ready => "Execution plan is valid.".to_owned(),
+        ExecutionPlanValidation::NoRemainingSteps => "No remaining steps to continue.".to_owned(),
     }
 }
 
@@ -74,7 +78,7 @@ mod tests {
     #[test]
     fn validate_uses_generate_guidance_for_uninitialized_plan() {
         assert_eq!(
-            validation_error_message(ExecutionPlanValidation::NotInitialized),
+            validation_error_message(ExecutionPlanValidation::NotInitialized, "handoff"),
             "Execution plan not initialized. Run `handoff generate` first."
         );
     }

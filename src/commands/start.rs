@@ -1,4 +1,5 @@
 use crate::commands::prompt_output;
+use crate::core::command_name;
 use crate::core::config;
 use crate::core::feature;
 use crate::core::paths::AiPaths;
@@ -20,7 +21,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
         .with_context(|| format!("Failed to read file: {}", state_path.display()))?;
     let spec_exists = feature::file_exists(&active_feature_path, feature::SPEC_FILE);
     let design_exists = feature::file_exists(&active_feature_path, feature::DESIGN_FILE);
-    ensure_start_ready(&state_content)?;
+    ensure_start_ready(&state_content, &command_name::current())?;
 
     let template_manager = TemplateManager::new(paths);
     let config = config::load(paths)?;
@@ -49,13 +50,17 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     )
 }
 
-fn ensure_start_ready(state_content: &str) -> Result<()> {
+fn ensure_start_ready(state_content: &str, command_name: &str) -> Result<()> {
     match state::validate_execution_plan(state_content) {
         ExecutionPlanValidation::Ready => Ok(()),
         ExecutionPlanValidation::NotInitialized => Err(anyhow!(
-            "Execution plan not ready. Run `handoff generate` first."
+            "Execution plan not ready. Run `{} generate` first.",
+            command_name
         )),
-        validation => Err(anyhow!(validation.guard_message())),
+        validation => Err(anyhow!(
+            "{}",
+            validation.guard_message_with_command(command_name)
+        )),
     }
 }
 
@@ -103,6 +108,7 @@ mod tests {
     fn start_requires_generate_when_execution_plan_is_missing() {
         let error = ensure_start_ready(
             "# State\n\n# Current Step\nNot started\n\n# Execution Plan\nNot yet generated.\n",
+            "handoff",
         )
         .unwrap_err();
 
@@ -116,6 +122,7 @@ mod tests {
     fn start_preserves_deterministic_invalid_plan_errors() {
         let error = ensure_start_ready(
             "# State\n\n# Current Step\nImplement\n\n# Execution Plan\n- [>] one\n- [>] two\n",
+            "handoff",
         )
         .unwrap_err();
 

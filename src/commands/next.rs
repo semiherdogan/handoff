@@ -1,3 +1,4 @@
+use crate::core::command_name;
 use crate::core::paths::AiPaths;
 use crate::core::state::ExecutionPlanValidation;
 use crate::core::workflow;
@@ -6,6 +7,7 @@ use anyhow::Result;
 
 pub fn run(paths: &AiPaths) -> Result<()> {
     let snapshot = workflow::load_snapshot(paths)?;
+    let command_name = command_name::current();
 
     println!("State memory");
     println!(
@@ -30,10 +32,10 @@ pub fn run(paths: &AiPaths) -> Result<()> {
     println!("Next command");
     println!(
         "- {}",
-        workflow::next_recommendation(&snapshot.summary, &snapshot.artifacts)
+        workflow::next_recommendation(&snapshot.summary, &snapshot.artifacts, &command_name)
     );
     println!("Run mode");
-    println!("- {}", run_mode_label(&snapshot));
+    println!("- {}", run_mode_label(&snapshot, &command_name));
 
     Ok(())
 }
@@ -61,22 +63,26 @@ fn next_task_label(snapshot: &WorkflowSnapshot) -> String {
     }
 }
 
-fn run_mode_label(snapshot: &WorkflowSnapshot) -> &'static str {
+fn run_mode_label(snapshot: &WorkflowSnapshot, command_name: &str) -> String {
     if snapshot.artifacts.feature == "needs review" {
-        return "No prompt yet. Review FEATURE.md first.";
+        return "No prompt yet. Review FEATURE.md first.".to_owned();
     }
 
     match snapshot.validation {
-        ExecutionPlanValidation::NotInitialized => "handoff run will emit a planning prompt.",
-        ExecutionPlanValidation::Ready if snapshot.summary.completed_steps == 0 => {
-            "handoff run will emit a start prompt."
+        ExecutionPlanValidation::NotInitialized => {
+            format!("{command_name} run will emit a planning prompt.")
         }
-        ExecutionPlanValidation::Ready => "handoff run will emit a continuation prompt.",
+        ExecutionPlanValidation::Ready if snapshot.summary.completed_steps == 0 => {
+            format!("{command_name} run will emit a start prompt.")
+        }
+        ExecutionPlanValidation::Ready => {
+            format!("{command_name} run will emit a continuation prompt.")
+        }
         ExecutionPlanValidation::MultipleCurrentSteps => {
-            "No prompt yet. Fix STATE.md so only one [>] step exists."
+            "No prompt yet. Fix STATE.md so only one [>] step exists.".to_owned()
         }
         ExecutionPlanValidation::NoRemainingSteps => {
-            "No prompt needed. The execution plan is already complete."
+            "No prompt needed. The execution plan is already complete.".to_owned()
         }
     }
 }
@@ -133,7 +139,7 @@ mod tests {
         snapshot.summary.completed_steps = 2;
 
         assert_eq!(
-            run_mode_label(&snapshot),
+            run_mode_label(&snapshot, "handoff"),
             "handoff run will emit a continuation prompt."
         );
     }
