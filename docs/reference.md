@@ -98,8 +98,6 @@ source <(handoff completion zsh)
 handoff completion zsh > ~/.zsh/completions/_handoff
 ```
 
-If using an alias such as `ho`, map it with `compdef _handoff ho`.
-
 ## Development
 
 ```bash
