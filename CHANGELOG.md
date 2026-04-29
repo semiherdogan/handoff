@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [v0.7.3] - 2026-04-29
+
 ### Changed
 
 - Updated command guidance to use the invoked binary name, such as `ho`, and fall back to `handoff` when the name cannot be detected.
