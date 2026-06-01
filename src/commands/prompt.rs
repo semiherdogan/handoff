@@ -23,10 +23,10 @@ pub fn run(paths: &AiPaths, kind: Option<PromptKind>, copy: bool, raw: bool) -> 
         PromptKind::Start => prompts::start_prompt(
             &template_manager,
             &prompts::StartPromptContext {
-                read_files: "- AGENTS.md (if present)\n- README.md (if present)\n- .handoff/current/FEATURE.md\n- .handoff/current/STATE.md\n- .handoff/current/SESSION.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
+                read_files: "- AGENTS.md (if present)\n- README.md (if present)\n- .handoff/current/FEATURE.md\n- .handoff/current/STATE.md\n- .handoff/current/SESSION.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)\n- .handoff/current/DECISIONS.md (if present)".to_owned(),
                 artifact_status: "- Planning state unknown in raw prompt mode. Only continue if STATE.md already contains a valid execution plan.".to_owned(),
                 planning_mode: "Raw execution-only mode. Reuse existing planning artifacts and do not regenerate the plan unless you are logically blocked by a contradiction in the markdown artifacts.".to_owned(),
-                workflow_instructions: "1. Inspect FEATURE.md, STATE.md, SESSION.md, and any available SPEC.md / DESIGN.md files.\n2. Continue only if STATE.md already has a valid execution plan.\n3. Implement the current micro-step from STATE.md.\n4. Keep execution steps small, keep exactly one [>] if work remains, and update SESSION.md after each step transition.".to_owned(),
+                workflow_instructions: "1. Inspect FEATURE.md, STATE.md, SESSION.md, and any available SPEC.md / DESIGN.md / DECISIONS.md files.\n2. Continue only if STATE.md already has a valid execution plan.\n3. Implement the current micro-step from STATE.md.\n4. Keep execution steps small, keep exactly one [>] if work remains, and update STATE.md evidence plus SESSION.md after each step transition.".to_owned(),
             },
             &prompt_options,
         ),
@@ -45,6 +45,7 @@ pub fn run(paths: &AiPaths, kind: Option<PromptKind>, copy: bool, raw: bool) -> 
                 &prompt_options,
             )
         }
+        PromptKind::Drift => prompts::drift_prompt(&template_manager, &prompt_options),
     };
 
     prompt_output::output_prompt_with_summary(&prompt, copy, raw, Some(prompt_summary(selected)))
@@ -56,6 +57,11 @@ fn prompt_summary(selected: PromptKind) -> prompt_output::PromptSummary {
             "Prepared a raw context-improvement prompt without workflow guard checks."
                 .to_owned(),
             "Paste this prompt into your AI assistant to improve README.md, AGENTS.md, or other missing context only where it will materially help future sessions."
+                .to_owned(),
+        ),
+        PromptKind::Drift => (
+            "Prepared a raw drift audit prompt without workflow guard checks.".to_owned(),
+            "Paste this prompt into your AI assistant to audit saved intent against implementation without changing code."
                 .to_owned(),
         ),
         _ => (

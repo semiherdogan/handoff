@@ -43,7 +43,7 @@ pub enum Command {
         #[arg(long, help = "Output raw prompt without formatting")]
         raw: bool,
     },
-    /// Generate a planning-only prompt (updates SPEC/DESIGN/STATE)
+    /// Generate a planning-only prompt (updates SPEC/DESIGN/STATE/DECISIONS)
     Generate {
         #[arg(long, help = "Copy prompt to clipboard")]
         copy: bool,
@@ -52,6 +52,13 @@ pub enum Command {
     },
     /// Generate an execution-only prompt (requires execution plan)
     Start {
+        #[arg(long, help = "Copy prompt to clipboard")]
+        copy: bool,
+        #[arg(long, help = "Output raw prompt without formatting")]
+        raw: bool,
+    },
+    /// Generate a drift audit prompt
+    Drift {
         #[arg(long, help = "Copy prompt to clipboard")]
         copy: bool,
         #[arg(long, help = "Output raw prompt without formatting")]
@@ -128,7 +135,7 @@ pub enum Command {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum PromptKind {
-    /// Planning-only prompt (updates SPEC/DESIGN/STATE)
+    /// Planning-only prompt (updates SPEC/DESIGN/STATE/DECISIONS)
     Generate,
     /// Execution-only prompt (requires execution plan)
     Start,
@@ -142,6 +149,8 @@ pub enum PromptKind {
     Continue,
     /// Generate prompt to improve missing repository context files
     Context,
+    /// Generate prompt to audit drift between saved intent and implementation
+    Drift,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]

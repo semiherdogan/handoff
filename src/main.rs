@@ -20,6 +20,7 @@ fn run() -> Result<()> {
         Command::Continue { copy, raw } => commands::r#continue::run(&paths, copy, raw),
         Command::Generate { copy, raw } => commands::generate::run(&paths, copy, raw),
         Command::Start { copy, raw } => commands::start::run(&paths, copy, raw),
+        Command::Drift { copy, raw } => commands::drift::run(&paths, copy, raw),
         Command::Spec { copy, raw } => commands::spec::run(&paths, copy, raw),
         Command::Design { copy, raw } => commands::design::run(&paths, copy, raw),
         Command::Tasks { copy, raw } => commands::tasks::run(&paths, copy, raw),

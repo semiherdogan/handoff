@@ -31,7 +31,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
             what_changed: format!(
                 "No repository files changed. The prompt is scoped to the active feature workspace '{feature_name}'."
             ),
-            next: "Paste this prompt into your AI assistant to refresh SPEC.md, optional DESIGN.md, STATE.md, and SESSION.md."
+            next: "Paste this prompt into your AI assistant to refresh SPEC.md, optional DESIGN.md, STATE.md, SESSION.md, and DECISIONS.md when needed."
                 .to_owned(),
         }),
     )

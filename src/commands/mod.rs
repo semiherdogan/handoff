@@ -4,6 +4,7 @@ pub mod completion;
 pub mod confirm;
 pub mod r#continue;
 pub mod design;
+pub mod drift;
 pub mod export;
 pub mod generate;
 pub mod ignore;

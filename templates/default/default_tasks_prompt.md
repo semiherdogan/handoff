@@ -6,6 +6,7 @@ Read:
 - .handoff/current/SPEC.md
 - .handoff/current/DESIGN.md (if it exists)
 - .handoff/current/STATE.md
+- .handoff/current/DECISIONS.md (if present)
 
 Goal
 Generate an execution-ready task list in .handoff/current/STATE.md.
@@ -35,6 +36,7 @@ Step formatting rules (STRICT):
 Additional requirements:
 - Fully update STATE.md after creating the plan.
 - Keep the plan grounded in SPEC.md.
+- Keep the plan aligned with accepted decisions in DECISIONS.md.
 - Avoid bundling unrelated concerns into one step.
 - Prefer 5-10 micro-steps when reasonable.
 - If SPEC.md or DESIGN.md contain contradictions or gaps that block task planning, flag them explicitly instead of guessing.

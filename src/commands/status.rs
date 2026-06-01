@@ -231,9 +231,7 @@ fn next_focus(
     }
 
     match validation {
-        ExecutionPlanValidation::NotInitialized => {
-            "Generate SPEC.md, optional DESIGN.md, STATE.md, and SESSION.md.".to_owned()
-        }
+        ExecutionPlanValidation::NotInitialized => "Generate SPEC.md, optional DESIGN.md, STATE.md, SESSION.md, and DECISIONS.md when needed.".to_owned(),
         ExecutionPlanValidation::Ready => summary.current_step.clone(),
         ExecutionPlanValidation::MultipleCurrentSteps => {
             "Repair STATE.md so only one step is marked as [>].".to_owned()

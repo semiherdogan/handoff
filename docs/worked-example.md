@@ -23,6 +23,7 @@ This creates the workspace:
     DESIGN.md
     STATE.md
     SESSION.md
+    DECISIONS.md
 ```
 
 ## 2. Write the feature brief
@@ -77,6 +78,7 @@ After planning, the feature workspace should converge toward:
 - `DESIGN.md`: optional implementation notes when the change is complex enough
 - `STATE.md`: execution plan with exactly one `[>]` current step while work remains
 - `SESSION.md`: continuation-safe summary of what changed and what comes next
+- `DECISIONS.md`: durable decisions that should survive future sessions
 
 Example execution plan:
 
@@ -113,8 +115,10 @@ Use `start` and `continue` when you want to drive the execution flow directly.
 During implementation:
 
 - mark completed steps as `[x]`
+- record evidence in `STATE.md` for completed steps
 - keep exactly one `[>]` if work remains
 - rewrite `SESSION.md` after meaningful progress
+- update `DECISIONS.md` when a durable product or architecture choice changes
 - use `handoff validate` when you need a hard readiness check
 
 ## 7. Finish cleanly
@@ -122,8 +126,11 @@ During implementation:
 When all planned steps are done:
 
 - every execution step should be `[x]`
+- completed steps should include evidence for changed files and validation
 - `SESSION.md` should summarize what shipped and any follow-up items
 - `handoff next` should stop pointing to more execution work
+
+Use `handoff drift --copy` if you want an audit prompt that compares the saved spec, plan, session, decisions, and implementation before closing the feature.
 
 ## Why This Example Matters
 
@@ -135,5 +142,6 @@ The value is the saved state on disk:
 - the plan survives
 - the execution ledger survives
 - the continuation context survives
+- the decision history survives
 
 That is what lets a later AI session resume without starting over.

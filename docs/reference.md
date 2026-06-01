@@ -15,11 +15,12 @@
 | `run [--copy] [--raw]` | Load the active state and emit the next prompt automatically (`generate`, `start`, or `continue`) |
 | `generate [--copy] [--raw]` | Generate a planning-only prompt that refreshes markdown artifacts without coding |
 | `start [--copy] [--raw]` | Generate an execution prompt only when a valid execution plan already exists |
+| `drift [--copy] [--raw]` | Generate a drift audit prompt that compares saved intent against implementation |
 | `spec [--copy] [--raw]` | Generate a prompt to create or rewrite `SPEC.md` |
 | `design [--copy] [--raw]` | Generate a prompt to create or rewrite `DESIGN.md` |
 | `tasks [--copy] [--raw]` | Generate a prompt to create or rewrite the `STATE.md` execution plan |
 | `continue [--copy] [--raw]` | Generate a continuation prompt (with state guards) |
-| `prompt generate\|start\|spec\|design\|tasks\|continue\|context [--copy] [--raw]` | Raw prompt output (no guard checks) |
+| `prompt generate\|start\|spec\|design\|tasks\|continue\|context\|drift [--copy] [--raw]` | Raw prompt output (no guard checks) |
 | `status [--follow]` | Show current execution state, configured language, and execution-plan validation (`--follow` polls live) |
 | `next` | Show the next task or blocking action for the active feature |
 | `validate` | Validate the current execution plan and report whether it is ready, complete, or invalid |
@@ -46,6 +47,7 @@
       DESIGN.md
       STATE.md
       SESSION.md
+      DECISIONS.md
 ```
 
 ## Config
@@ -58,7 +60,7 @@ language = "English"
 
 If `language` is missing, `handoff` falls back to English when generating prompts.
 
-The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, and `SESSION.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax.
+The language setting applies to handoff prompt prose and markdown artifacts such as `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `SESSION.md`, and `DECISIONS.md`. It does not tell the assistant to rename identifiers, change code conventions, or switch programming language syntax.
 
 Parser-sensitive `STATE.md` structure remains in English.
 
@@ -82,9 +84,11 @@ Parser-sensitive `STATE.md` structure remains in English.
 - the next recommended command
 - the prompt mode that `handoff run` will emit
 
-`handoff init` also scans repository context readiness, detects files such as `README.md`, `AGENTS.md`, and `CLAUDE.md` when present, and calls out missing high-value context such as `README.md` or `AGENTS.md`.
+`handoff init` also scans repository context readiness, detects files such as `README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `docs/architecture.md`, `docs/conventions.md`, and `docs/decisions/` when present, and calls out missing high-value context such as `README.md` or `AGENTS.md`.
 
 Use `handoff prompt context --copy` when you want a prompt that improves missing repository context without implementing code.
+
+Use `handoff drift --copy` when you want an audit prompt that asks an assistant to compare `SPEC.md`, optional `DESIGN.md`, `STATE.md`, `SESSION.md`, `DECISIONS.md`, and the implementation for confirmed drift. The command does not inspect code itself; it emits a deterministic audit prompt.
 
 `handoff validate` gives a more explicit execution-plan check and exits with failure for uninitialized or structurally invalid plans.
 

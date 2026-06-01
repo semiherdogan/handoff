@@ -27,6 +27,16 @@ Unknown
 # Known Issues
 None
 
+# Evidence
+None yet.
+
+Evidence Entry Format:
+- Step:
+- Files:
+- Commands:
+- Result:
+- Notes:
+
 # Risks
 None
 

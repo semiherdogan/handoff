@@ -41,7 +41,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
             what_happened: "Prepared a continuation prompt from the saved project state."
                 .to_owned(),
             what_changed: format!(
-                "No repository files changed. The prompt loads SESSION.md and STATE.md from the active feature workspace '{feature_name}'."
+                "No repository files changed. The prompt loads SESSION.md, STATE.md, and DECISIONS.md when present from the active feature workspace '{feature_name}'."
             ),
             next: "Paste this prompt into your AI assistant to resume the remaining micro-steps from the current state."
                 .to_owned(),

@@ -61,7 +61,7 @@ fn prepare_run_prompt(
             prompt: prompts::generate_prompt(template_manager, prompt_options),
             mode_label: "generate",
             next_task:
-                "Generate SPEC.md, optional DESIGN.md, STATE.md, and SESSION.md from FEATURE.md."
+                "Generate SPEC.md, optional DESIGN.md, STATE.md, SESSION.md, and DECISIONS.md when needed from FEATURE.md."
                     .to_owned(),
         }),
         ExecutionPlanValidation::Ready if snapshot.summary.completed_steps == 0 => {

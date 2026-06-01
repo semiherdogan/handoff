@@ -5,6 +5,7 @@ Read:
 - README.md (if present)
 - .handoff/current/FEATURE.md
 - .handoff/current/SPEC.md
+- .handoff/current/DECISIONS.md (if present)
 
 Goal
 Produce the smallest coherent implementation design that satisfies the spec.
@@ -23,6 +24,7 @@ Execution Protocol (Required)
 4. Identify the most likely files or modules that will change.
 5. Document tradeoffs and risks briefly.
 6. Choose the minimal design that satisfies SPEC.md.
+7. Update DECISIONS.md only for durable architecture or product choices that should survive future sessions.
 
 --------------------------------------------------
 Constraints
@@ -32,6 +34,7 @@ Constraints
 - Avoid speculative architecture.
 - Preserve existing behavior and patterns unless SPEC.md requires change.
 - Do not rewrite SPEC.md unless it is internally contradictory and you must call that out explicitly.
+- Do not record routine implementation details in DECISIONS.md.
 
 --------------------------------------------------
 Output Quality

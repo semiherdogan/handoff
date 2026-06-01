@@ -9,12 +9,12 @@ use anyhow::Result;
 
 pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
     let active_feature_path = workspace::resolve_current_feature_path(paths)?;
-    feature::validate_spec_file(&active_feature_path)?;
+    feature::validate_feature_files(&active_feature_path)?;
     let feature_name = workspace::resolve_current_feature_name(paths)?;
 
     let template_manager = TemplateManager::new(paths);
     let config = config::load(paths)?;
-    let prompt = prompts::tasks_prompt(
+    let prompt = prompts::drift_prompt(
         &template_manager,
         &prompts::PromptOptions {
             language_instruction: config.workflow_language_instruction(),
@@ -26,13 +26,12 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
         copy,
         raw,
         Some(prompt_output::PromptSummary {
-            title: "Tasks Prompt".to_owned(),
-            what_happened: "Prepared a prompt to turn the current spec into an execution plan."
-                .to_owned(),
+            title: "Drift Audit Prompt".to_owned(),
+            what_happened: "Prepared a drift audit prompt for the active feature.".to_owned(),
             what_changed: format!(
-                "No repository files changed. The prompt targets STATE.md and reads DECISIONS.md when present in the active feature workspace '{feature_name}'."
+                "No repository files changed. The prompt audits saved intent against implementation for '{feature_name}'."
             ),
-            next: "Paste this prompt into your AI assistant to build an execution-ready STATE.md with exactly one current step."
+            next: "Paste this prompt into your AI assistant to inspect implementation drift without changing code."
                 .to_owned(),
         }),
     )

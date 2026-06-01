@@ -8,6 +8,7 @@ Read:
 - .handoff/current/FEATURE.md
 - .handoff/current/SPEC.md (if present)
 - .handoff/current/DESIGN.md (if present)
+- .handoff/current/DECISIONS.md (if present)
 
 --------------------------------------------------
 Role
@@ -38,8 +39,10 @@ Execution Protocol (Required)
    - Mark the next step as "- [>]" when work remains.
    - Validate via build/tests.
    - Fix issues if needed.
+   - Add evidence to STATE.md for the completed step, including changed files, commands/tests run, and result.
    - Fully update .handoff/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
    - Rewrite .handoff/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
+   - Update .handoff/current/DECISIONS.md only when durable product or architecture decisions changed.
 6. Continue automatically while unfinished steps exist.
 7. Stop if logically blocked or if no remaining steps exist.
 
@@ -91,4 +94,5 @@ Before Context Ends
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
 - Update .handoff/current/STATE.md fully.
 - Rewrite .handoff/current/SESSION.md for safe continuation.
+- Update .handoff/current/DECISIONS.md if durable decisions changed.
 - When all steps are marked [x] and no work remains, write a final summary in SESSION.md stating what was delivered and any follow-up items. Do not mark a feature complete if tests fail or known issues remain.

@@ -35,8 +35,10 @@ After each micro-step:
 - Mark the next step as "- [>]".
 - Run build/tests.
 - Fix issues before proceeding.
+- Add evidence to .handoff/current/STATE.md for the completed step, including changed files, commands/tests run, and result.
 - Fully update .handoff/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
 - Rewrite .handoff/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
+- Update .handoff/current/DECISIONS.md only when the step introduces or changes a durable product or architecture decision.
 - Continue automatically.
 
 Stop only if logically blocked.
@@ -82,4 +84,5 @@ Before Context Ends
 - If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
 - Update .handoff/current/STATE.md.
 - Rewrite .handoff/current/SESSION.md for safe continuation.
+- Update .handoff/current/DECISIONS.md if durable decisions changed.
 - When all steps are marked [x] and no work remains, write a final summary in SESSION.md stating what was delivered and any follow-up items. Do not mark a feature complete if tests fail or known issues remain.

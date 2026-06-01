@@ -4,6 +4,7 @@ Read:
 - AGENTS.md (if present)
 - README.md (if present)
 - .handoff/current/FEATURE.md
+- .handoff/current/DECISIONS.md (if present)
 
 Goal
 Convert the raw feature request into a clear, implementation-ready behavioral spec.
@@ -22,7 +23,8 @@ Execution Protocol (Required)
 4. Separate in-scope work from out-of-scope work.
 5. Keep requirements concrete and testable.
 6. Preserve the user's intent; do not invent unsupported product behavior.
-7. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly under "Open Questions" instead of filling them with assumptions.
+7. Preserve accepted decisions from DECISIONS.md when they affect behavior.
+8. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly under "Open Questions" instead of filling them with assumptions.
 
 --------------------------------------------------
 Constraints

@@ -28,6 +28,7 @@ Without a memory layer:
 - `DESIGN.md`: optional technical design
 - `STATE.md`: execution plan and progress
 - `SESSION.md`: continuation-safe session summary
+- `DECISIONS.md`: durable feature decisions and tradeoffs
 
 Then it generates the right prompt for the current state so your assistant can plan, execute, and continue without losing the thread.
 
@@ -41,6 +42,7 @@ handoff init my-feature
 handoff run --copy
 handoff next
 handoff status
+handoff drift --copy
 ```
 
 What happens:
@@ -50,6 +52,7 @@ What happens:
 - `handoff run` chooses the right prompt from the saved state
 - `handoff next` shows the next task or blocking action
 - `handoff status` makes the current state visible
+- `handoff drift` generates an audit prompt to compare saved intent against implementation
 
 If the repo is missing high-value context, run:
 
@@ -57,14 +60,15 @@ If the repo is missing high-value context, run:
 handoff prompt context --copy
 ```
 
-That prompt helps you improve `README.md`, `AGENTS.md`, `CLAUDE.md`, or other context files only when they would materially help future AI sessions.
+That prompt helps you improve `README.md`, `AGENTS.md`, `CLAUDE.md`, `docs/architecture.md`, `docs/conventions.md`, `docs/decisions/`, or other context files only when they would materially help future AI sessions.
 
 ## How It Works
 
 1. Capture the feature intent in `FEATURE.md`.
 2. Shape it into a spec and execution plan.
-3. Track execution in `STATE.md` and `SESSION.md`.
-4. Continue later from the saved project state.
+3. Track execution evidence in `STATE.md` and continuation context in `SESSION.md`.
+4. Preserve durable choices in `DECISIONS.md`.
+5. Continue later from the saved project state.
 
 ## Why It Converts Better Than Ad-Hoc Prompting
 

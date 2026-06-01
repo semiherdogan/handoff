@@ -26,9 +26,10 @@ Execution Protocol (Required)
 3. Prefer `README.md` for onboarding, user flow, installation, and usage guidance.
 4. Prefer `AGENTS.md` for repository rules, constraints, workflow contracts, and contributor/agent guidance.
 5. Only create files under `docs/` if the repository has architecture or workflow detail that clearly does not fit in `README.md` or `AGENTS.md`.
-6. Keep any created or updated context files compact, concrete, and aligned with the repository's actual behavior.
-7. If an existing context file is already strong, leave it alone.
-8. Stop after updating repository context files. Do not implement code changes.
+6. Prefer `docs/architecture.md` for durable system structure, `docs/conventions.md` for project-specific conventions, and `docs/decisions/` for long-lived project decisions broader than one feature.
+7. Keep any created or updated context files compact, concrete, and aligned with the repository's actual behavior.
+8. If an existing context file is already strong, leave it alone.
+9. Stop after updating repository context files. Do not implement code changes.
 
 --------------------------------------------------
 Constraints

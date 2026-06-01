@@ -29,6 +29,8 @@ What each step does:
    Shows the next task or blocking action without generating a prompt.
 5. `handoff continue --copy`
    Remains available when you want the continuation prompt directly instead of letting `handoff run` decide.
+6. `handoff drift --copy`
+   Generates an audit prompt when you want an assistant to compare saved intent and decisions against implementation without changing code.
 
 If `handoff init` reports missing high-value context such as `README.md` or `AGENTS.md`, run:
 
@@ -59,6 +61,7 @@ Use this decision rule:
 - `handoff generate` is for planning-only refresh when you do not want implementation to start yet.
 - `handoff start` is for direct execution when a valid plan already exists.
 - `handoff continue` is for direct continuation when execution is already underway.
+- `handoff drift` is for auditing whether implementation still matches `SPEC.md`, optional `DESIGN.md`, `STATE.md`, `SESSION.md`, and `DECISIONS.md`.
 - `handoff spec`, `handoff design`, and `handoff tasks` are for manual planning checkpoints when you want explicit review steps.
 - `handoff prompt <kind>` is for raw prompt selection when you already know exactly which prompt you want.
 
@@ -79,6 +82,7 @@ They are most useful when they document:
 - build, test, and run commands
 - repo structure and module boundaries
 - project-specific conventions
+- durable project decisions
 - important invariants and guardrails
 - high-value troubleshooting notes
 

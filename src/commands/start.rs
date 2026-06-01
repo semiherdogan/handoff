@@ -42,7 +42,7 @@ pub fn run(paths: &AiPaths, copy: bool, raw: bool) -> Result<()> {
             title: "Start Prompt".to_owned(),
             what_happened: "Prepared an execution prompt from the active execution plan.".to_owned(),
             what_changed: format!(
-                "No repository files changed. The prompt reuses STATE.md and SESSION.md from the active feature workspace '{feature_name}'."
+                "No repository files changed. The prompt reuses STATE.md, SESSION.md, and DECISIONS.md when present from the active feature workspace '{feature_name}'."
             ),
             next: "Paste this prompt into your AI assistant to begin executing the current micro-step without regenerating the plan."
                 .to_owned(),
@@ -69,14 +69,14 @@ pub(crate) fn build_start_prompt_context(
     design_exists: bool,
 ) -> prompts::StartPromptContext {
     prompts::StartPromptContext {
-        read_files: "- AGENTS.md (if present)\n- README.md (if present)\n- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)".to_owned(),
+        read_files: "- AGENTS.md (if present)\n- README.md (if present)\n- .handoff/current/SESSION.md\n- .handoff/current/STATE.md\n- .handoff/current/FEATURE.md\n- .handoff/current/SPEC.md (if present)\n- .handoff/current/DESIGN.md (if present)\n- .handoff/current/DECISIONS.md (if present)".to_owned(),
         artifact_status: format!(
-            "- FEATURE.md: present\n- SPEC.md: {}\n- DESIGN.md: {}\n- STATE.md: contains a valid execution plan\n- SESSION.md: present",
+            "- FEATURE.md: present\n- SPEC.md: {}\n- DESIGN.md: {}\n- DECISIONS.md: optional\n- STATE.md: contains a valid execution plan\n- SESSION.md: present",
             if spec_exists { "present" } else { "missing" },
             if design_exists { "present" } else { "missing" }
         ),
         planning_mode: "Execution-only mode. The planning artifacts are ready. Do not regenerate the plan unless you are logically blocked by a contradiction in the existing markdown artifacts.".to_owned(),
-        workflow_instructions: "1. Read SESSION.md, STATE.md, and FEATURE.md first.\n2. If SPEC.md and/or DESIGN.md exist, use them as supporting planning context.\n3. Continue from the existing execution plan in STATE.md.\n4. Implement only the current micro-step, then update STATE.md and SESSION.md after the step transition.\n5. Validate with build/tests before proceeding to the next micro-step.".to_owned(),
+        workflow_instructions: "1. Read SESSION.md, STATE.md, and FEATURE.md first.\n2. If SPEC.md, DESIGN.md, or DECISIONS.md exist, use them as supporting planning context.\n3. Continue from the existing execution plan in STATE.md.\n4. Implement only the current micro-step, then update STATE.md evidence and SESSION.md after the step transition.\n5. Validate with build/tests before proceeding to the next micro-step.".to_owned(),
     }
 }
 

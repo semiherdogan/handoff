@@ -1,8 +1,8 @@
 use crate::templates::manager::{
     DEFAULT_CONTEXT_PROMPT_TEMPLATE_NAME, DEFAULT_CONTINUE_PROMPT_TEMPLATE_NAME,
-    DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME,
-    DEFAULT_SPEC_PROMPT_TEMPLATE_NAME, DEFAULT_START_PROMPT_TEMPLATE_NAME,
-    DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
+    DEFAULT_DESIGN_PROMPT_TEMPLATE_NAME, DEFAULT_DRIFT_PROMPT_TEMPLATE_NAME,
+    DEFAULT_GENERATE_PROMPT_TEMPLATE_NAME, DEFAULT_SPEC_PROMPT_TEMPLATE_NAME,
+    DEFAULT_START_PROMPT_TEMPLATE_NAME, DEFAULT_TASKS_PROMPT_TEMPLATE_NAME, TemplateManager,
 };
 
 pub struct PromptOptions {
@@ -92,6 +92,13 @@ pub fn context_prompt(
     )
 }
 
+pub fn drift_prompt(template_manager: &TemplateManager, options: &PromptOptions) -> String {
+    apply_shared_prompt_options(
+        template_manager.get_template(DEFAULT_DRIFT_PROMPT_TEMPLATE_NAME),
+        options,
+    )
+}
+
 fn apply_shared_prompt_options(template: String, options: &PromptOptions) -> String {
     template.replace("{{language_instruction}}", &options.language_instruction)
 }
@@ -99,7 +106,8 @@ fn apply_shared_prompt_options(template: String, options: &PromptOptions) -> Str
 #[cfg(test)]
 mod tests {
     use super::{
-        ContextPromptContext, PromptOptions, context_prompt, generate_prompt, spec_prompt,
+        ContextPromptContext, PromptOptions, context_prompt, drift_prompt, generate_prompt,
+        spec_prompt,
     };
     use crate::core::paths::AiPaths;
     use crate::core::test_utils::make_temp_base;
@@ -162,6 +170,24 @@ mod tests {
         assert!(prompt.contains("- High value: AGENTS.md"));
         assert!(!prompt.contains("{{existing_context_sources}}"));
         assert!(!prompt.contains("{{missing_context_sources}}"));
+
+        fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
+    }
+
+    #[test]
+    fn drift_prompt_renders_language_instruction() {
+        let base = make_temp_base("drift-prompt-language");
+        let paths = AiPaths::discover(&base);
+        let manager = TemplateManager::new(&paths);
+        let prompt = drift_prompt(
+            &manager,
+            &PromptOptions {
+                language_instruction: "Write prose in English.".to_owned(),
+            },
+        );
+
+        assert!(prompt.contains("Write prose in English."));
+        assert!(!prompt.contains("{{language_instruction}}"));
 
         fs::remove_dir_all(base).expect("failed to cleanup temp test dir");
     }

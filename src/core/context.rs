@@ -71,7 +71,11 @@ pub fn scan(paths: &AiPaths) -> ContextScan {
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
+        "CONTRIBUTING.md",
         "docs/",
+        "docs/architecture.md",
+        "docs/conventions.md",
+        "docs/decisions/",
         "Cargo.toml",
         "package.json",
         "pyproject.toml",
@@ -101,11 +105,31 @@ pub fn scan(paths: &AiPaths) -> ContextScan {
     }
 
     let mut optional_missing = Vec::new();
-    if !root.join("docs").is_dir() {
+    let docs_dir = root.join("docs");
+    if !docs_dir.is_dir() {
         optional_missing.push(ContextGap {
             name: "docs/",
             message: "Optional. Only useful if README.md and AGENTS.md are not enough for architecture or workflow context.",
         });
+    } else {
+        if !root.join("docs/architecture.md").is_file() {
+            optional_missing.push(ContextGap {
+                name: "docs/architecture.md",
+                message: "Optional. Useful when architecture cannot be understood quickly from README.md and AGENTS.md.",
+            });
+        }
+        if !root.join("docs/conventions.md").is_file() {
+            optional_missing.push(ContextGap {
+                name: "docs/conventions.md",
+                message: "Optional. Useful when coding, testing, or workflow conventions need more detail than AGENTS.md.",
+            });
+        }
+        if !root.join("docs/decisions").is_dir() {
+            optional_missing.push(ContextGap {
+                name: "docs/decisions/",
+                message: "Optional. Useful for long-lived project decisions that should be shared outside a single feature.",
+            });
+        }
     }
 
     ContextScan {
@@ -170,10 +194,17 @@ mod tests {
         let paths = AiPaths::discover(&base);
         fs::create_dir_all(base.join("src")).expect("should create src");
         fs::create_dir_all(base.join("docs")).expect("should create docs");
+        fs::create_dir_all(base.join("docs/decisions")).expect("should create decisions docs");
         fs::create_dir_all(&paths.ai_dir).expect("should create .handoff");
         fs::write(base.join("README.md"), "# Demo\n").expect("should write readme");
         fs::write(base.join("AGENTS.md"), "# Rules\n").expect("should write agents");
         fs::write(base.join("CLAUDE.md"), "# Claude\n").expect("should write claude");
+        fs::write(base.join("CONTRIBUTING.md"), "# Contributing\n")
+            .expect("should write contributing");
+        fs::write(base.join("docs/architecture.md"), "# Architecture\n")
+            .expect("should write architecture");
+        fs::write(base.join("docs/conventions.md"), "# Conventions\n")
+            .expect("should write conventions");
         fs::write(base.join("Cargo.toml"), "[package]\nname=\"demo\"\n").expect("write cargo");
 
         let scan = scan(&paths);
@@ -181,7 +212,17 @@ mod tests {
         assert!(scan.found_sources.contains(&"README.md".to_owned()));
         assert!(scan.found_sources.contains(&"AGENTS.md".to_owned()));
         assert!(scan.found_sources.contains(&"CLAUDE.md".to_owned()));
+        assert!(scan.found_sources.contains(&"CONTRIBUTING.md".to_owned()));
         assert!(scan.found_sources.contains(&"docs/".to_owned()));
+        assert!(
+            scan.found_sources
+                .contains(&"docs/architecture.md".to_owned())
+        );
+        assert!(
+            scan.found_sources
+                .contains(&"docs/conventions.md".to_owned())
+        );
+        assert!(scan.found_sources.contains(&"docs/decisions/".to_owned()));
         assert!(scan.found_sources.contains(&"src/".to_owned()));
         assert!(scan.high_value_missing.is_empty());
 

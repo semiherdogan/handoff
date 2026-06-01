@@ -11,7 +11,7 @@ Guidelines for AI/code agents and contributors working in this repository.
 
 ## Core Intent
 
-`handoff` manages a structured feature workspace under `.handoff/` and generates prompts (`start`, `spec`, `design`, `tasks`, `continue`) for coding assistants.
+`handoff` manages a structured feature workspace under `.handoff/` and generates prompts (`start`, `spec`, `design`, `tasks`, `continue`, `drift`) for coding assistants.
 
 The tool should remain:
 
@@ -45,6 +45,7 @@ Expected structure:
       DESIGN.md
       STATE.md
       SESSION.md
+      DECISIONS.md
 ```
 
 Artifact responsibilities:
@@ -53,12 +54,13 @@ Artifact responsibilities:
 - `FEATURE.md`: raw feature intent and owner constraints
 - `SPEC.md`: normalized behavioral requirements and acceptance criteria
 - `DESIGN.md`: technical design scaffold; may stay lightweight for simple features
-- `STATE.md`: execution plan and progress markers
+- `STATE.md`: execution plan, progress markers, and execution evidence
 - `SESSION.md`: continuation-safe session summary
+- `DECISIONS.md`: durable feature-level product or architecture decisions
 
 `.handoff/current/` is reserved for handoff workflow artifacts only:
 
-- allowed files: `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, `SESSION.md`
+- allowed files: `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, `SESSION.md`, `DECISIONS.md`
 - do not place extra project documentation, analysis notes, reports, or drafts there
 - if permanent project docs are needed, put them in normal repository locations such as `docs/`, the repository root, or the closest relevant module directory
 
@@ -89,6 +91,8 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - section headers like `# Current Step`, `# Execution Plan`, and `# Risks`
 - execution markers `[ ]`, `[>]`, and `[x]`
 
+Execution prompts should add evidence for completed steps under `# Evidence`, including changed files, validation commands, and results.
+
 ## Commands (Current Surface)
 
 - `handoff init [feature] [--force]`
@@ -96,11 +100,12 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 - `handoff run [--copy] [--raw]`
 - `handoff generate [--copy] [--raw]`
 - `handoff start [--copy] [--raw]`
+- `handoff drift [--copy] [--raw]`
 - `handoff spec [--copy] [--raw]`
 - `handoff design [--copy] [--raw]`
 - `handoff tasks [--copy] [--raw]`
 - `handoff continue [--copy] [--raw]`
-- `handoff prompt [generate|start|spec|design|tasks|continue|context] [--copy] [--raw]`
+- `handoff prompt [generate|start|spec|design|tasks|continue|context|drift] [--copy] [--raw]`
 - `handoff status`
 - `handoff next`
 - `handoff validate`
@@ -117,14 +122,15 @@ Deterministic guard errors are part of the contract; do not silently relax them.
 
 - `init`: create/select feature workspace, optionally replace existing `.handoff/current` with `--force`
 - `init`: create/select feature workspace, scan repository context readiness, and point users to `handoff prompt context` when high-value context is missing
-- `generate`: generate a planning-only prompt that updates `SPEC.md`, optional `DESIGN.md`, `STATE.md`, and `SESSION.md` without implementing code
+- `generate`: generate a planning-only prompt that updates `SPEC.md`, optional `DESIGN.md`, `STATE.md`, `SESSION.md`, and durable `DECISIONS.md` entries without implementing code
 - `run`: inspect the active workspace state and emit the next prompt automatically (`generate`, `start`, or `continue`)
 - `start`: generate an execution-only prompt; require an existing valid execution plan before implementation begins
 - `spec`: generate a prompt that turns `FEATURE.md` into `SPEC.md`
 - `design`: generate a prompt that turns `FEATURE.md` + `SPEC.md` into `DESIGN.md`
 - `tasks`: generate a prompt that turns `SPEC.md` (+ optional `DESIGN.md`) into the `STATE.md` execution plan
 - `continue`: generate continuation prompt with STATE guard checks
-- `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, or `continue`) without continue guard semantics
+- `drift`: generate an audit prompt that compares saved intent and decisions against implementation without changing code
+- `prompt`: raw prompt generator (`generate`, `start`, `spec`, `design`, `tasks`, `continue`, `context`, or `drift`) without continue guard semantics
 - `prompt context`: generate a repo-context improvement prompt that helps create or improve files such as `README.md` or `AGENTS.md` without implementing code
 - `status`: summarize active feature state, configured workflow language, execution-plan validation, blocking reason, and artifact readiness in a compact view
 - `next`: show the next task or blocking action without generating a prompt
@@ -191,6 +197,6 @@ When updating workflow behavior, also update:
 - `README.md` (usage flow and command guidance)
 - `CHANGELOG.md` (record user-facing changes in Keep a Changelog format)
 - default templates in `templates/default/` (if prompt/state contract changes)
-- start/continue/spec/design/tasks prompt contracts to require full per-step `STATE.md` updates and `SESSION.md` rewrites for continuation safety where applicable
+- start/continue/spec/design/tasks prompt contracts to require full per-step `STATE.md` updates, evidence entries, `SESSION.md` rewrites, and durable `DECISIONS.md` updates for continuation safety where applicable
 
 When a task is completed and it results in a user-facing change, add an entry to `CHANGELOG.md` under the `Unreleased` section before finishing.

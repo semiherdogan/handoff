@@ -8,6 +8,7 @@ Read:
 - .handoff/current/DESIGN.md
 - .handoff/current/STATE.md
 - .handoff/current/SESSION.md
+- .handoff/current/DECISIONS.md (if present)
 
 Goal
 Create or refresh the planning markdown artifacts needed for execution, then stop before any code changes.
@@ -24,10 +25,11 @@ Execution Protocol (Required)
 2. Create or fully rewrite `.handoff/current/SPEC.md` from the feature intent.
 3. Create or fully rewrite `.handoff/current/DESIGN.md` only if the feature is complex enough to benefit from explicit technical planning. Otherwise keep the file lightweight and clearly note that a detailed design is not needed.
 4. Create or fully rewrite `.handoff/current/STATE.md` with an execution-ready micro-step plan grounded in SPEC.md and optional DESIGN.md.
-5. Rewrite `.handoff/current/SESSION.md` so the next execution session can safely continue from the generated plan.
-6. Ensure exactly one step is marked as `[>]` in `.handoff/current/STATE.md` when work remains.
-7. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly in SPEC.md under "Open Questions" instead of filling them with assumptions.
-8. Stop after updating the markdown artifacts. Do not implement code, edit source files, or run the execution loop.
+5. Update `.handoff/current/DECISIONS.md` only for durable product or architecture decisions that future sessions should preserve.
+6. Rewrite `.handoff/current/SESSION.md` so the next execution session can safely continue from the generated plan.
+7. Ensure exactly one step is marked as `[>]` in `.handoff/current/STATE.md` when work remains.
+8. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly in SPEC.md under "Open Questions" instead of filling them with assumptions.
+9. Stop after updating the markdown artifacts. Do not implement code, edit source files, or run the execution loop.
 
 STATE.md step formatting rules (STRICT):
 - Use markdown list form only:
@@ -43,3 +45,4 @@ Constraints
 - Do not modify files outside `.handoff/current/*.md`.
 - Preserve the user's intent from `FEATURE.md`.
 - Keep the generated plan practical, concrete, and ready for execution.
+- Do not record routine implementation choices in DECISIONS.md.

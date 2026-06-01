@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added feature-local `DECISIONS.md` files for durable product and architecture decisions in new handoff workspaces.
+- Added `handoff drift` and `handoff prompt drift` to emit a drift audit prompt without changing code.
+- Added an `Evidence` section to the default `STATE.md` template for changed files, commands, results, and notes per completed step.
+
+### Changed
+
+- Updated planning and execution prompts to read feature decisions, preserve durable decisions, and require execution evidence after completed micro-steps.
+- Expanded repository context scanning and context-improvement prompts to recognize `CONTRIBUTING.md`, `docs/architecture.md`, `docs/conventions.md`, and `docs/decisions/`.
 
 ## [v0.7.3] - 2026-04-29
 

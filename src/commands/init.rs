@@ -65,6 +65,7 @@ fn init_summary(
     let design_file = format!(".handoff/current/{}", feature::DESIGN_FILE);
     let state_file = format!(".handoff/current/{}", feature::STATE_FILE);
     let session_file = format!(".handoff/current/{}", feature::SESSION_FILE);
+    let decisions_file = format!(".handoff/current/{}", feature::DECISIONS_FILE);
     let context_summary = format!(
         "Context readiness:\n- Found sources:\n{}\n- High-value gaps:\n{}\n- Optional gaps:\n{}\n- Improve context with: {command_name} prompt context --copy",
         indent_block(&context_scan.found_sources_bullets(), 2),
@@ -74,8 +75,8 @@ fn init_summary(
 
     if set_as_current {
         return format!(
-            "Initialized feature: {feature_name}\n\n{context_summary}\n\nNext:\n1. Edit: {}\n2. If the repo needs better onboarding/context docs, run: {command_name} prompt context --copy\n3. Then run: {command_name} run --copy\n4. Use {command_name} next to inspect the current task without generating a prompt\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)",
-            feature_file, spec_file, design_file, state_file, session_file,
+            "Initialized feature: {feature_name}\n\n{context_summary}\n\nNext:\n1. Edit: {}\n2. If the repo needs better onboarding/context docs, run: {command_name} prompt context --copy\n3. Then run: {command_name} run --copy\n4. Use {command_name} next to inspect the current task without generating a prompt\n\nPlanning files available:\n- {} (AI-managed; usually do not edit unless you want to refine requirements)\n- {} (AI-managed; usually do not edit unless the feature needs explicit design changes)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed during planning and execution)\n- {} (AI-managed; durable decisions only)",
+            feature_file, spec_file, design_file, state_file, session_file, decisions_file,
         );
     }
 

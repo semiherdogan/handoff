@@ -1,6 +1,7 @@
 use crate::templates::manager::{
-    DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME, DEFAULT_SESSION_TEMPLATE_NAME,
-    DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME, TemplateManager,
+    DEFAULT_DECISIONS_TEMPLATE_NAME, DEFAULT_DESIGN_TEMPLATE_NAME, DEFAULT_FEATURE_TEMPLATE_NAME,
+    DEFAULT_SESSION_TEMPLATE_NAME, DEFAULT_SPEC_TEMPLATE_NAME, DEFAULT_STATE_TEMPLATE_NAME,
+    TemplateManager,
 };
 use anyhow::{Context, Result};
 use std::fs;
@@ -11,6 +12,7 @@ pub const SPEC_FILE: &str = "SPEC.md";
 pub const DESIGN_FILE: &str = "DESIGN.md";
 pub const STATE_FILE: &str = "STATE.md";
 pub const SESSION_FILE: &str = "SESSION.md";
+pub const DECISIONS_FILE: &str = "DECISIONS.md";
 pub const FEATURE_OBJECTIVE_PLACEHOLDER: &str = "Describe the concrete objective of this feature.";
 pub const GENERATED_ARTIFACT_PLACEHOLDER: &str = "Not yet generated.";
 pub const SESSION_SUMMARY_PLACEHOLDER: &str = "None yet.";
@@ -43,12 +45,14 @@ pub fn ensure_feature_files(
     let design_template = template_manager.get_template(DEFAULT_DESIGN_TEMPLATE_NAME);
     let state_template = template_manager.get_template(DEFAULT_STATE_TEMPLATE_NAME);
     let session_template = template_manager.get_template(DEFAULT_SESSION_TEMPLATE_NAME);
+    let decisions_template = template_manager.get_template(DEFAULT_DECISIONS_TEMPLATE_NAME);
 
     write_if_missing(&feature_dir.join(FEATURE_FILE), &feature_template)?;
     write_if_missing(&feature_dir.join(SPEC_FILE), &spec_template)?;
     write_if_missing(&feature_dir.join(DESIGN_FILE), &design_template)?;
     write_if_missing(&feature_dir.join(STATE_FILE), &state_template)?;
     write_if_missing(&feature_dir.join(SESSION_FILE), &session_template)?;
+    write_if_missing(&feature_dir.join(DECISIONS_FILE), &decisions_template)?;
 
     Ok(())
 }
@@ -146,8 +150,8 @@ fn classify_review_artifact(
 #[cfg(test)]
 mod tests {
     use super::{
-        DESIGN_FILE, FEATURE_FILE, FeatureTemplateSeed, SESSION_FILE, SPEC_FILE, STATE_FILE,
-        classify_design_artifact, classify_feature_artifact, classify_session_artifact,
+        DECISIONS_FILE, DESIGN_FILE, FEATURE_FILE, FeatureTemplateSeed, SESSION_FILE, SPEC_FILE,
+        STATE_FILE, classify_design_artifact, classify_feature_artifact, classify_session_artifact,
         classify_spec_artifact, ensure_feature_files,
     };
     use crate::core::paths::AiPaths;
@@ -179,6 +183,7 @@ mod tests {
             DESIGN_FILE,
             STATE_FILE,
             SESSION_FILE,
+            DECISIONS_FILE,
         ] {
             assert!(
                 feature_dir.join(name).is_file(),

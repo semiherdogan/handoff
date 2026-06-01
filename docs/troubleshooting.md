@@ -119,7 +119,9 @@ Fix:
 
 - read `README.md`, `AGENTS.md`, and `CLAUDE.md` again if present
 - inspect `.handoff/current/SESSION.md`
+- inspect `.handoff/current/DECISIONS.md` if present
 - use `handoff status` and `handoff next`
+- run `handoff drift --copy` for a focused audit prompt
 - regenerate planning if the feature intent changed materially
 
 ## `README.md`, `AGENTS.md`, or `CLAUDE.md` exist, but sessions are still weak
@@ -135,6 +137,7 @@ Weak context files usually miss:
 - architecture constraints
 - common failure modes
 - project-specific conventions
+- durable project decisions
 
 Use:
 

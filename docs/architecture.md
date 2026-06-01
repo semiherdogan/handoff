@@ -21,6 +21,7 @@ The core unit is a feature workspace:
       DESIGN.md
       STATE.md
       SESSION.md
+      DECISIONS.md
 ```
 
 ## Artifact Responsibilities
@@ -28,8 +29,9 @@ The core unit is a feature workspace:
 - `FEATURE.md`: raw intent, constraints, and non-goals
 - `SPEC.md`: normalized behavior and acceptance criteria
 - `DESIGN.md`: optional technical shape when the feature needs it
-- `STATE.md`: execution ledger and parser-sensitive progress markers
+- `STATE.md`: execution ledger, evidence, and parser-sensitive progress markers
 - `SESSION.md`: continuation-safe summary for the next AI session
+- `DECISIONS.md`: durable feature-level product or architecture decisions
 
 The product depends on these files being explicit and durable. The files are the memory layer.
 
@@ -48,6 +50,8 @@ The explicit commands let you drive the same flow manually:
 - execution-oriented: `start`, `continue`
 
 `status`, `next`, and `validate` expose the saved state without generating a prompt.
+
+`drift` generates an audit prompt that asks an assistant to compare saved intent and decisions against implementation. It stays prompt-only so the core remains deterministic and provider-agnostic.
 
 ## State Contract
 
@@ -81,6 +85,8 @@ That is why `handoff init` can call out missing high-value context like:
 - `AGENTS.md`
 
 It also detects repository guidance files such as `CLAUDE.md` when they already exist.
+
+For larger repositories, context scanning also recognizes more specific shared context such as `CONTRIBUTING.md`, `docs/architecture.md`, `docs/conventions.md`, and `docs/decisions/`.
 
 But repository context is separate from feature state:
 
