@@ -1,27 +1,40 @@
 # handoff
 
-AI coding tools forget your project.
+AI coding tools lose intent.
 
-`handoff` doesn't.
+`handoff` keeps it executable.
 
-Local-first project memory layer for AI-assisted development.
+Local-first intent and execution layer for AI-assisted development.
 
-It keeps a feature workspace on disk so your spec, plan, progress, and continuation context survive across sessions.
+It turns a feature brief into specs, design notes, decisions, execution steps, evidence, and continuation-safe prompts.
 
 ![Handoff](./cover.jpg)
 
 ## The Problem
 
-Without a memory layer:
+Without a structured workflow layer:
 
 - context disappears between chats
 - you repeat the same setup and constraints
+- intent gets blurred before implementation starts
+- requirements and decisions drift apart
 - execution drifts away from earlier decisions
 - “what should I do next?” becomes manual work again
 
 ## What Handoff Is
 
-`handoff` gives each feature a small local workspace:
+`handoff` gives each feature a local workflow workspace:
+
+- capture intent in `FEATURE.md`
+- normalize behavior in `SPEC.md`
+- preserve technical shape in `DESIGN.md`
+- record durable choices in `DECISIONS.md`
+- execute from `STATE.md`
+- keep proof of work through evidence
+- resume from `SESSION.md`
+- audit drift with `handoff drift`
+
+The workspace stays plain Markdown:
 
 - `FEATURE.md`: the raw feature brief
 - `SPEC.md`: normalized requirements
@@ -30,7 +43,7 @@ Without a memory layer:
 - `SESSION.md`: continuation-safe session summary
 - `DECISIONS.md`: durable feature decisions and tradeoffs
 
-Then it generates the right prompt for the current state so your assistant can plan, execute, and continue without losing the thread.
+Then it generates the right prompt for the current state so your assistant can plan, execute, continue, and audit the work without losing the thread.
 
 **No API keys. No cloud. No provider lock-in.** It works with any AI coding assistant that accepts a text prompt.
 
@@ -64,24 +77,42 @@ That prompt helps you improve `README.md`, `AGENTS.md`, `CLAUDE.md`, `docs/archi
 
 ## How It Works
 
-1. Capture the feature intent in `FEATURE.md`.
-2. Shape it into a spec and execution plan.
-3. Track execution evidence in `STATE.md` and continuation context in `SESSION.md`.
-4. Preserve durable choices in `DECISIONS.md`.
-5. Continue later from the saved project state.
+1. Capture feature intent.
+2. Turn intent into a spec.
+3. Add design only when it helps.
+4. Preserve durable decisions.
+5. Generate an execution plan.
+6. Execute with evidence.
+7. Continue safely across sessions.
+8. Audit drift before closing.
+
+## More Than Memory
+
+`handoff` is not just a place to store context.
+
+It keeps the development loop structured:
+
+- intent stays explicit
+- specs become the behavioral source of truth
+- decisions explain why choices were made
+- execution steps stay deterministic
+- evidence records what was actually validated
+- drift audits catch mismatch before work is closed
 
 ## Why It Converts Better Than Ad-Hoc Prompting
 
 - your assistant stops restarting from scratch every session
+- feature intent becomes reviewable before code changes
 - the next step stays explicit instead of living in chat history
 - planning and execution stay separated
+- decisions and validation evidence survive handoff
 - you can switch models or assistants without throwing away progress
 
 ## Use It When You
 
 - build with AI across multiple sessions
 - work solo and need continuity without extra process overhead
-- want deterministic state instead of chat-based memory
+- want intent, decisions, state, and evidence outside chat history
 - hand off work between assistants or teammates
 
 ## Installation
