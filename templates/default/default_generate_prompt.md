@@ -11,7 +11,7 @@ Read:
 - .handoff/current/DECISIONS.md (if present)
 
 Goal
-Create or refresh the planning markdown artifacts needed for execution, then stop before any code changes.
+Create or refresh the planning artifacts needed for execution, then stop before any code changes.
 
 --------------------------------------------------
 Language and Workspace Requirements
@@ -19,30 +19,26 @@ Language and Workspace Requirements
 {{language_instruction}}
 
 --------------------------------------------------
-Execution Protocol (Required)
+Execution Protocol
 
-1. Read `AGENTS.md` and `README.md` first when present, then read `.handoff/current/FEATURE.md` carefully.
-2. Create or fully rewrite `.handoff/current/SPEC.md` from the feature intent.
-3. Create or fully rewrite `.handoff/current/DESIGN.md` only if the feature is complex enough to benefit from explicit technical planning. Otherwise keep the file lightweight and clearly note that a detailed design is not needed.
-4. Create or fully rewrite `.handoff/current/STATE.md` with an execution-ready micro-step plan grounded in SPEC.md and optional DESIGN.md.
-5. Update `.handoff/current/DECISIONS.md` only for durable product or architecture decisions that future sessions should preserve.
-6. Rewrite `.handoff/current/SESSION.md` so the next execution session can safely continue from the generated plan.
-7. Ensure exactly one step is marked as `[>]` in `.handoff/current/STATE.md` when work remains.
-8. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly in SPEC.md under "Open Questions" instead of filling them with assumptions.
-9. Stop after updating the markdown artifacts. Do not implement code, edit source files, or run the execution loop.
+1. Read AGENTS.md and README.md first when present, then read .handoff/current/FEATURE.md carefully.
+2. Create or fully rewrite .handoff/current/SPEC.md from the feature intent.
+3. Create or rewrite .handoff/current/DESIGN.md only if the feature benefits from explicit technical planning. Otherwise keep it lightweight.
+4. Create or rewrite .handoff/current/STATE.md with an execution-ready micro-step plan grounded in SPEC.md and optional DESIGN.md.
+5. Update .handoff/current/DECISIONS.md only for durable product or architecture decisions.
+6. Rewrite .handoff/current/SESSION.md so the next session can safely continue from the generated plan.
+7. Ensure exactly one step is marked `[>]` in .handoff/current/STATE.md when work remains.
+8. If FEATURE.md is vague or contradictory, flag gaps in SPEC.md under "Open Questions" instead of assuming.
+9. Stop after updating artifacts. Do not implement code.
 
-STATE.md step formatting rules (STRICT):
-- Use markdown list form only:
-  - "- [ ] Step description"
-  - "- [>] Step description"
-  - "- [x] Step description"
-- Do not use raw "[ ]" lines without list prefixes.
+.handoff/current/STATE.md markers (strict):
+- `- [ ]` pending | `- [>]` current (exactly one) | `- [x]` completed
+- Always use list prefix. No raw `[ ]` lines.
 
 --------------------------------------------------
 Constraints
 
-- Do not implement code.
-- Do not modify files outside `.handoff/current/*.md`.
-- Preserve the user's intent from `FEATURE.md`.
-- Keep the generated plan practical, concrete, and ready for execution.
-- Do not record routine implementation choices in DECISIONS.md.
+- Do not implement code or modify files outside `.handoff/current/*.md`.
+- Preserve the user's intent from .handoff/current/FEATURE.md.
+- Keep the plan practical, concrete, and ready for execution.
+- Do not record routine implementation choices in .handoff/current/DECISIONS.md.

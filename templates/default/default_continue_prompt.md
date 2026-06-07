@@ -10,10 +10,6 @@ Read:
 - .handoff/current/DESIGN.md (if present)
 - .handoff/current/DECISIONS.md (if present)
 
---------------------------------------------------
-Role
-You are a senior engineer executing a structured implementation loop.
-
 Goal
 Complete the remaining micro-steps defined in .handoff/current/STATE.md.
 
@@ -23,76 +19,44 @@ Language and Workspace Requirements
 {{language_instruction}}
 
 --------------------------------------------------
-Execution Protocol (Required)
+Execution Protocol
 
-1. Continue from the last unfinished micro-step.
-2. Do NOT regenerate the entire plan unless logically blocked.
-3. Implement only one micro-step at a time.
-4. STATE.md step formatting rules (STRICT):
-   - Use markdown list form only:
-     - "- [ ] Step description"
-     - "- [>] Step description" (exactly one current step)
-     - "- [x] Step description" (completed)
-   - Do NOT use raw "[ ]" lines without list prefix.
-5. After each step:
-   - Mark completed step as "- [x]".
-   - Mark the next step as "- [>]" when work remains.
-   - Validate via build/tests.
-   - Fix issues if needed.
-   - Add evidence to STATE.md for the completed step, including changed files, commands/tests run, and result.
-   - Fully update .handoff/current/STATE.md after each step transition (Current Step, Execution Plan markers, Completed Steps, Remaining Steps, and any changed issues/risks/notes).
-   - Rewrite .handoff/current/SESSION.md after each step with current progress, next micro-step, and continuation-safe context.
-   - Update .handoff/current/DECISIONS.md only when durable product or architecture decisions changed.
-6. Continue automatically while unfinished steps exist.
-7. Stop if logically blocked or if no remaining steps exist.
+1. Continue from the last unfinished micro-step. Do not regenerate the plan unless logically blocked.
+2. Implement one micro-step at a time.
+3. After each step:
+   - Mark completed step as `- [x]`, set next as `- [>]`.
+   - Run build/tests, fix issues before proceeding.
+   - Add evidence to .handoff/current/STATE.md (changed files, commands, result).
+   - Update .handoff/current/STATE.md fully (markers, counts, risks).
+   - Rewrite .handoff/current/SESSION.md for safe continuation.
+   - Update .handoff/current/DECISIONS.md only when durable choices change.
+4. Continue automatically while steps remain. Stop if blocked.
 
---------------------------------------------------
-Structured Reasoning Requirements
-
-- Think step by step.
-- If critical information is missing, ask before proceeding.
-- Do not assume unstated architecture.
-- Do not introduce unstated assumptions.
-- Explicitly evaluate risk before modifying multiple files.
-- Prefer evidence from SPEC.md, DESIGN.md, FEATURE.md, and repository context over familiarity.
+.handoff/current/STATE.md markers (strict):
+- `- [ ]` pending | `- [>]` current (exactly one) | `- [x]` completed
+- Always use list prefix. No raw `[ ]` lines.
 
 --------------------------------------------------
 Constraints
 
-- Do not modify unrelated modules.
-- Do not introduce speculative improvements.
-- Do not fabricate test results.
-- Do not fabricate statistics or sources.
-- Do not skip validation.
+- Do not modify unrelated modules or introduce speculative improvements.
+- Do not fabricate test results or skip validation.
+- Do not assume unstated architecture. Ask if critical info is missing.
+- Prefer evidence from planning artifacts and repo context over familiarity.
+- If multiple interpretations exist, choose the one most consistent with FEATURE.md and state assumptions explicitly.
 
 --------------------------------------------------
 Engineering Guardrails
 
-- Follow existing project patterns and conventions.
-- Preserve existing behavior unless explicitly asked to change it.
-- Fix root causes, not just symptoms.
-- Do not catch and ignore errors silently; surface enough context to debug.
-- Follow existing security/auth patterns and do not weaken checks without clarification.
-- Do not upgrade dependencies unless required for the task.
-- Keep lockfiles and existing version constraints intact.
-- Update tests when behavior changes or bugs are fixed.
-- Add tests when required for the task.
-- Remove code only when it is provably unused; otherwise leave it and call it out.
-
---------------------------------------------------
-Uncertainty Handling
-
-If multiple interpretations exist:
-- Briefly enumerate them.
-- Choose the most consistent with .handoff/current/FEATURE.md.
-- State assumptions explicitly.
+- Follow existing project patterns. Preserve existing behavior unless required to change.
+- Fix root causes. Do not swallow errors silently.
+- Do not upgrade dependencies or weaken security unless required.
+- Update tests when behavior changes. Remove only provably unused code.
 
 --------------------------------------------------
 Before Context Ends
 
-- Ensure exactly one [>] exists if work remains.
-- If `AGENTS.md` exists and workflow/structure/contracts changed, update `AGENTS.md`.
-- Update .handoff/current/STATE.md fully.
-- Rewrite .handoff/current/SESSION.md for safe continuation.
-- Update .handoff/current/DECISIONS.md if durable decisions changed.
-- When all steps are marked [x] and no work remains, write a final summary in SESSION.md stating what was delivered and any follow-up items. Do not mark a feature complete if tests fail or known issues remain.
+- Ensure exactly one `[>]` exists if work remains.
+- Update .handoff/current/STATE.md, rewrite .handoff/current/SESSION.md, update .handoff/current/DECISIONS.md if decisions changed.
+- If AGENTS.md exists and contracts changed, update it.
+- When all steps are `[x]`, write a final summary in .handoff/current/SESSION.md. Do not mark complete if tests fail or known issues remain.

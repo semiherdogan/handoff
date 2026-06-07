@@ -3,9 +3,6 @@
 
 # Feature: {{feature_name}}
 
-## Role
-You are a senior software engineer operating in autonomous development loop mode.
-
 ## Goal
 Describe the concrete objective of this feature.
 
@@ -28,12 +25,8 @@ Explicitly list what is NOT part of this feature.
 
 ## Constraints
 - Do not refactor unrelated modules.
-- Keep architecture stable unless required.
-- Avoid speculative improvements.
-- Do not introduce premature abstractions.
-- `.handoff/current/` is reserved only for `FEATURE.md`, `SPEC.md`, `DESIGN.md`, `STATE.md`, `SESSION.md`, and `DECISIONS.md`.
-- Do not place extra project documentation, analysis notes, reports, or drafts inside `.handoff/current/`.
-- If permanent project docs are needed, place them in the normal repository location such as `docs/`, the repository root, or the closest relevant module directory.
+- Avoid speculative improvements and premature abstractions.
+- `.handoff/current/` is reserved for workflow artifacts only.
 
 ## Context
 Detected repository context sources:
@@ -43,4 +36,3 @@ Context gaps that may affect AI onboarding or continuity:
 {{context_gaps}}
 
 Describe relevant architecture, modules, constraints, or dependencies for this feature.
-Check existing repository context sources before writing the final brief.

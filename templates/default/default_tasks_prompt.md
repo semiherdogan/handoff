@@ -17,33 +17,23 @@ Language and Workspace Requirements
 {{language_instruction}}
 
 --------------------------------------------------
-Execution Protocol (Required)
+Execution Protocol
 
-1. Read AGENTS.md and README.md first when present, then derive tasks from SPEC.md and optional DESIGN.md.
+1. Read AGENTS.md and README.md first when present, then derive tasks from .handoff/current/SPEC.md and optional .handoff/current/DESIGN.md.
 2. Write the execution plan into .handoff/current/STATE.md under "Execution Plan".
-3. Break work into practical micro-steps.
-4. Keep each step narrowly scoped and executable.
+3. Break work into practical micro-steps (prefer 5-10).
+4. Keep each step narrowly scoped and executable. Avoid bundling unrelated concerns into one step.
+5. Exactly one step must be `[>]`. All others must be `[ ]`.
+6. Keep the plan grounded in SPEC.md and aligned with DECISIONS.md.
+7. If SPEC.md or DESIGN.md contain contradictions, flag them instead of guessing.
 
-Step formatting rules (STRICT):
-- Use markdown list form only:
-  - "- [ ] Step description"
-  - "- [>] Step description"
-  - "- [x] Step description"
-- Exactly one step must be marked as [>] when work remains.
-- All not-yet-started steps other than the current one must be [ ].
-- Do not use raw "[ ]" lines without list prefixes.
-
-Additional requirements:
-- Fully update STATE.md after creating the plan.
-- Keep the plan grounded in SPEC.md.
-- Keep the plan aligned with accepted decisions in DECISIONS.md.
-- Avoid bundling unrelated concerns into one step.
-- Prefer 5-10 micro-steps when reasonable.
-- If SPEC.md or DESIGN.md contain contradictions or gaps that block task planning, flag them explicitly instead of guessing.
+.handoff/current/STATE.md markers (strict):
+- `- [ ]` pending | `- [>]` current (exactly one) | `- [x]` completed
+- Always use list prefix. No raw `[ ]` lines.
 
 --------------------------------------------------
 Constraints
 
 - Do not implement code.
-- Do not overwrite FEATURE.md.
-- Do not rewrite SPEC.md or DESIGN.md unless blocked by contradictions that must be called out explicitly.
+- Do not overwrite .handoff/current/FEATURE.md.
+- Do not rewrite .handoff/current/SPEC.md or .handoff/current/DESIGN.md unless blocked by contradictions that must be called out explicitly.

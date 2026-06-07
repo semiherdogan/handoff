@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Streamlined the default prompt and scaffold templates to remove duplicated boilerplate (engineering guardrails, reasoning blocks, repeated STATE marker rules) while preserving workflow contracts; all artifact write targets now use explicit `.handoff/current/` paths to avoid wrong-file edits.
 - Updated planning and execution prompts to read feature decisions, preserve durable decisions, and require execution evidence after completed micro-steps.
 - Expanded repository context scanning and context-improvement prompts to recognize `CONTRIBUTING.md`, `docs/architecture.md`, `docs/conventions.md`, and `docs/decisions/`.
 

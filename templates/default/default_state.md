@@ -9,15 +9,6 @@ Not started
 # Execution Plan
 Not yet generated.
 
-Step Marker Contract (when plan is created):
-- Use markdown list form only.
-- Allowed markers:
-  - "- [ ] Step description" (pending)
-  - "- [>] Step description" (current)
-  - "- [x] Step description" (completed)
-- Ensure exactly one [>] exists if work remains.
-- Do not use raw "[ ]" lines without list prefix.
-
 # Completed Steps
 None
 
@@ -29,13 +20,6 @@ None
 
 # Evidence
 None yet.
-
-Evidence Entry Format:
-- Step:
-- Files:
-- Commands:
-- Result:
-- Notes:
 
 # Risks
 None

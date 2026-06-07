@@ -16,29 +16,21 @@ Language and Workspace Requirements
 {{language_instruction}}
 
 --------------------------------------------------
-Execution Protocol (Required)
+Execution Protocol
 
-1. Read AGENTS.md and README.md first when present, then read FEATURE.md and SPEC.md.
+1. Read AGENTS.md and README.md first when present, then read .handoff/current/FEATURE.md and .handoff/current/SPEC.md.
 2. Create or fully rewrite .handoff/current/DESIGN.md.
-3. Align the design to the existing repository structure and project conventions.
+3. Align the design to existing repository structure and conventions.
 4. Identify the most likely files or modules that will change.
 5. Document tradeoffs and risks briefly.
 6. Choose the minimal design that satisfies SPEC.md.
-7. Update DECISIONS.md only for durable architecture or product choices that should survive future sessions.
+7. Update .handoff/current/DECISIONS.md only for durable architecture or product choices.
 
 --------------------------------------------------
 Constraints
 
-- Do not implement code.
-- Do not generate execution steps in STATE.md.
+- Do not implement code or generate .handoff/current/STATE.md.
+- Do not rewrite .handoff/current/SPEC.md unless it is internally contradictory and you must call that out explicitly.
 - Avoid speculative architecture.
-- Preserve existing behavior and patterns unless SPEC.md requires change.
-- Do not rewrite SPEC.md unless it is internally contradictory and you must call that out explicitly.
-- Do not record routine implementation details in DECISIONS.md.
-
---------------------------------------------------
-Output Quality
-
-- Keep the design practical.
+- Preserve existing behavior unless SPEC.md requires change.
 - Favor repository-specific decisions over generic architecture advice.
-- Make the result directly useful for task generation and implementation.

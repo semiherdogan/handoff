@@ -15,29 +15,21 @@ Language and Workspace Requirements
 {{language_instruction}}
 
 --------------------------------------------------
-Execution Protocol (Required)
+Execution Protocol
 
 1. Read AGENTS.md and README.md first when present, then read .handoff/current/FEATURE.md carefully.
 2. Create or fully rewrite .handoff/current/SPEC.md.
 3. Normalize ambiguity into explicit scope, requirements, edge cases, assumptions, and acceptance criteria.
-4. Separate in-scope work from out-of-scope work.
+4. Separate in-scope from out-of-scope work.
 5. Keep requirements concrete and testable.
-6. Preserve the user's intent; do not invent unsupported product behavior.
-7. Preserve accepted decisions from DECISIONS.md when they affect behavior.
-8. If FEATURE.md is vague, contradictory, or missing critical information, flag the gaps explicitly under "Open Questions" instead of filling them with assumptions.
+6. Preserve the user's intent; do not invent unsupported behavior.
+7. Preserve accepted decisions from .handoff/current/DECISIONS.md when they affect behavior.
+8. If FEATURE.md is vague or contradictory, flag gaps under "Open Questions" instead of assuming.
 
 --------------------------------------------------
 Constraints
 
 - Do not implement code.
-- Do not generate execution steps in STATE.md.
-- Do not create DESIGN.md unless explicitly asked.
-- Do not overwrite FEATURE.md.
-- Avoid implementation detail unless it is necessary to clarify behavior.
-
---------------------------------------------------
-Output Quality
-
-- Keep the spec compact.
-- Prefer precision over verbosity.
-- Make the requirements usable as direct input for task planning.
+- Do not generate .handoff/current/STATE.md or .handoff/current/DESIGN.md.
+- Do not overwrite .handoff/current/FEATURE.md.
+- Keep the spec compact: precision over verbosity.
