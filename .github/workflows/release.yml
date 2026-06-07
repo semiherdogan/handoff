@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, without the v prefix. Example: 0.8.1"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -20,15 +26,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref }}
 
       - name: Write release version file
         shell: bash
+        env:
+          RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || '' }}
         run: |
-          tag_version="${GITHUB_REF_NAME#v}"
+          if [[ -n "$RELEASE_VERSION" ]]; then
+            tag_version="$RELEASE_VERSION"
+          else
+            tag_version="${GITHUB_REF_NAME#v}"
+          fi
+
           if [[ -z "$tag_version" ]]; then
             echo "Failed to read release tag version"
             exit 1
           fi
+
           printf '%s\n' "$tag_version" > version.txt
 
       - name: Setup Rust
@@ -59,6 +75,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v8.0.1
@@ -68,10 +86,13 @@ jobs:
 
       - name: Generate release notes
         shell: bash
-        run: bash scripts/extract-release-notes.sh "$GITHUB_REF_NAME" RELEASE_NOTES.md
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
+        run: bash scripts/extract-release-notes.sh "$RELEASE_TAG" RELEASE_NOTES.md
 
       - name: Publish release
         uses: softprops/action-gh-release@v2.5.0
         with:
           files: dist/*
           body_path: RELEASE_NOTES.md
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
