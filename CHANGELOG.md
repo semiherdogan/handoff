@@ -6,18 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Added
-
-- Added a GitHub Actions release preparation workflow backed by git-cliff for changelog generation, release tag creation, and GitHub release notes.
-- Added feature-local `DECISIONS.md` files for durable product and architecture decisions in new handoff workspaces.
-- Added `handoff drift` and `handoff prompt drift` to emit a drift audit prompt without changing code.
-- Added an `Evidence` section to the default `STATE.md` template for changed files, commands, results, and notes per completed step.
+## [v0.8.1] - 2026-06-07
 
 ### Changed
 
-- Streamlined the default prompt and scaffold templates to remove duplicated boilerplate (engineering guardrails, reasoning blocks, repeated STATE marker rules) while preserving workflow contracts; all artifact write targets now use explicit `.handoff/current/` paths to avoid wrong-file edits.
-- Updated planning and execution prompts to read feature decisions, preserve durable decisions, and require execution evidence after completed micro-steps.
-- Expanded repository context scanning and context-improvement prompts to recognize `CONTRIBUTING.md`, `docs/architecture.md`, `docs/conventions.md`, and `docs/decisions/`.
+- Refresh project positioning and workflow overview
+- Remove duplicated boilerplate across prompt templates (engineering guardrails, reasoning blocks, repeated STATE marker rules)
+- Condense execution protocol sections while preserving workflow contracts and artifact write targets
+- Enforce explicit `.handoff/current/` paths in all templates to prevent wrong-file edits
+- Update context, continue, design, drift, feature, generate, spec, start, state, and tasks prompts for consistency
+- Simplify constraint lists and remove redundant formatting guidance
+- Add `/.kiro` to .gitignore to exclude local session artifacts
+- Update CHANGELOG.md with summary of template streamlining effort
+- Add prepare-release.yml workflow for changelog generation and release tagging
+- Integrate git-cliff for automated conventional commit parsing and changelog updates
+- Add extract-release-notes.sh script to generate GitHub release notes from changelog
+- Add prepare-release-changelog.sh script to move unreleased entries into versioned sections
+- Add cliff.toml configuration for git-cliff commit parsing and changelog formatting
+- Update release.yml to checkout code and publish release notes to GitHub
+- Add mise tasks for changelog preview and release preparation
+- Update CHANGELOG.md to document new release automation workflow
+
+
 
 ## [v0.7.3] - 2026-04-29
 
