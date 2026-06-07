@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added a GitHub Actions release preparation workflow backed by git-cliff for changelog generation, release tag creation, and GitHub release notes.
 - Added feature-local `DECISIONS.md` files for durable product and architecture decisions in new handoff workspaces.
 - Added `handoff drift` and `handoff prompt drift` to emit a drift audit prompt without changing code.
 - Added an `Evidence` section to the default `STATE.md` template for changed files, commands, results, and notes per completed step.

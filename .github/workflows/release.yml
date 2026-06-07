@@ -57,13 +57,21 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+
       - name: Download artifacts
         uses: actions/download-artifact@v8.0.1
         with:
           path: dist
           merge-multiple: true
 
+      - name: Generate release notes
+        shell: bash
+        run: bash scripts/extract-release-notes.sh "$GITHUB_REF_NAME" RELEASE_NOTES.md
+
       - name: Publish release
         uses: softprops/action-gh-release@v2.5.0
         with:
           files: dist/*
+          body_path: RELEASE_NOTES.md

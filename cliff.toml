@@ -1,0 +1,52 @@
+# git-cliff configuration
+# https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+"""
+body = """
+{% if version -%}
+## [{{ version }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## [Unreleased]
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+
+{% for commit in commits -%}
+{% if commit.body -%}
+{{ commit.body | trim }}
+{% else -%}
+- {{ commit.message | split(pat="\n") | first | upper_first | trim }}
+{% endif -%}
+{% endfor %}
+{% endfor %}
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+filter_commits = false
+tag_pattern = "v[0-9]*"
+sort_commits = "oldest"
+commit_parsers = [
+  { message = "^release: ", skip = true },
+  { message = "^chore\\(release\\):", skip = true },
+  { message = "^feat", group = "Added" },
+  { message = "^fix", group = "Fixed" },
+  { message = "^docs", group = "Changed" },
+  { message = "^ci", group = "Changed" },
+  { message = "^refactor", group = "Changed" },
+  { message = "^perf", group = "Changed" },
+  { message = "^test", group = "Changed" },
+  { message = "^chore", group = "Changed" },
+  { message = "^.*", group = "Changed" },
+]
